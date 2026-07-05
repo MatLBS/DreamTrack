@@ -1,8 +1,9 @@
-import { and, asc, eq, gte, sql } from "drizzle-orm";
+import { and, asc, eq, gt, gte, lt, lte, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import {
   applications,
+  transitions,
   type Application,
   type NewApplication,
 } from "@/db/schema";
@@ -33,21 +34,19 @@ export async function getMaxPositionInColumn(
   return row?.max ?? null;
 }
 
-export async function createApplication(
-  values: NewApplication,
-): Promise<Application> {
-  const [application] = await db
-    .insert(applications)
-    .values(values)
-    .returning();
-  return application;
+/** Nombre de cartes dans une colonne — utilisé par le guard de suppression de colonne. */
+export async function countApplicationsInColumn(
+  columnId: string,
+): Promise<number> {
+  const [row] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(applications)
+    .where(eq(applications.columnId, columnId));
+  return row?.count ?? 0;
 }
 
 export type ApplicationPatch = Partial<
-  Pick<
-    NewApplication,
-    "company" | "role" | "url" | "notes" | "columnId" | "position"
-  >
+  Pick<NewApplication, "company" | "role" | "url" | "notes">
 >;
 
 export async function updateApplication(
@@ -62,27 +61,142 @@ export async function updateApplication(
   return application;
 }
 
-export async function deleteApplication(id: string): Promise<void> {
-  await db.delete(applications).where(eq(applications.id, id));
+/**
+ * Crée une carte et écrit l'événement de création (`fromColumnId = null`)
+ * dans le même mouvement. Atomique.
+ */
+export async function insertApplicationWithTransition({
+  company,
+  role,
+  url,
+  notes,
+  columnId,
+  position,
+}: {
+  company: string;
+  role: string;
+  url?: string | null;
+  notes?: string | null;
+  columnId: string;
+  position: number;
+}): Promise<Application> {
+  return db.transaction(async (tx) => {
+    const [application] = await tx
+      .insert(applications)
+      .values({ company, role, url, notes, columnId, position })
+      .returning();
+
+    await tx.insert(transitions).values({
+      applicationId: application.id,
+      fromColumnId: null,
+      toColumnId: columnId,
+    });
+
+    return application;
+  });
 }
 
-/** Décale de `by` les cartes d'une colonne dont `position >= fromPosition`. */
-export async function shiftApplicationPositions({
-  columnId,
+/**
+ * Déplace une carte : referme le trou dans l'ancienne colonne, ouvre le slot
+ * dans la nouvelle (ou décale la plage intra-colonne en cas de réordonnancement),
+ * met à jour la carte, et écrit la transition uniquement si la colonne change.
+ * Atomique.
+ */
+export async function moveApplication({
+  applicationId,
+  fromColumnId,
+  toColumnId,
   fromPosition,
-  by,
+  toPosition,
 }: {
-  columnId: string;
+  applicationId: string;
+  fromColumnId: string;
+  toColumnId: string;
   fromPosition: number;
-  by: number;
-}): Promise<void> {
-  await db
-    .update(applications)
-    .set({ position: sql`${applications.position} + ${by}` })
-    .where(
-      and(
-        eq(applications.columnId, columnId),
-        gte(applications.position, fromPosition),
-      ),
-    );
+  toPosition: number;
+}): Promise<Application> {
+  return db.transaction(async (tx) => {
+    if (fromColumnId === toColumnId) {
+      if (toPosition > fromPosition) {
+        await tx
+          .update(applications)
+          .set({ position: sql`${applications.position} - 1` })
+          .where(
+            and(
+              eq(applications.columnId, fromColumnId),
+              gt(applications.position, fromPosition),
+              lte(applications.position, toPosition),
+            ),
+          );
+      } else if (toPosition < fromPosition) {
+        await tx
+          .update(applications)
+          .set({ position: sql`${applications.position} + 1` })
+          .where(
+            and(
+              eq(applications.columnId, fromColumnId),
+              gte(applications.position, toPosition),
+              lt(applications.position, fromPosition),
+            ),
+          );
+      }
+    } else {
+      await tx
+        .update(applications)
+        .set({ position: sql`${applications.position} - 1` })
+        .where(
+          and(
+            eq(applications.columnId, fromColumnId),
+            gt(applications.position, fromPosition),
+          ),
+        );
+
+      await tx
+        .update(applications)
+        .set({ position: sql`${applications.position} + 1` })
+        .where(
+          and(
+            eq(applications.columnId, toColumnId),
+            gte(applications.position, toPosition),
+          ),
+        );
+    }
+
+    const [application] = await tx
+      .update(applications)
+      .set({ columnId: toColumnId, position: toPosition })
+      .where(eq(applications.id, applicationId))
+      .returning();
+
+    if (fromColumnId !== toColumnId) {
+      await tx.insert(transitions).values({
+        applicationId,
+        fromColumnId,
+        toColumnId,
+      });
+    }
+
+    return application;
+  });
+}
+
+/**
+ * Supprime une carte (le cascade supprime ses transitions) et referme le trou
+ * dans sa colonne. Atomique.
+ */
+export async function removeApplicationAndCloseGap(
+  id: string,
+  columnId: string,
+  position: number,
+): Promise<void> {
+  await db.transaction(async (tx) => {
+    await tx.delete(applications).where(eq(applications.id, id));
+
+    await tx
+      .update(applications)
+      .set({ position: sql`${applications.position} - 1` })
+      .where(
+        and(eq(applications.columnId, columnId), gt(applications.position, position)),
+      );
+  });
 }

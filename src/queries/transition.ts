@@ -1,13 +1,9 @@
-import { db } from "@/db";
-import { transitions, type NewTransition, type Transition } from "@/db/schema";
+import { asc } from "drizzle-orm";
 
-/**
- * Écrit une transition (création ou déplacement d'une carte).
- * `fromColumnId` NULL = événement de création. Appelé par le service à chaque move.
- */
-export async function createTransition(
-  values: NewTransition,
-): Promise<Transition> {
-  const [transition] = await db.insert(transitions).values(values).returning();
-  return transition;
+import { db } from "@/db";
+import { transitions, type Transition } from "@/db/schema";
+
+/** Toutes les transitions, triées par date de création — source de vérité du Sankey. */
+export async function listTransitions(): Promise<Transition[]> {
+  return db.select().from(transitions).orderBy(asc(transitions.createdAt));
 }

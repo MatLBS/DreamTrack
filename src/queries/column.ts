@@ -1,4 +1,4 @@
-import { asc, eq, gte, sql } from "drizzle-orm";
+import { and, asc, eq, gt, gte, lt, lte, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import { columns, type Column, type NewColumn } from "@/db/schema";
@@ -10,11 +10,6 @@ export async function listColumns(): Promise<Column[]> {
 
 export async function getColumnById(id: string): Promise<Column | undefined> {
   const [column] = await db.select().from(columns).where(eq(columns.id, id));
-  return column;
-}
-
-export async function createColumn(values: NewColumn): Promise<Column> {
-  const [column] = await db.insert(columns).values(values).returning();
   return column;
 }
 
@@ -32,20 +27,93 @@ export async function updateColumn(
   return column;
 }
 
-export async function deleteColumn(id: string): Promise<void> {
-  await db.delete(columns).where(eq(columns.id, id));
+/** Insert simple en masse — utilisé uniquement par le seed (table vide, aucun décalage requis). */
+export async function insertColumns(values: NewColumn[]): Promise<Column[]> {
+  return db.insert(columns).values(values).returning();
 }
 
-/** Décale de `by` toutes les colonnes dont `position >= fromPosition` (ouvre/referme un slot). */
-export async function shiftColumnPositions({
-  fromPosition,
-  by,
+/**
+ * Insère une nouvelle colonne à `position` : décale les colonnes existantes
+ * (>= position) de +1, puis insère la nouvelle à ce slot. Atomique.
+ */
+export async function insertColumnAt({
+  name,
+  position,
+  isDefault,
 }: {
-  fromPosition: number;
-  by: number;
-}): Promise<void> {
-  await db
-    .update(columns)
-    .set({ position: sql`${columns.position} + ${by}` })
-    .where(gte(columns.position, fromPosition));
+  name: string;
+  position: number;
+  isDefault: boolean;
+}): Promise<Column> {
+  return db.transaction(async (tx) => {
+    await tx
+      .update(columns)
+      .set({ position: sql`${columns.position} + 1` })
+      .where(gte(columns.position, position));
+
+    const [column] = await tx
+      .insert(columns)
+      .values({ name, position, isDefault })
+      .returning();
+    return column;
+  });
+}
+
+/**
+ * Déplace une colonne de `fromPosition` vers `toPosition`, en décalant les
+ * colonnes intermédiaires pour combler/ouvrir le slot. Atomique.
+ */
+export async function moveColumnToPosition(
+  id: string,
+  fromPosition: number,
+  toPosition: number,
+): Promise<Column> {
+  return db.transaction(async (tx) => {
+    if (toPosition > fromPosition) {
+      await tx
+        .update(columns)
+        .set({ position: sql`${columns.position} - 1` })
+        .where(
+          and(
+            gt(columns.position, fromPosition),
+            lte(columns.position, toPosition),
+          ),
+        );
+    } else if (toPosition < fromPosition) {
+      await tx
+        .update(columns)
+        .set({ position: sql`${columns.position} + 1` })
+        .where(
+          and(
+            gte(columns.position, toPosition),
+            lt(columns.position, fromPosition),
+          ),
+        );
+    }
+
+    const [column] = await tx
+      .update(columns)
+      .set({ position: toPosition })
+      .where(eq(columns.id, id))
+      .returning();
+    return column;
+  });
+}
+
+/**
+ * Supprime une colonne et referme le trou (décale de -1 les colonnes situées
+ * après elle). Atomique.
+ */
+export async function removeColumnAndCloseGap(
+  id: string,
+  position: number,
+): Promise<void> {
+  await db.transaction(async (tx) => {
+    await tx.delete(columns).where(eq(columns.id, id));
+
+    await tx
+      .update(columns)
+      .set({ position: sql`${columns.position} - 1` })
+      .where(gt(columns.position, position));
+  });
 }

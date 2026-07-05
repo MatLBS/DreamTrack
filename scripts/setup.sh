@@ -7,6 +7,9 @@ if [ ! -f .env ]; then
   echo "  Edit .env and fill in the required values before continuing."
 fi
 
+echo "→ Cleaning up old dependencies..."
+rm -rf node_modules && package-lock.json
+
 echo "→ Installing dependencies..."
 npm install
 
@@ -14,6 +17,6 @@ echo "→ Pushing schema to database..."
 npm run db:migrate
 
 echo "→ Seeding database with initial data..."
-npm run seed:users
+npm run db:seed
 
 echo "✓ Setup complete. Run 'npm run dev' to start."
