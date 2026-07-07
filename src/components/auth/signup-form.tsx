@@ -23,7 +23,8 @@ export function SignupForm() {
         password: values.password,
         callbackURL: "/",
       });
-      if (error) throw new Error(error.message ?? "Impossible de créer le compte");
+      if (error)
+        throw new Error(error.message ?? "Impossible de créer le compte");
     },
     onSuccess: () => {
       router.push("/");
@@ -53,8 +54,7 @@ export function SignupForm() {
         name="name"
         validators={{
           onChange: ({ value }) =>
-            SignupSchema.shape.name.safeParse(value).error?.issues[0]
-              ?.message,
+            SignupSchema.shape.name.safeParse(value).error?.issues[0]?.message,
         }}
       >
         {(field) => (
@@ -87,8 +87,7 @@ export function SignupForm() {
         name="email"
         validators={{
           onChange: ({ value }) =>
-            SignupSchema.shape.email.safeParse(value).error?.issues[0]
-              ?.message,
+            SignupSchema.shape.email.safeParse(value).error?.issues[0]?.message,
         }}
       >
         {(field) => (

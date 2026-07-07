@@ -57,9 +57,9 @@ export function ApplicationCard({
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium">{application.company}</p>
+          <p className="truncate text-sm font-semibold">{application.role}</p>
           <p className="truncate text-xs text-muted-foreground">
-            {application.role}
+            {application.company}
           </p>
         </div>
         <DropdownMenu>
@@ -83,7 +83,7 @@ export function ApplicationCard({
           href={application.url}
           target="_blank"
           rel="noreferrer"
-          className="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:underline"
+          className="mt-2 inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-800 hover:underline dark:bg-amber-950 dark:text-amber-300"
         >
           <ExternalLink className="size-3" />
           Offre

@@ -244,7 +244,12 @@ function createStackedPlanesBufferGeometry(
 
 const MergedPlanes = forwardRef<
   BeamMesh,
-  { material: THREE.ShaderMaterial; width: number; count: number; height: number }
+  {
+    material: THREE.ShaderMaterial;
+    width: number;
+    count: number;
+    height: number;
+  }
 >(({ material, width, count, height }, ref) => {
   const mesh = useRef<BeamMesh>(null!);
   useImperativeHandle(ref, () => mesh.current);
@@ -281,7 +286,12 @@ const DirLight: FC<{ position: [number, number, number]; color: string }> = ({
     dir.current.shadow.bias = -0.004;
   }, []);
   return (
-    <directionalLight ref={dir} color={color} intensity={1} position={position} />
+    <directionalLight
+      ref={dir}
+      color={color}
+      intensity={1}
+      position={position}
+    />
   );
 };
 

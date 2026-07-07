@@ -32,12 +32,14 @@ interface ApplicationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   application?: Application;
+  defaultColumnId?: string;
 }
 
 export function ApplicationDialog({
   open,
   onOpenChange,
   application,
+  defaultColumnId,
 }: ApplicationDialogProps) {
   const queryClient = useQueryClient();
   const isEdit = Boolean(application);
@@ -52,7 +54,10 @@ export function ApplicationDialog({
       };
       const result = application
         ? await updateApplicationAction(application.id, payload)
-        : await createApplicationAction(payload);
+        : await createApplicationAction({
+            ...payload,
+            columnId: defaultColumnId,
+          });
 
       if (!result.ok) throw new Error(result.message);
       return result.data;

@@ -52,8 +52,7 @@ export function LoginForm() {
         name="email"
         validators={{
           onChange: ({ value }) =>
-            LoginSchema.shape.email.safeParse(value).error?.issues[0]
-              ?.message,
+            LoginSchema.shape.email.safeParse(value).error?.issues[0]?.message,
         }}
       >
         {(field) => (

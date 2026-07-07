@@ -40,22 +40,35 @@ export async function getBoard(): Promise<BoardColumn[]> {
   }));
 }
 
-/** Crée une carte dans la colonne d'entrée (1re colonne) et écrit la transition de création. */
+/**
+ * Crée une carte — dans `columnId` si fourni (et valide), sinon dans la colonne
+ * d'entrée (1re colonne) — et écrit la transition de création.
+ */
 export async function createApplication(
   input: CreateApplicationInput,
 ): Promise<Application> {
-  const values = parseInput(CreateApplicationSchema, input);
-  const [entry] = await listColumns();
-  if (!entry) {
-    throw new ServiceError("CONFLICT", "No columns exist yet");
+  const { columnId, ...values } = parseInput(CreateApplicationSchema, input);
+
+  let targetColumnId = columnId;
+  if (targetColumnId) {
+    const column = await getColumnById(targetColumnId);
+    if (!column) {
+      throw new ServiceError("NOT_FOUND", `Column ${targetColumnId} not found`);
+    }
+  } else {
+    const [entry] = await listColumns();
+    if (!entry) {
+      throw new ServiceError("CONFLICT", "No columns exist yet");
+    }
+    targetColumnId = entry.id;
   }
 
-  const maxPosition = await getMaxPositionInColumn(entry.id);
+  const maxPosition = await getMaxPositionInColumn(targetColumnId);
   const position = (maxPosition ?? -1) + 1;
 
   return insertApplicationWithTransition({
     ...values,
-    columnId: entry.id,
+    columnId: targetColumnId,
     position,
   });
 }

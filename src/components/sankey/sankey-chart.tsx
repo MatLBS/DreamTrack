@@ -94,16 +94,17 @@ export function SankeyChart({ data }: { data: SankeyData }) {
         <g>
           {layout.links.map((link: LayoutLink, index: number) => {
             const source = link.source as LayoutNode;
+            const target = link.target as LayoutNode;
             return (
               <path
                 key={index}
                 d={linkPath(link) ?? undefined}
                 fill="none"
-                stroke={categoryColor(source.isLostStage)}
-                strokeOpacity={0.35}
+                stroke={categoryColor(target.isLostStage)}
+                strokeOpacity={0.4}
                 strokeWidth={Math.max(1, link.width ?? 0)}
               >
-                <title>{`${source.name} → ${(link.target as LayoutNode).name} : ${link.value}`}</title>
+                <title>{`${source.name} → ${target.name} : ${link.value}`}</title>
               </path>
             );
           })}
