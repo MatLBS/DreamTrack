@@ -196,7 +196,10 @@ export async function removeApplicationAndCloseGap(
       .update(applications)
       .set({ position: sql`${applications.position} - 1` })
       .where(
-        and(eq(applications.columnId, columnId), gt(applications.position, position)),
+        and(
+          eq(applications.columnId, columnId),
+          gt(applications.position, position),
+        ),
       );
   });
 }

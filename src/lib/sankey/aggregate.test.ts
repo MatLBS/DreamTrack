@@ -4,8 +4,20 @@ import type { Column, Transition } from "@/db/schema";
 
 import { aggregateSankey } from "./aggregate";
 
-function makeColumn(id: string, position: number, name = id): Column {
-  return { id, name, position, isDefault: true, createdAt: new Date() };
+function makeColumn(
+  id: string,
+  position: number,
+  name = id,
+  isLostStage = false,
+): Column {
+  return {
+    id,
+    name,
+    position,
+    isDefault: true,
+    isLostStage,
+    createdAt: new Date(),
+  };
 }
 
 function makeTransition(
@@ -24,7 +36,7 @@ function makeTransition(
 describe("aggregateSankey", () => {
   const a = makeColumn("a", 0, "Jobs applied to");
   const b = makeColumn("b", 1, "Replies");
-  const c = makeColumn("c", 2, "Rejections");
+  const c = makeColumn("c", 2, "Rejections", true);
   const columns = [a, b, c];
 
   it("counts transitions grouped by (from, to) pair", () => {
@@ -68,9 +80,18 @@ describe("aggregateSankey", () => {
     const { nodes } = aggregateSankey(columns, transitions);
 
     expect(nodes).toEqual([
-      { id: "b", name: "Replies", position: 1 },
-      { id: "c", name: "Rejections", position: 2 },
+      { id: "b", name: "Replies", position: 1, isLostStage: false },
+      { id: "c", name: "Rejections", position: 2, isLostStage: true },
     ]);
+  });
+
+  it("propagates isLostStage from the column onto its Sankey node", () => {
+    const transitions = [makeTransition("a", "b"), makeTransition("a", "c")];
+
+    const { nodes } = aggregateSankey(columns, transitions);
+
+    expect(nodes.find((n) => n.id === "b")?.isLostStage).toBe(false);
+    expect(nodes.find((n) => n.id === "c")?.isLostStage).toBe(true);
   });
 
   it("returns empty nodes/links when there are no real transitions", () => {

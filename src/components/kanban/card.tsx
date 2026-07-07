@@ -29,8 +29,14 @@ export function ApplicationCard({
   onDelete,
   isOverlay,
 }: ApplicationCardProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: application.id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: application.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -57,7 +63,9 @@ export function ApplicationCard({
           </p>
         </div>
         <DropdownMenu>
-          <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" />}>
+          <DropdownMenuTrigger
+            render={<Button variant="ghost" size="icon-sm" />}
+          >
             <MoreVertical className="size-4" />
             <span className="sr-only">Actions</span>
           </DropdownMenuTrigger>

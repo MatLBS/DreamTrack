@@ -27,9 +27,9 @@ const NODE_PADDING = 28;
 const HEIGHT = 420;
 const MARGIN = { top: 8, right: 8, bottom: 8, left: 8 };
 
-/** Couleur catégorielle par colonne — index fixe (position absolue), jamais recalculé selon les nœuds affichés. */
-function seriesColor(position: number): string {
-  return `var(--sankey-series-${(position % 8) + 1})`;
+/** Vert = l'étape fait avancer la candidature, rouge = elle la marque comme perdue. */
+function categoryColor(isLostStage: boolean): string {
+  return isLostStage ? "var(--sankey-negative)" : "var(--sankey-positive)";
 }
 
 export function SankeyChart({ data }: { data: SankeyData }) {
@@ -53,12 +53,13 @@ export function SankeyChart({ data }: { data: SankeyData }) {
       .nodeId((d) => d.id)
       .nodeWidth(NODE_WIDTH)
       .nodePadding(NODE_PADDING)
+      .nodeSort((a, b) => {
+        if (a.isLostStage !== b.isLostStage) return a.isLostStage ? 1 : -1;
+        return a.position - b.position;
+      })
       .extent([
         [MARGIN.left, MARGIN.top],
-        [
-          Math.max(width - MARGIN.right, 200),
-          HEIGHT - MARGIN.bottom,
-        ],
+        [Math.max(width - MARGIN.right, 200), HEIGHT - MARGIN.bottom],
       ]);
 
     // d3-sankey mute ses arguments en place : on clone pour ne jamais toucher
@@ -98,7 +99,7 @@ export function SankeyChart({ data }: { data: SankeyData }) {
                 key={index}
                 d={linkPath(link) ?? undefined}
                 fill="none"
-                stroke={seriesColor(source.position)}
+                stroke={categoryColor(source.isLostStage)}
                 strokeOpacity={0.35}
                 strokeWidth={Math.max(1, link.width ?? 0)}
               >
@@ -123,7 +124,7 @@ export function SankeyChart({ data }: { data: SankeyData }) {
                   width={x1 - x0}
                   height={Math.max(1, y1 - y0)}
                   rx={2}
-                  fill={seriesColor(node.position)}
+                  fill={categoryColor(node.isLostStage)}
                 >
                   <title>{`${node.name} : ${node.value}`}</title>
                 </rect>

@@ -1,6 +1,7 @@
 import type { ZodType } from "zod";
 
-export type ServiceErrorCode = "NOT_FOUND" | "VALIDATION" | "CONFLICT";
+export type ServiceErrorCode =
+  "NOT_FOUND" | "VALIDATION" | "CONFLICT" | "UNAUTHORIZED";
 
 export class ServiceError extends Error {
   constructor(

@@ -102,7 +102,9 @@ export function ApplicationDialog({
             name="company"
             validators={{
               onChange: ({ value }) =>
-                value.trim().length === 0 ? "L'entreprise est requise" : undefined,
+                value.trim().length === 0
+                  ? "L'entreprise est requise"
+                  : undefined,
             }}
           >
             {(field) => (
@@ -209,7 +211,9 @@ export function ApplicationDialog({
               Annuler
             </Button>
             <form.Subscribe
-              selector={(state) => [state.canSubmit, state.isSubmitting] as const}
+              selector={(state) =>
+                [state.canSubmit, state.isSubmitting] as const
+              }
             >
               {([canSubmit, isSubmitting]) => (
                 <Button type="submit" disabled={!canSubmit || isSubmitting}>

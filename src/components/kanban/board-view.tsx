@@ -16,8 +16,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
-import { deleteApplicationAction, moveApplicationAction } from "@/app/actions/application";
+import {
+  deleteApplicationAction,
+  moveApplicationAction,
+} from "@/app/actions/application";
 import { getBoardAction, getSankeyAction } from "@/app/actions/board";
+import { setColumnCategoryAction } from "@/app/actions/column";
 import { Button } from "@/components/ui/button";
 import type { Application } from "@/db/schema";
 import type { SankeyData } from "@/lib/sankey/aggregate";
@@ -26,6 +30,7 @@ import type { BoardColumn } from "@/services/application";
 
 import { ApplicationCard } from "./card";
 import { ApplicationDialog } from "./application-dialog";
+import { ColumnDialog } from "./column-dialog";
 import { KanbanColumn } from "./column";
 
 interface BoardViewProps {
@@ -71,6 +76,7 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
   const [dialogState, setDialogState] = useState<
     { open: false } | { open: true; application?: Application }
   >({ open: false });
+  const [columnDialogOpen, setColumnDialogOpen] = useState(false);
 
   const boardQuery = useQuery({
     queryKey: ["board"],
@@ -120,7 +126,8 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (applicationId: string) => deleteApplicationAction(applicationId),
+    mutationFn: (applicationId: string) =>
+      deleteApplicationAction(applicationId),
     onSuccess: (result) => {
       if (!result.ok) {
         toast.error(result.message);
@@ -131,6 +138,25 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
       queryClient.invalidateQueries({ queryKey: ["sankey"] });
     },
     onError: () => toast.error("Impossible de supprimer la candidature"),
+  });
+
+  const toggleCategoryMutation = useMutation({
+    mutationFn: ({
+      columnId,
+      isLostStage,
+    }: {
+      columnId: string;
+      isLostStage: boolean;
+    }) => setColumnCategoryAction(columnId, { isLostStage }),
+    onSuccess: (result) => {
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
+      queryClient.invalidateQueries({ queryKey: ["board"] });
+      queryClient.invalidateQueries({ queryKey: ["sankey"] });
+    },
+    onError: () => toast.error("Impossible de changer la catégorie"),
   });
 
   function findColumnByCardId(cardId: string): BoardColumn | undefined {
@@ -213,12 +239,30 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
               onDeleteApplication={(applicationId) =>
                 deleteMutation.mutate(applicationId)
               }
+              onToggleCategory={() =>
+                toggleCategoryMutation.mutate({
+                  columnId: column.id,
+                  isLostStage: !column.isLostStage,
+                })
+              }
             />
           ))}
+          <div className="flex w-72 shrink-0 items-start pt-1">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => setColumnDialogOpen(true)}
+            >
+              <Plus className="size-4" />
+              Ajouter une colonne
+            </Button>
+          </div>
         </div>
 
         <DragOverlay>
-          {activeApplication && <ApplicationCard application={activeApplication} isOverlay />}
+          {activeApplication && (
+            <ApplicationCard application={activeApplication} isOverlay />
+          )}
         </DragOverlay>
       </DndContext>
 
@@ -232,6 +276,12 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
           setDialogState(open ? { open: true } : { open: false })
         }
         application={dialogState.open ? dialogState.application : undefined}
+      />
+
+      <ColumnDialog
+        open={columnDialogOpen}
+        onOpenChange={setColumnDialogOpen}
+        columns={board}
       />
     </div>
   );

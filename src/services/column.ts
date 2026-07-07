@@ -3,9 +3,11 @@ import {
   CreateColumnSchema,
   RenameColumnSchema,
   ReorderColumnSchema,
+  SetColumnCategorySchema,
   type CreateColumnInput,
   type RenameColumnInput,
   type ReorderColumnInput,
+  type SetColumnCategoryInput,
 } from "@/lib/validation/column";
 import { countApplicationsInColumn } from "@/queries/application";
 import {
@@ -23,13 +25,13 @@ import { parseInput, ServiceError } from "./errors";
 /** Nombre de colonnes fixes en sortie (Accepted, Rejected) — jamais déplaçables. */
 const TERMINAL_COUNT = 2;
 
-const DEFAULT_COLUMN_NAMES = [
-  "Jobs applied to",
-  "Replies",
-  "Rejections",
-  "No reply",
-  "Accepted",
-  "Rejected",
+const DEFAULT_COLUMNS = [
+  { name: "Jobs applied to", isLostStage: false },
+  { name: "Replies", isLostStage: false },
+  { name: "Rejections", isLostStage: true },
+  { name: "No reply", isLostStage: true },
+  { name: "Accepted", isLostStage: false },
+  { name: "Rejected", isLostStage: true },
 ] as const;
 
 export async function getColumns(): Promise<Column[]> {
@@ -42,10 +44,11 @@ export async function ensureDefaultColumns(): Promise<void> {
   if (existing.length > 0) return;
 
   await insertColumns(
-    DEFAULT_COLUMN_NAMES.map((name, position) => ({
+    DEFAULT_COLUMNS.map(({ name, isLostStage }, position) => ({
       name,
       position,
       isDefault: true,
+      isLostStage,
     })),
   );
 }
@@ -61,14 +64,45 @@ function assertIndexInFreeZone(index: number, columnCount: number): void {
   }
 }
 
-export async function createColumn(
-  input: CreateColumnInput,
-): Promise<Column> {
-  const { name, index } = parseInput(CreateColumnSchema, input);
+export async function createColumn(input: CreateColumnInput): Promise<Column> {
+  const { name, index, isLostStage } = parseInput(CreateColumnSchema, input);
   const existing = await listColumns();
   assertIndexInFreeZone(index, existing.length);
 
-  return insertColumnAt({ name, position: index, isDefault: false });
+  return insertColumnAt({
+    name,
+    position: index,
+    isDefault: false,
+    isLostStage,
+  });
+}
+
+/**
+ * Bascule vert/rouge d'une colonne existante. La colonne d'entrée (position 0)
+ * n'est ni un succès ni un échec — sa catégorie est fixe et non modifiable.
+ */
+export async function setColumnCategory(
+  id: string,
+  input: SetColumnCategoryInput,
+): Promise<Column> {
+  const { isLostStage } = parseInput(SetColumnCategorySchema, input);
+  const column = await getColumnById(id);
+  if (!column) {
+    throw new ServiceError("NOT_FOUND", `Column ${id} not found`);
+  }
+
+  if (column.position === 0) {
+    throw new ServiceError(
+      "VALIDATION",
+      "Entry column category cannot be changed",
+    );
+  }
+
+  const updated = await updateColumn(id, { isLostStage });
+  if (!updated) {
+    throw new ServiceError("NOT_FOUND", `Column ${id} not found`);
+  }
+  return updated;
 }
 
 export async function renameColumn(

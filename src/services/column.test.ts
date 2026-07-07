@@ -7,6 +7,7 @@ import {
   getColumns,
   renameColumn,
   reorderColumn,
+  setColumnCategory,
 } from "@/services/column";
 import { ServiceError } from "@/services/errors";
 
@@ -22,6 +23,21 @@ describe("column service", () => {
       "Rejected",
     ]);
     expect(columns.every((c) => c.isDefault)).toBe(true);
+  });
+
+  it("assigns the expected default categories (green/red)", async () => {
+    const columns = await getColumns();
+    const isLostStageByName = Object.fromEntries(
+      columns.map((c) => [c.name, c.isLostStage]),
+    );
+    expect(isLostStageByName).toEqual({
+      "Jobs applied to": false,
+      Replies: false,
+      Rejections: true,
+      "No reply": true,
+      Accepted: false,
+      Rejected: true,
+    });
   });
 
   describe("createColumn", () => {
@@ -64,9 +80,9 @@ describe("column service", () => {
     });
 
     it("throws NOT_FOUND for an unknown id", async () => {
-      await expect(
-        renameColumn("unknown-id", { name: "X" }),
-      ).rejects.toThrow(ServiceError);
+      await expect(renameColumn("unknown-id", { name: "X" })).rejects.toThrow(
+        ServiceError,
+      );
     });
   });
 
@@ -90,16 +106,41 @@ describe("column service", () => {
 
     it("rejects moving the entry column", async () => {
       const [entry] = await getColumns();
-      await expect(
-        reorderColumn(entry.id, { index: 2 }),
-      ).rejects.toThrow(ServiceError);
+      await expect(reorderColumn(entry.id, { index: 2 })).rejects.toThrow(
+        ServiceError,
+      );
     });
 
     it("rejects moving a terminal column", async () => {
       const columns = await getColumns();
       const accepted = columns.find((c) => c.name === "Accepted")!;
+      await expect(reorderColumn(accepted.id, { index: 2 })).rejects.toThrow(
+        ServiceError,
+      );
+    });
+  });
+
+  describe("setColumnCategory", () => {
+    it("toggles a non-entry column to lost (red)", async () => {
+      const columns = await getColumns();
+      const replies = columns.find((c) => c.name === "Replies")!;
+
+      const updated = await setColumnCategory(replies.id, {
+        isLostStage: true,
+      });
+      expect(updated.isLostStage).toBe(true);
+    });
+
+    it("rejects changing the entry column's category", async () => {
+      const [entry] = await getColumns();
       await expect(
-        reorderColumn(accepted.id, { index: 2 }),
+        setColumnCategory(entry.id, { isLostStage: true }),
+      ).rejects.toThrow(ServiceError);
+    });
+
+    it("throws NOT_FOUND for an unknown id", async () => {
+      await expect(
+        setColumnCategory("unknown-id", { isLostStage: true }),
       ).rejects.toThrow(ServiceError);
     });
   });

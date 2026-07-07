@@ -13,7 +13,9 @@ export async function getColumnById(id: string): Promise<Column | undefined> {
   return column;
 }
 
-export type ColumnPatch = Partial<Pick<NewColumn, "name" | "position">>;
+export type ColumnPatch = Partial<
+  Pick<NewColumn, "name" | "position" | "isLostStage">
+>;
 
 export async function updateColumn(
   id: string,
@@ -40,10 +42,12 @@ export async function insertColumnAt({
   name,
   position,
   isDefault,
+  isLostStage,
 }: {
   name: string;
   position: number;
   isDefault: boolean;
+  isLostStage: boolean;
 }): Promise<Column> {
   return db.transaction(async (tx) => {
     await tx
@@ -53,7 +57,7 @@ export async function insertColumnAt({
 
     const [column] = await tx
       .insert(columns)
-      .values({ name, position, isDefault })
+      .values({ name, position, isDefault, isLostStage })
       .returning();
     return column;
   });
