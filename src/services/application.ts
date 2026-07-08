@@ -7,6 +7,7 @@ import {
   type MoveApplicationInput,
   type UpdateApplicationInput,
 } from "@/lib/validation/application";
+import { aggregateStats, type ApplicationStats } from "@/lib/stats/aggregate";
 import {
   countApplicationsInColumn,
   getApplicationById,
@@ -18,6 +19,7 @@ import {
   updateApplication,
 } from "@/queries/application";
 import { getColumnById, listColumns } from "@/queries/column";
+import { listTransitions } from "@/queries/transition";
 
 import { parseInput, ServiceError } from "./errors";
 
@@ -120,6 +122,17 @@ export async function moveApplication(
     fromPosition: application.position,
     toPosition: clampedIndex,
   });
+}
+
+/** Statistiques agrégées (candidatures, taux de réponse, en attente, offres). */
+export async function getApplicationStats(): Promise<ApplicationStats> {
+  const [columns, applications, transitions] = await Promise.all([
+    listColumns(),
+    listApplications(),
+    listTransitions(),
+  ]);
+
+  return aggregateStats(columns, applications, transitions);
 }
 
 export async function deleteApplication(id: string): Promise<void> {

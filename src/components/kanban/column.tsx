@@ -43,7 +43,7 @@ export function KanbanColumn({
   const isEntryColumn = column.position === 0;
 
   return (
-    <div className="flex w-[266px] shrink-0 flex-col gap-3 rounded-xl border bg-card p-3.5">
+    <div className="flex w-[266px] shrink-0 flex-col gap-3 rounded-2xl border bg-card p-3.5">
       <div className="flex items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <button
@@ -67,7 +67,7 @@ export function KanbanColumn({
                 : "var(--sankey-positive)",
             }}
           />
-          <h2 className="truncate text-sm font-semibold">{column.name}</h2>
+          <h2 className="truncate text-[13.5px] font-bold">{column.name}</h2>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger
@@ -90,13 +90,16 @@ export function KanbanColumn({
         </DropdownMenu>
       </div>
 
-      <p className="-mt-2 text-xs font-medium text-muted-foreground">
+      <p
+        className="-mt-2 text-[11px] font-semibold"
+        style={{ color: "var(--brand)" }}
+      >
         {column.applications.length} candidatures
       </p>
 
       <Button
         type="button"
-        className="w-full rounded-full transition-opacity hover:opacity-90"
+        className="w-full rounded-[9px] transition-opacity hover:opacity-90"
         style={{
           backgroundColor: "var(--brand)",
           color: "var(--brand-foreground)",

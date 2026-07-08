@@ -16,14 +16,14 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
+  { href: "/ai-watch", label: "Veille IA", icon: Radar, top: 64, x: -70 },
   {
     href: "/application-track",
     label: "Candidatures",
     icon: Kanban,
-    top: 64,
-    x: -70,
+    top: 96,
+    x: 0,
   },
-  { href: "/ai-watch", label: "Veille IA", icon: Radar, top: 96, x: 0 },
   { href: "/profile", label: "Profil", icon: User, top: 64, x: 70 },
 ];
 

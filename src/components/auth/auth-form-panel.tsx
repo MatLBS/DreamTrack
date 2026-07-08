@@ -34,10 +34,16 @@ export function AuthFormPanel({ activeTab, onTabChange }: AuthFormPanelProps) {
           onValueChange={(value) => onTabChange(value as AuthTab)}
         >
           <TabsList className="h-11 w-full">
-            <TabsTrigger value="login" className="flex-1">
+            <TabsTrigger
+              value="login"
+              className="flex-1 data-active:bg-black data-active:text-white dark:data-active:bg-black dark:data-active:text-white"
+            >
               Connexion
             </TabsTrigger>
-            <TabsTrigger value="signup" className="flex-1">
+            <TabsTrigger
+              value="signup"
+              className="flex-1 data-active:bg-black data-active:text-white dark:data-active:bg-black dark:data-active:text-white"
+            >
               Inscription
             </TabsTrigger>
           </TabsList>
@@ -65,32 +71,6 @@ export function AuthFormPanel({ activeTab, onTabChange }: AuthFormPanelProps) {
           <Image src="/google-icon.svg" alt="" width={16} height={16} />
           Continuer avec Google
         </Button>
-
-        <p className="text-center text-sm text-muted-foreground">
-          {activeTab === "login" ? (
-            <>
-              Pas encore de compte ?{" "}
-              <button
-                type="button"
-                className="font-medium text-foreground underline underline-offset-4"
-                onClick={() => onTabChange("signup")}
-              >
-                Créer un compte
-              </button>
-            </>
-          ) : (
-            <>
-              Déjà un compte ?{" "}
-              <button
-                type="button"
-                className="font-medium text-foreground underline underline-offset-4"
-                onClick={() => onTabChange("login")}
-              >
-                Se connecter
-              </button>
-            </>
-          )}
-        </p>
       </div>
     </div>
   );

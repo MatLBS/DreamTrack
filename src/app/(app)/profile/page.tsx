@@ -1,10 +1,18 @@
-export default function ProfilePage() {
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-lg font-semibold">Profil</h1>
-        <p className="text-sm text-muted-foreground">Bientôt disponible</p>
-      </div>
-    </div>
-  );
+import { headers } from "next/headers";
+
+import { ProfileView } from "@/components/profile/profile-view";
+import { auth } from "@/lib/auth";
+import { getApplicationStats } from "@/services/application";
+import { getProfile } from "@/services/profile";
+
+export default async function ProfilePage() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) return null;
+
+  const [profile, stats] = await Promise.all([
+    getProfile(session.user.id),
+    getApplicationStats(),
+  ]);
+
+  return <ProfileView user={session.user} profile={profile} stats={stats} />;
 }

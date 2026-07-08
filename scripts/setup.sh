@@ -8,7 +8,7 @@ if [ ! -f .env ]; then
 fi
 
 echo "→ Cleaning up old dependencies..."
-rm -rf node_modules && rm -rf package-lock.json
+rm -rf node_modules && rm -rf package-lock.json && rm -rf src/dev.db
 
 echo "→ Installing dependencies..."
 npm install

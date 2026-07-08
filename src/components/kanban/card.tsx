@@ -50,14 +50,14 @@ export function ApplicationCard({
       {...attributes}
       {...listeners}
       className={cn(
-        "cursor-grab touch-none rounded-lg border bg-card p-3 shadow-sm active:cursor-grabbing",
+        "cursor-grab touch-none rounded-xl border bg-card p-3 shadow-sm active:cursor-grabbing",
         isDragging && "opacity-40",
         isOverlay && "shadow-lg",
       )}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold">{application.role}</p>
+          <p className="truncate text-[13px] font-bold">{application.role}</p>
           <p className="truncate text-xs text-muted-foreground">
             {application.company}
           </p>
@@ -66,7 +66,7 @@ export function ApplicationCard({
           <DropdownMenuTrigger
             render={<Button variant="ghost" size="icon-sm" />}
           >
-            <MoreVertical className="size-4" />
+            <MoreVertical className="size-4 text-muted-foreground/60" />
             <span className="sr-only">Actions</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -90,7 +90,7 @@ export function ApplicationCard({
         </a>
       )}
 
-      <p className="mt-2 text-[11px] text-muted-foreground">
+      <p className="mt-2 text-[10.5px] text-muted-foreground">
         {formatDistanceToNow(application.createdAt, {
           addSuffix: true,
           locale: fr,

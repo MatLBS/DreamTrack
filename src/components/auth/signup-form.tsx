@@ -68,8 +68,7 @@ export function SignupForm() {
             <Input
               id={field.name}
               name={field.name}
-              placeholder="Jane Doe"
-              className="h-11 text-base"
+              className="h-11 border-2 border-input bg-muted/30 text-base"
               value={field.state.value}
               onBlur={field.handleBlur}
               onChange={(event) => field.handleChange(event.target.value)}
@@ -103,7 +102,7 @@ export function SignupForm() {
               name={field.name}
               type="email"
               placeholder="nom@example.com"
-              className="h-11 text-base"
+              className="h-11 border-2 border-input bg-muted/30 text-base"
               value={field.state.value}
               onBlur={field.handleBlur}
               onChange={(event) => field.handleChange(event.target.value)}
@@ -137,7 +136,7 @@ export function SignupForm() {
               id={field.name}
               name={field.name}
               placeholder="••••••••"
-              className="h-11 text-base"
+              className="h-11 border-2 border-input bg-muted/30 text-base"
               value={field.state.value}
               onBlur={field.handleBlur}
               onChange={(event) => field.handleChange(event.target.value)}

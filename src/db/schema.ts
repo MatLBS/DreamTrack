@@ -79,6 +79,41 @@ export type Transition = typeof transitions.$inferSelect;
 export type NewTransition = typeof transitions.$inferInsert;
 
 /**
+ * Préférences de recherche d'un utilisateur : poste visé, localisations souhaitées,
+ * fourchette de salaire visée. Une ligne par utilisateur (upsert), créée à la
+ * première sauvegarde depuis la page Profil.
+ */
+export const profiles = sqliteTable("profiles", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .unique()
+    .references(() => user.id, { onDelete: "cascade" }),
+  desiredPositions: text("desired_positions", { mode: "json" })
+    .$type<string[]>()
+    .notNull()
+    .default(sql`'[]'`),
+  locations: text("locations", { mode: "json" })
+    .$type<string[]>()
+    .notNull()
+    .default(sql`'[]'`),
+  salaryMin: integer("salary_min"),
+  salaryMax: integer("salary_max"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date())
+    .$onUpdate(() => new Date()),
+});
+
+export type Profile = typeof profiles.$inferSelect;
+export type NewProfile = typeof profiles.$inferInsert;
+
+/**
  * Tables Better Auth (générées via `npx @better-auth/cli generate`).
  * Ne pas modifier la forme des colonnes à la main : régénérer via la CLI si le
  * schéma auth change (config dans `src/lib/auth.ts`).

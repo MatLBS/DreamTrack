@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   sankey,
+  sankeyLeft,
   sankeyLinkHorizontal,
   type SankeyNode as D3SankeyNode,
   type SankeyLink as D3SankeyLink,
@@ -32,6 +33,14 @@ function categoryColor(isLostStage: boolean): string {
   return isLostStage ? "var(--sankey-negative)" : "var(--sankey-positive)";
 }
 
+/** Empile les flux verts (étape qui fait avancer) au-dessus des flux rouges (perdus). */
+function greenLinksAbove(a: LayoutLink, b: LayoutLink): number {
+  const aLost = (a.target as LayoutNode).isLostStage;
+  const bLost = (b.target as LayoutNode).isLostStage;
+  if (aLost !== bLost) return aLost ? 1 : -1;
+  return (a.target as LayoutNode).position - (b.target as LayoutNode).position;
+}
+
 export function SankeyChart({ data }: { data: SankeyData }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(800);
@@ -57,6 +66,8 @@ export function SankeyChart({ data }: { data: SankeyData }) {
         if (a.isLostStage !== b.isLostStage) return a.isLostStage ? 1 : -1;
         return a.position - b.position;
       })
+      .nodeAlign(sankeyLeft)
+      .linkSort(greenLinksAbove)
       .extent([
         [MARGIN.left, MARGIN.top],
         [Math.max(width - MARGIN.right, 200), HEIGHT - MARGIN.bottom],
