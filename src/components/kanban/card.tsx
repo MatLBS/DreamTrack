@@ -50,23 +50,23 @@ export function ApplicationCard({
       {...attributes}
       {...listeners}
       className={cn(
-        "cursor-grab touch-none rounded-lg border bg-card p-3 shadow-sm active:cursor-grabbing",
+        "cursor-grab touch-none rounded-xl border bg-card p-3 shadow-sm active:cursor-grabbing",
         isDragging && "opacity-40",
         isOverlay && "shadow-lg",
       )}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium">{application.company}</p>
+          <p className="truncate text-[13px] font-bold">{application.role}</p>
           <p className="truncate text-xs text-muted-foreground">
-            {application.role}
+            {application.company}
           </p>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger
             render={<Button variant="ghost" size="icon-sm" />}
           >
-            <MoreVertical className="size-4" />
+            <MoreVertical className="size-4 text-muted-foreground/60" />
             <span className="sr-only">Actions</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -83,14 +83,14 @@ export function ApplicationCard({
           href={application.url}
           target="_blank"
           rel="noreferrer"
-          className="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:underline"
+          className="mt-2 inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-800 hover:underline dark:bg-amber-950 dark:text-amber-300"
         >
           <ExternalLink className="size-3" />
           Offre
         </a>
       )}
 
-      <p className="mt-2 text-[11px] text-muted-foreground">
+      <p className="mt-2 text-[10.5px] text-muted-foreground">
         {formatDistanceToNow(application.createdAt, {
           addSuffix: true,
           locale: fr,

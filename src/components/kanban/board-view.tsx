@@ -21,9 +21,12 @@ import {
   moveApplicationAction,
 } from "@/app/actions/application";
 import { getBoardAction, getSankeyAction } from "@/app/actions/board";
-import { setColumnCategoryAction } from "@/app/actions/column";
+import {
+  deleteColumnAction,
+  setColumnCategoryAction,
+} from "@/app/actions/column";
 import { Button } from "@/components/ui/button";
-import type { Application } from "@/db/schema";
+import type { Application, Column } from "@/db/schema";
 import type { SankeyData } from "@/lib/sankey/aggregate";
 import { SankeyChart } from "@/components/sankey/sankey-chart";
 import type { BoardColumn } from "@/services/application";
@@ -32,6 +35,7 @@ import { ApplicationCard } from "./card";
 import { ApplicationDialog } from "./application-dialog";
 import { ColumnDialog } from "./column-dialog";
 import { KanbanColumn } from "./column";
+import { RenameColumnDialog } from "./rename-column-dialog";
 
 interface BoardViewProps {
   initialBoard: BoardColumn[];
@@ -74,9 +78,13 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
   const queryClient = useQueryClient();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [dialogState, setDialogState] = useState<
-    { open: false } | { open: true; application?: Application }
+    | { open: false }
+    | { open: true; application?: Application; columnId?: string }
   >({ open: false });
   const [columnDialogOpen, setColumnDialogOpen] = useState(false);
+  const [renameDialogState, setRenameDialogState] = useState<
+    { open: false } | { open: true; column: Column }
+  >({ open: false });
 
   const boardQuery = useQuery({
     queryKey: ["board"],
@@ -159,6 +167,20 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
     onError: () => toast.error("Impossible de changer la catégorie"),
   });
 
+  const deleteColumnMutation = useMutation({
+    mutationFn: (columnId: string) => deleteColumnAction(columnId),
+    onSuccess: (result) => {
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
+      toast.success("Colonne supprimée");
+      queryClient.invalidateQueries({ queryKey: ["board"] });
+      queryClient.invalidateQueries({ queryKey: ["sankey"] });
+    },
+    onError: () => toast.error("Impossible de supprimer la colonne"),
+  });
+
   function findColumnByCardId(cardId: string): BoardColumn | undefined {
     return board.find((column) =>
       column.applications.some((application) => application.id === cardId),
@@ -209,14 +231,8 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
     : undefined;
 
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold">Suivi de candidatures</h1>
-        <Button onClick={() => setDialogState({ open: true })}>
-          <Plus className="size-4" />
-          Ajouter une candidature
-        </Button>
-      </div>
+    <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 mt-10">
+      <h1 className="text-[22px] font-extrabold">Suivi de candidatures</h1>
 
       <DndContext
         id="kanban-board"
@@ -225,7 +241,7 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
         onDragEnd={handleDragEnd}
         onDragCancel={() => setActiveId(null)}
       >
-        <div className="flex gap-3 overflow-x-auto pb-2">
+        <div className="flex gap-3 overflow-x-auto overscroll-x-contain pb-2">
           {board.map((column) => (
             <KanbanColumn
               key={column.id}
@@ -245,9 +261,18 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
                   isLostStage: !column.isLostStage,
                 })
               }
+              onAddApplication={(columnId) =>
+                setDialogState({ open: true, columnId })
+              }
+              onRenameColumn={(col) =>
+                setRenameDialogState({ open: true, column: col })
+              }
+              onDeleteColumn={(columnId) =>
+                deleteColumnMutation.mutate(columnId)
+              }
             />
           ))}
-          <div className="flex w-72 shrink-0 items-start pt-1">
+          <div className="flex w-[266px] shrink-0 items-start pt-1">
             <Button
               variant="outline"
               className="w-full"
@@ -266,7 +291,8 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
         </DragOverlay>
       </DndContext>
 
-      <div className="rounded-xl border bg-card p-2">
+      <div className="rounded-2xl border bg-card p-6">
+        <h2 className="text-[15px] font-extrabold">Flux des candidatures</h2>
         <SankeyChart data={sankeyQuery.data} />
       </div>
 
@@ -276,12 +302,25 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
           setDialogState(open ? { open: true } : { open: false })
         }
         application={dialogState.open ? dialogState.application : undefined}
+        defaultColumnId={dialogState.open ? dialogState.columnId : undefined}
       />
 
       <ColumnDialog
         open={columnDialogOpen}
         onOpenChange={setColumnDialogOpen}
         columns={board}
+      />
+
+      <RenameColumnDialog
+        open={renameDialogState.open}
+        onOpenChange={(open) =>
+          setRenameDialogState(
+            open && renameDialogState.open
+              ? { open: true, column: renameDialogState.column }
+              : { open: false },
+          )
+        }
+        column={renameDialogState.open ? renameDialogState.column : undefined}
       />
     </div>
   );

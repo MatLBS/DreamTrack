@@ -39,6 +39,38 @@ describe("application service", () => {
       const second = await createApplication({ company: "B", role: "R2" });
       expect(second.position).toBe(1);
     });
+
+    it("creates the card directly in the given column when columnId is provided", async () => {
+      const columns = await getColumns();
+      const replies = columns.find((c) => c.name === "Replies")!;
+
+      const application = await createApplication({
+        company: "Acme",
+        role: "SWE",
+        columnId: replies.id,
+      });
+
+      expect(application.columnId).toBe(replies.id);
+      expect(application.position).toBe(0);
+
+      const rows = await db
+        .select()
+        .from(transitions)
+        .where(eq(transitions.applicationId, application.id));
+      expect(rows).toHaveLength(1);
+      expect(rows[0].fromColumnId).toBeNull();
+      expect(rows[0].toColumnId).toBe(replies.id);
+    });
+
+    it("throws NOT_FOUND when columnId does not exist", async () => {
+      await expect(
+        createApplication({
+          company: "Acme",
+          role: "SWE",
+          columnId: "unknown-column",
+        }),
+      ).rejects.toThrow(ServiceError);
+    });
   });
 
   describe("moveApplication", () => {

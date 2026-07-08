@@ -1,0 +1,23 @@
+"use client";
+
+import { cn } from "@/lib/utils";
+
+interface ModifyButtonProps {
+  onClick: () => void;
+  className?: string;
+}
+
+export function ModifyButton({ onClick, className }: ModifyButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "rounded-[9px] border border-[#e6e6ea] px-[18px] py-2.5 text-[13.5px] font-bold text-[#14161c] transition-colors hover:bg-[#f7f7f8]",
+        className,
+      )}
+    >
+      Modifier
+    </button>
+  );
+}

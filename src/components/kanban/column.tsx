@@ -5,7 +5,16 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { MoreVertical, Plus } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import type { Column } from "@/db/schema";
 import type { BoardColumn } from "@/services/application";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +25,9 @@ interface KanbanColumnProps {
   onEditApplication: (applicationId: string) => void;
   onDeleteApplication: (applicationId: string) => void;
   onToggleCategory: () => void;
+  onAddApplication: (columnId: string) => void;
+  onRenameColumn: (column: Column) => void;
+  onDeleteColumn: (columnId: string) => void;
 }
 
 export function KanbanColumn({
@@ -23,13 +35,16 @@ export function KanbanColumn({
   onEditApplication,
   onDeleteApplication,
   onToggleCategory,
+  onAddApplication,
+  onRenameColumn,
+  onDeleteColumn,
 }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id: column.id });
   const isEntryColumn = column.position === 0;
 
   return (
-    <div className="flex w-72 shrink-0 flex-col rounded-xl border bg-muted/30">
-      <div className="flex items-center justify-between px-3 py-2">
+    <div className="flex w-[266px] shrink-0 flex-col gap-3 rounded-2xl border bg-card p-3.5">
+      <div className="flex items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <button
             type="button"
@@ -52,16 +67,52 @@ export function KanbanColumn({
                 : "var(--sankey-positive)",
             }}
           />
-          <h2 className="truncate text-sm font-medium">{column.name}</h2>
+          <h2 className="truncate text-[13.5px] font-bold">{column.name}</h2>
         </div>
-        <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
-          {column.applications.length}
-        </span>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={<Button variant="ghost" size="icon-sm" />}
+          >
+            <MoreVertical className="size-4 text-muted-foreground" />
+            <span className="sr-only">Options de la colonne</span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onRenameColumn(column)}>
+              Renommer
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => onDeleteColumn(column.id)}
+            >
+              Supprimer
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
+
+      <p
+        className="-mt-2 text-[11px] font-semibold"
+        style={{ color: "var(--brand)" }}
+      >
+        {column.applications.length} candidatures
+      </p>
+
+      <Button
+        type="button"
+        className="w-full rounded-[9px] transition-opacity hover:opacity-90"
+        style={{
+          backgroundColor: "var(--brand)",
+          color: "var(--brand-foreground)",
+        }}
+        onClick={() => onAddApplication(column.id)}
+      >
+        <Plus className="size-4" />
+      </Button>
+
       <div
         ref={setNodeRef}
         className={cn(
-          "flex min-h-24 flex-1 flex-col gap-2 overflow-y-auto p-2 pt-0",
+          "flex min-h-16 flex-1 flex-col gap-2 overflow-y-auto",
           isOver && "bg-accent/40",
         )}
       >
@@ -78,6 +129,11 @@ export function KanbanColumn({
             />
           ))}
         </SortableContext>
+        {column.applications.length === 0 && (
+          <p className="py-5 text-center text-xs text-muted-foreground/70">
+            Aucune candidature
+          </p>
+        )}
       </div>
     </div>
   );

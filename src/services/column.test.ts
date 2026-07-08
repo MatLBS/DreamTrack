@@ -83,6 +83,9 @@ describe("column service", () => {
       await expect(renameColumn("unknown-id", { name: "X" })).rejects.toThrow(
         ServiceError,
       );
+      await expect(renameColumn("unknown-id", { name: "X" })).rejects.toThrow(
+        ServiceError,
+      );
     });
   });
 
@@ -106,6 +109,9 @@ describe("column service", () => {
 
     it("rejects moving the entry column", async () => {
       const [entry] = await getColumns();
+      await expect(reorderColumn(entry.id, { index: 2 })).rejects.toThrow(
+        ServiceError,
+      );
       await expect(reorderColumn(entry.id, { index: 2 })).rejects.toThrow(
         ServiceError,
       );
