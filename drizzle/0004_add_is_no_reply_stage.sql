@@ -1,0 +1,1 @@
+ALTER TABLE `columns` ADD `is_no_reply_stage` integer DEFAULT false NOT NULL;

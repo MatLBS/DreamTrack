@@ -1,4 +1,4 @@
-import type { Application, Column, Transition } from "@/db/schema";
+import type { Application, Column } from "@/db/schema";
 
 export interface ApplicationStats {
   total: number;
@@ -15,19 +15,18 @@ const EMPTY_STATS: ApplicationStats = {
 };
 
 /**
- * Statistiques dérivées du Kanban (colonnes, cartes, transitions).
+ * Statistiques dérivées du Kanban (colonnes, cartes).
  *
  * `pending` = cartes encore dans la colonne d'entrée (position 0).
  * `offers` = cartes dans la colonne d'acceptation (colonne non "lost" parmi les
  * colonnes terminales — cf. `TERMINAL_COUNT` dans `services/column.ts`).
- * `responseRate` = % de cartes ayant atteint au moins une colonne "réponse"
- * (ni la colonne d'entrée, ni une colonne "lost" — donc "Sans réponse" ne
- * compte pas comme une réponse, mais "Réponses reçues"/"Acceptées" oui).
+ * `responseRate` = % de cartes actuellement en dehors des colonnes marquées
+ * `isNoReplyStage` (ghosting) — un rejet explicite compte comme une réponse,
+ * seul le silence ("No reply") n'en compte pas.
  */
 export function aggregateStats(
   columns: Column[],
   applications: Application[],
-  transitions: Transition[],
 ): ApplicationStats {
   if (columns.length === 0) return EMPTY_STATS;
 
@@ -40,15 +39,11 @@ export function aggregateStats(
   const acceptedColumn =
     terminalColumns.find((column) => !column.isLostStage) ?? terminalColumns[0];
 
-  const respondedApplicationIds = new Set<string>();
-  for (const transition of transitions) {
-    const toColumn = columns.find(
-      (column) => column.id === transition.toColumnId,
-    );
-    if (!toColumn) continue;
-    if (toColumn.id === entryColumn.id || toColumn.isLostStage) continue;
-    respondedApplicationIds.add(transition.applicationId);
-  }
+  const noReplyColumnIds = new Set(
+    columns
+      .filter((column) => column.isNoReplyStage)
+      .map((column) => column.id),
+  );
 
   const total = applications.length;
   const pending = applications.filter(
@@ -59,8 +54,11 @@ export function aggregateStats(
         (application) => application.columnId === acceptedColumn.id,
       ).length
     : 0;
+  const noReplyCount = applications.filter((application) =>
+    noReplyColumnIds.has(application.columnId),
+  ).length;
   const responseRate =
-    total === 0 ? 0 : Math.round((respondedApplicationIds.size / total) * 100);
+    total === 0 ? 0 : Math.round(((total - noReplyCount) / total) * 100);
 
   return { total, responseRate, pending, offers };
 }

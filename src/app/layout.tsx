@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Suivi de candidatures",
+  title: "DreamTrack",
   description: "Kanban et Sankey pour suivre ses candidatures",
 };
 

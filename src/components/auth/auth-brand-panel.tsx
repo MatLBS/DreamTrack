@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
 const BeamsBackground = dynamic(() => import("./beams-background"), {
   ssr: false,
@@ -15,7 +16,7 @@ export function AuthBrandPanel() {
 
       <div className="relative z-10 flex h-full w-full flex-col p-12">
         <div className="flex items-center gap-2">
-          <span className="size-6 rounded-md bg-rose-900" aria-hidden />
+          <Image src="/icon-512x512.png" alt="Logo" width={40} height={40} />
           <span className="text-sm font-semibold text-white">DreamTrack</span>
         </div>
 

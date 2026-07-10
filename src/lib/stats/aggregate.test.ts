@@ -1,16 +1,22 @@
 import { describe, expect, it } from "vitest";
 
-import type { Application, Column, Transition } from "@/db/schema";
+import type { Application, Column } from "@/db/schema";
 
 import { aggregateStats } from "./aggregate";
 
-function makeColumn(id: string, position: number, isLostStage = false): Column {
+function makeColumn(
+  id: string,
+  position: number,
+  isLostStage = false,
+  isNoReplyStage = false,
+): Column {
   return {
     id,
     name: id,
     position,
     isDefault: true,
     isLostStage,
+    isNoReplyStage,
     createdAt: new Date(),
   };
 }
@@ -29,39 +35,25 @@ function makeApplication(id: string, columnId: string): Application {
   };
 }
 
-function makeTransition(
-  applicationId: string,
-  fromColumnId: string | null,
-  toColumnId: string,
-): Transition {
-  return {
-    id: crypto.randomUUID(),
-    applicationId,
-    fromColumnId,
-    toColumnId,
-    createdAt: new Date(),
-  };
-}
-
 describe("aggregateStats", () => {
-  // entry(0) -> replies(1, ok) -> { rejections(2, lost), noReply(3, lost) }
+  // entry(0) -> replies(1, ok) -> { rejections(2, lost), noReply(3, lost + no-reply) }
   // terminal: accepted(4, ok) / rejected(5, lost)
   const entry = makeColumn("entry", 0);
   const replies = makeColumn("replies", 1);
   const rejections = makeColumn("rejections", 2, true);
-  const noReply = makeColumn("no-reply", 3, true);
+  const noReply = makeColumn("no-reply", 3, true, true);
   const accepted = makeColumn("accepted", 4);
   const rejected = makeColumn("rejected", 5, true);
   const columns = [entry, replies, rejections, noReply, accepted, rejected];
 
   it("returns all zeros for an empty board", () => {
-    expect(aggregateStats([], [], [])).toEqual({
+    expect(aggregateStats([], [])).toEqual({
       total: 0,
       responseRate: 0,
       pending: 0,
       offers: 0,
     });
-    expect(aggregateStats(columns, [], [])).toEqual({
+    expect(aggregateStats(columns, [])).toEqual({
       total: 0,
       responseRate: 0,
       pending: 0,
@@ -75,7 +67,7 @@ describe("aggregateStats", () => {
       makeApplication("a2", "entry"),
       makeApplication("a3", "replies"),
     ];
-    const stats = aggregateStats(columns, applications, []);
+    const stats = aggregateStats(columns, applications);
     expect(stats.pending).toBe(2);
     expect(stats.total).toBe(3);
   });
@@ -86,42 +78,28 @@ describe("aggregateStats", () => {
       makeApplication("a2", "rejected"),
       makeApplication("a3", "entry"),
     ];
-    const stats = aggregateStats(columns, applications, []);
+    const stats = aggregateStats(columns, applications);
     expect(stats.offers).toBe(1);
   });
 
-  it("does not count an application that only reached a lost stage as responded", () => {
-    const applications = [makeApplication("a1", "no-reply")];
-    const transitions = [
-      makeTransition("a1", null, "entry"),
-      makeTransition("a1", "entry", "no-reply"),
+  it("does not count an application currently in the No reply column as responded", () => {
+    const applications = [
+      makeApplication("a1", "no-reply"),
+      makeApplication("a2", "replies"),
     ];
-    const stats = aggregateStats(columns, applications, transitions);
-    expect(stats.responseRate).toBe(0);
+    const stats = aggregateStats(columns, applications);
+    expect(stats.responseRate).toBe(50);
   });
 
-  it("counts an application that reached a non-entry, non-lost column as responded", () => {
-    const applications = [
-      makeApplication("a1", "replies"),
-      makeApplication("a2", "entry"),
-    ];
-    const transitions = [
-      makeTransition("a1", null, "entry"),
-      makeTransition("a1", "entry", "replies"),
-      makeTransition("a2", null, "entry"),
-    ];
-    const stats = aggregateStats(columns, applications, transitions);
-    expect(stats.responseRate).toBe(50);
+  it("counts an application in a lost stage other than No reply (e.g. Rejections) as responded", () => {
+    const applications = [makeApplication("a1", "rejections")];
+    const stats = aggregateStats(columns, applications);
+    expect(stats.responseRate).toBe(100);
   });
 
   it("counts an accepted application as responded", () => {
     const applications = [makeApplication("a1", "accepted")];
-    const transitions = [
-      makeTransition("a1", null, "entry"),
-      makeTransition("a1", "entry", "replies"),
-      makeTransition("a1", "replies", "accepted"),
-    ];
-    const stats = aggregateStats(columns, applications, transitions);
+    const stats = aggregateStats(columns, applications);
     expect(stats.responseRate).toBe(100);
   });
 });

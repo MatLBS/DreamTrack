@@ -9,6 +9,7 @@ import { AccountSettingsCard } from "./account-settings-card";
 import { EditAccountDialog } from "./edit-account-dialog";
 import { EditProfileDialog } from "./edit-profile-dialog";
 import { ModifyButton } from "./modify-button";
+import { TagList } from "./tag-list";
 
 interface ProfileUser {
   name: string;
@@ -39,17 +40,14 @@ function formatSalary(
   return `Jusqu'à ${max}k€`;
 }
 
-function formatList(items: string[] | undefined) {
-  if (!items || items.length === 0) return "Non renseigné";
-  return items.join(" / ");
-}
-
 const cardClassName =
   "rounded-[16px] border border-[#e6e6ea] bg-white p-[28px]";
 const sectionLabelClassName =
   "mb-[18px] text-[12px] font-bold tracking-[0.4px] text-[#6b6b76]";
 const preferenceRowClassName =
   "flex items-center justify-between rounded-[12px] bg-[#f7f7f8] px-[18px] py-[14px] text-[14px] text-[#3a3a42]";
+const preferenceListRowClassName =
+  "flex flex-col gap-2.5 rounded-[12px] bg-[#f7f7f8] px-[18px] py-[14px] text-[14px] text-[#3a3a42]";
 
 export function ProfileView({ user, profile, stats }: ProfileViewProps) {
   const [editOpen, setEditOpen] = useState(false);
@@ -91,17 +89,13 @@ export function ProfileView({ user, profile, stats }: ProfileViewProps) {
               <ModifyButton onClick={() => setEditOpen(true)} />
             </div>
             <div className="flex flex-col gap-3">
-              <div className={preferenceRowClassName}>
+              <div className={preferenceListRowClassName}>
                 <span>Poste(s) visé(s)</span>
-                <span className="font-bold">
-                  {formatList(profile?.desiredPositions)}
-                </span>
+                <TagList items={profile?.desiredPositions} />
               </div>
-              <div className={preferenceRowClassName}>
+              <div className={preferenceListRowClassName}>
                 <span>Localisation(s)</span>
-                <span className="font-bold">
-                  {formatList(profile?.locations)}
-                </span>
+                <TagList items={profile?.locations} />
               </div>
               <div className={preferenceRowClassName}>
                 <span>Salaire visé</span>

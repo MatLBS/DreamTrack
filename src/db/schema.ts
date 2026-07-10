@@ -20,6 +20,10 @@ export const columns = sqliteTable("columns", {
   isLostStage: integer("is_lost_stage", { mode: "boolean" })
     .notNull()
     .default(false),
+  /** true = colonne "sans réponse" (ghosting) ; ne compte pas comme une réponse dans les stats. */
+  isNoReplyStage: integer("is_no_reply_stage", { mode: "boolean" })
+    .notNull()
+    .default(false),
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .notNull()
     .$defaultFn(() => new Date()),

@@ -26,12 +26,12 @@ import { parseInput, ServiceError } from "./errors";
 const TERMINAL_COUNT = 2;
 
 const DEFAULT_COLUMNS = [
-  { name: "Jobs applied to", isLostStage: false },
-  { name: "Replies", isLostStage: false },
-  { name: "Rejections", isLostStage: true },
-  { name: "No reply", isLostStage: true },
-  { name: "Accepted", isLostStage: false },
-  { name: "Rejected", isLostStage: true },
+  { name: "Jobs applied to", isLostStage: false, isNoReplyStage: false },
+  { name: "Replies", isLostStage: false, isNoReplyStage: false },
+  { name: "Rejections", isLostStage: true, isNoReplyStage: false },
+  { name: "No reply", isLostStage: true, isNoReplyStage: true },
+  { name: "Accepted", isLostStage: false, isNoReplyStage: false },
+  { name: "Rejected", isLostStage: true, isNoReplyStage: false },
 ] as const;
 
 export async function getColumns(): Promise<Column[]> {
@@ -44,11 +44,12 @@ export async function ensureDefaultColumns(): Promise<void> {
   if (existing.length > 0) return;
 
   await insertColumns(
-    DEFAULT_COLUMNS.map(({ name, isLostStage }, position) => ({
+    DEFAULT_COLUMNS.map(({ name, isLostStage, isNoReplyStage }, position) => ({
       name,
       position,
       isDefault: true,
       isLostStage,
+      isNoReplyStage,
     })),
   );
 }
