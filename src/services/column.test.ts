@@ -40,6 +40,21 @@ describe("column service", () => {
     });
   });
 
+  it("flags only the No reply column as isNoReplyStage", async () => {
+    const columns = await getColumns();
+    const isNoReplyStageByName = Object.fromEntries(
+      columns.map((c) => [c.name, c.isNoReplyStage]),
+    );
+    expect(isNoReplyStageByName).toEqual({
+      "Jobs applied to": false,
+      Replies: false,
+      Rejections: false,
+      "No reply": true,
+      Accepted: false,
+      Rejected: false,
+    });
+  });
+
   describe("createColumn", () => {
     it("inserts a column in the free zone and shifts the following columns", async () => {
       const created = await createColumn({ name: "Interviewing", index: 2 });

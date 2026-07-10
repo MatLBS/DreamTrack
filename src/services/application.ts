@@ -19,7 +19,6 @@ import {
   updateApplication,
 } from "@/queries/application";
 import { getColumnById, listColumns } from "@/queries/column";
-import { listTransitions } from "@/queries/transition";
 
 import { parseInput, ServiceError } from "./errors";
 
@@ -126,13 +125,12 @@ export async function moveApplication(
 
 /** Statistiques agrégées (candidatures, taux de réponse, en attente, offres). */
 export async function getApplicationStats(): Promise<ApplicationStats> {
-  const [columns, applications, transitions] = await Promise.all([
+  const [columns, applications] = await Promise.all([
     listColumns(),
     listApplications(),
-    listTransitions(),
   ]);
 
-  return aggregateStats(columns, applications, transitions);
+  return aggregateStats(columns, applications);
 }
 
 export async function deleteApplication(id: string): Promise<void> {

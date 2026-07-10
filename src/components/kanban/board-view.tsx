@@ -241,7 +241,7 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
         onDragEnd={handleDragEnd}
         onDragCancel={() => setActiveId(null)}
       >
-        <div className="flex gap-3 overflow-x-auto overscroll-x-contain pb-2">
+        <div className="relative flex min-w-0 gap-3 overflow-x-auto overscroll-x-contain pb-2">
           {board.map((column) => (
             <KanbanColumn
               key={column.id}
@@ -291,7 +291,7 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
         </DragOverlay>
       </DndContext>
 
-      <div className="rounded-2xl border bg-card p-6">
+      <div className="min-w-0 rounded-2xl border bg-card p-6">
         <h2 className="text-[15px] font-extrabold">Flux des candidatures</h2>
         <SankeyChart data={sankeyQuery.data} />
       </div>

@@ -16,6 +16,7 @@ function makeColumn(
     position,
     isDefault: true,
     isLostStage,
+    isNoReplyStage: false,
     createdAt: new Date(),
   };
 }
