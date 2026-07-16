@@ -1,10 +1,15 @@
+"use client";
+
+import { useT } from "@/lib/i18n/locale-provider";
+
 interface TagListProps {
   items: string[] | undefined;
 }
 
 export function TagList({ items }: TagListProps) {
+  const t = useT();
   if (!items || items.length === 0) {
-    return <span className="font-bold">Non renseigné</span>;
+    return <span className="font-bold">{t.profile.notProvided}</span>;
   }
   return (
     <div className="flex flex-wrap gap-1.5">

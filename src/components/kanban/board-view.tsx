@@ -30,6 +30,8 @@ import type { Application, Column } from "@/db/schema";
 import type { SankeyData } from "@/lib/sankey/aggregate";
 import { SankeyChart } from "@/components/sankey/sankey-chart";
 import type { BoardColumn } from "@/services/application";
+import { actionErrorMessage } from "@/lib/i18n/errors";
+import { useT } from "@/lib/i18n/locale-provider";
 
 import { ApplicationCard } from "./card";
 import { ApplicationDialog } from "./application-dialog";
@@ -75,6 +77,7 @@ function applyOptimisticMove(
 }
 
 export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
+  const t = useT();
   const queryClient = useQueryClient();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [dialogState, setDialogState] = useState<
@@ -122,10 +125,10 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
       if (context?.previousBoard) {
         queryClient.setQueryData(["board"], context.previousBoard);
       }
-      toast.error("Impossible de déplacer la carte");
+      toast.error(t.kanban.toasts.moveFailed);
     },
     onSuccess: (result) => {
-      if (!result.ok) toast.error(result.message);
+      if (!result.ok) toast.error(actionErrorMessage(t, result.code));
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["board"] });
@@ -138,14 +141,14 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
       deleteApplicationAction(applicationId),
     onSuccess: (result) => {
       if (!result.ok) {
-        toast.error(result.message);
+        toast.error(actionErrorMessage(t, result.code));
         return;
       }
-      toast.success("Candidature supprimée");
+      toast.success(t.kanban.toasts.applicationDeleted);
       queryClient.invalidateQueries({ queryKey: ["board"] });
       queryClient.invalidateQueries({ queryKey: ["sankey"] });
     },
-    onError: () => toast.error("Impossible de supprimer la candidature"),
+    onError: () => toast.error(t.kanban.toasts.deleteFailed),
   });
 
   const toggleCategoryMutation = useMutation({
@@ -158,27 +161,27 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
     }) => setColumnCategoryAction(columnId, { isLostStage }),
     onSuccess: (result) => {
       if (!result.ok) {
-        toast.error(result.message);
+        toast.error(actionErrorMessage(t, result.code));
         return;
       }
       queryClient.invalidateQueries({ queryKey: ["board"] });
       queryClient.invalidateQueries({ queryKey: ["sankey"] });
     },
-    onError: () => toast.error("Impossible de changer la catégorie"),
+    onError: () => toast.error(t.kanban.toasts.categoryFailed),
   });
 
   const deleteColumnMutation = useMutation({
     mutationFn: (columnId: string) => deleteColumnAction(columnId),
     onSuccess: (result) => {
       if (!result.ok) {
-        toast.error(result.message);
+        toast.error(actionErrorMessage(t, result.code));
         return;
       }
-      toast.success("Colonne supprimée");
+      toast.success(t.kanban.toasts.columnDeleted);
       queryClient.invalidateQueries({ queryKey: ["board"] });
       queryClient.invalidateQueries({ queryKey: ["sankey"] });
     },
-    onError: () => toast.error("Impossible de supprimer la colonne"),
+    onError: () => toast.error(t.kanban.toasts.deleteColumnFailed),
   });
 
   function findColumnByCardId(cardId: string): BoardColumn | undefined {
@@ -232,7 +235,7 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
 
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 mt-10">
-      <h1 className="text-[22px] font-extrabold">Suivi de candidatures</h1>
+      <h1 className="text-[22px] font-extrabold">{t.kanban.pageTitle}</h1>
 
       <DndContext
         id="kanban-board"
@@ -279,7 +282,7 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
               onClick={() => setColumnDialogOpen(true)}
             >
               <Plus className="size-4" />
-              Ajouter une colonne
+              {t.kanban.addColumn}
             </Button>
           </div>
         </div>
@@ -292,7 +295,7 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
       </DndContext>
 
       <div className="min-w-0 rounded-2xl border bg-card p-6">
-        <h2 className="text-[15px] font-extrabold">Flux des candidatures</h2>
+        <h2 className="text-[15px] font-extrabold">{t.kanban.sankeyTitle}</h2>
         <SankeyChart data={sankeyQuery.data} />
       </div>
 

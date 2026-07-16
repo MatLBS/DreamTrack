@@ -2,7 +2,6 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { fr } from "date-fns/locale";
 import { formatDistanceToNow } from "date-fns";
 import { ExternalLink, MoreVertical } from "lucide-react";
 
@@ -15,6 +14,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { dateLocales } from "@/lib/i18n/date-locales";
+import { useLocale, useT } from "@/lib/i18n/locale-provider";
 
 interface ApplicationCardProps {
   application: Application;
@@ -29,6 +30,8 @@ export function ApplicationCard({
   onDelete,
   isOverlay,
 }: ApplicationCardProps) {
+  const t = useT();
+  const { locale } = useLocale();
   const {
     attributes,
     listeners,
@@ -67,12 +70,14 @@ export function ApplicationCard({
             render={<Button variant="ghost" size="icon-sm" />}
           >
             <MoreVertical className="size-4 text-muted-foreground/60" />
-            <span className="sr-only">Actions</span>
+            <span className="sr-only">{t.kanban.cardActionsAria}</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={onEdit}>Modifier</DropdownMenuItem>
+            <DropdownMenuItem onClick={onEdit}>
+              {t.kanban.editCard}
+            </DropdownMenuItem>
             <DropdownMenuItem variant="destructive" onClick={onDelete}>
-              Supprimer
+              {t.kanban.deleteCard}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -86,14 +91,14 @@ export function ApplicationCard({
           className="mt-2 inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-800 hover:underline dark:bg-amber-950 dark:text-amber-300"
         >
           <ExternalLink className="size-3" />
-          Offre
+          {t.kanban.offerLink}
         </a>
       )}
 
       <p className="mt-2 text-[10.5px] text-muted-foreground">
         {formatDistanceToNow(application.createdAt, {
           addSuffix: true,
-          locale: fr,
+          locale: dateLocales[locale],
         })}
       </p>
     </div>

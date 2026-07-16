@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import type { Profile } from "@/db/schema";
 import type { ApplicationStats } from "@/lib/stats/aggregate";
+import { useT } from "@/lib/i18n/locale-provider";
+import type { Dictionary } from "@/lib/i18n";
 
 import { AccountSettingsCard } from "./account-settings-card";
 import { EditAccountDialog } from "./edit-account-dialog";
@@ -31,13 +33,14 @@ function getInitials(name: string): string {
 }
 
 function formatSalary(
+  t: Dictionary,
   min: number | null | undefined,
   max: number | null | undefined,
 ) {
-  if (min == null && max == null) return "Non renseigné";
-  if (min != null && max != null) return `${min}–${max}k€`;
-  if (min != null) return `À partir de ${min}k€`;
-  return `Jusqu'à ${max}k€`;
+  if (min == null && max == null) return t.profile.notProvided;
+  if (min != null && max != null) return t.profile.salaryRange(min, max);
+  if (min != null) return t.profile.salaryFromMin(min);
+  return t.profile.salaryUpToMax(max!);
 }
 
 const cardClassName =
@@ -50,12 +53,15 @@ const preferenceListRowClassName =
   "flex flex-col gap-2.5 rounded-[12px] bg-[#f7f7f8] px-[18px] py-[14px] text-[14px] text-[#3a3a42]";
 
 export function ProfileView({ user, profile, stats }: ProfileViewProps) {
+  const t = useT();
   const [editOpen, setEditOpen] = useState(false);
   const [accountEditOpen, setAccountEditOpen] = useState(false);
 
   return (
     <div className="mx-auto max-w-[1280px] p-6 pt-24">
-      <h1 className="mb-8 text-[28px] font-extrabold text-[#14161c]">Profil</h1>
+      <h1 className="mb-8 text-[28px] font-extrabold text-[#14161c]">
+        {t.profile.title}
+      </h1>
 
       <div className="flex flex-wrap items-start gap-10">
         <div className="min-w-[380px] flex-1 space-y-6">
@@ -84,23 +90,23 @@ export function ProfileView({ user, profile, stats }: ProfileViewProps) {
           <div className={cardClassName}>
             <div className="mb-[18px] flex items-center justify-between">
               <div className="text-[12px] font-bold tracking-[0.4px] text-[#6b6b76]">
-                PRÉFÉRENCES DE RECHERCHE
+                {t.profile.preferencesSection}
               </div>
               <ModifyButton onClick={() => setEditOpen(true)} />
             </div>
             <div className="flex flex-col gap-3">
               <div className={preferenceListRowClassName}>
-                <span>Poste(s) visé(s)</span>
+                <span>{t.profile.positionsLabel}</span>
                 <TagList items={profile?.desiredPositions} />
               </div>
               <div className={preferenceListRowClassName}>
-                <span>Localisation(s)</span>
+                <span>{t.profile.locationsLabel}</span>
                 <TagList items={profile?.locations} />
               </div>
               <div className={preferenceRowClassName}>
-                <span>Salaire visé</span>
+                <span>{t.profile.salaryLabel}</span>
                 <span className="font-bold">
-                  {formatSalary(profile?.salaryMin, profile?.salaryMax)}
+                  {formatSalary(t, profile?.salaryMin, profile?.salaryMax)}
                 </span>
               </div>
             </div>
@@ -109,14 +115,16 @@ export function ProfileView({ user, profile, stats }: ProfileViewProps) {
 
         <div className="w-[360px] flex-none space-y-6">
           <div className={cardClassName}>
-            <div className={sectionLabelClassName}>STATISTIQUES</div>
+            <div className={sectionLabelClassName}>
+              {t.profile.statsSection}
+            </div>
             <div className="grid grid-cols-2 gap-3.5">
               <div className="rounded-[12px] bg-[#f7f7f8] p-5 text-center">
                 <div className="text-[27px] font-extrabold text-[#14161c]">
                   {stats.total}
                 </div>
                 <div className="mt-1 text-[12px] text-[#6b6b76]">
-                  Candidatures
+                  {t.profile.totalLabel}
                 </div>
               </div>
               <div className="rounded-[12px] bg-[#f7f7f8] p-5 text-center">
@@ -124,7 +132,7 @@ export function ProfileView({ user, profile, stats }: ProfileViewProps) {
                   {stats.responseRate}%
                 </div>
                 <div className="mt-1 text-[12px] text-[#6b6b76]">
-                  Taux de réponse
+                  {t.profile.responseRateLabel}
                 </div>
               </div>
               <div className="rounded-[12px] bg-[#f7f7f8] p-5 text-center">
@@ -132,7 +140,7 @@ export function ProfileView({ user, profile, stats }: ProfileViewProps) {
                   {stats.pending}
                 </div>
                 <div className="mt-1 text-[12px] text-[#6b6b76]">
-                  En attente
+                  {t.profile.pendingLabel}
                 </div>
               </div>
               <div className="rounded-[12px] bg-[#f7f7f8] p-5 text-center">
@@ -140,7 +148,7 @@ export function ProfileView({ user, profile, stats }: ProfileViewProps) {
                   {stats.offers}
                 </div>
                 <div className="mt-1 text-[12px] text-[#6b6b76]">
-                  Offres reçues
+                  {t.profile.offersLabel}
                 </div>
               </div>
             </div>

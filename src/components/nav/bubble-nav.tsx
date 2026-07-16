@@ -6,25 +6,27 @@ import { gsap } from "gsap";
 import { Kanban, Menu, Radar, User } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-provider";
+import type { Dictionary } from "@/lib/i18n";
 
 interface NavItem {
   href: string;
-  label: string;
+  labelKey: keyof Dictionary["nav"];
   icon: typeof Kanban;
   top: number;
   x: number;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/ai-watch", label: "Veille IA", icon: Radar, top: 64, x: -70 },
+  { href: "/ai-watch", labelKey: "aiWatch", icon: Radar, top: 64, x: -70 },
   {
     href: "/application-track",
-    label: "Candidatures",
+    labelKey: "applicationTrack",
     icon: Kanban,
     top: 96,
     x: 0,
   },
-  { href: "/profile", label: "Profil", icon: User, top: 64, x: 70 },
+  { href: "/profile", labelKey: "profile", icon: User, top: 64, x: 70 },
 ];
 
 function subscribeToHoverCapability(onChange: () => void) {
@@ -38,6 +40,7 @@ function getHoverCapability() {
 }
 
 export function BubbleNav() {
+  const t = useT();
   const [isOpen, setIsOpen] = useState(false);
   const hasHover = useSyncExternalStore(
     subscribeToHoverCapability,
@@ -105,7 +108,7 @@ export function BubbleNav() {
       >
         <button
           type="button"
-          aria-label="Ouvrir la navigation"
+          aria-label={t.nav.openNav}
           aria-expanded={isOpen}
           onClick={hasHover ? undefined : () => setIsOpen((open) => !open)}
           className="relative z-10 flex size-14 items-center justify-center rounded-full border bg-card shadow-lg transition-transform active:scale-95"
@@ -115,11 +118,12 @@ export function BubbleNav() {
 
         {NAV_ITEMS.map((item, index) => {
           const Icon = item.icon;
+          const label = t.nav[item.labelKey];
           return (
             <Link
               key={item.href}
               href={item.href}
-              aria-label={item.label}
+              aria-label={label}
               aria-hidden={!isOpen}
               tabIndex={isOpen ? 0 : -1}
               ref={(el) => {
@@ -134,7 +138,7 @@ export function BubbleNav() {
             >
               <Icon className="size-5 text-foreground" />
               <span className="pointer-events-none absolute top-full mt-1.5 rounded-md bg-popover px-2 py-1 text-xs whitespace-nowrap text-popover-foreground opacity-0 shadow-sm transition-opacity group-hover:opacity-100">
-                {item.label}
+                {label}
               </span>
             </Link>
           );

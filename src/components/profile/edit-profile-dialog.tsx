@@ -19,6 +19,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Profile } from "@/db/schema";
+import { ActionError, actionErrorMessage } from "@/lib/i18n/errors";
+import { useT } from "@/lib/i18n/locale-provider";
 
 import { TagInput } from "./tag-input";
 
@@ -45,6 +47,7 @@ export function EditProfileDialog({
   onOpenChange,
   profile,
 }: EditProfileDialogProps) {
+  const t = useT();
   const router = useRouter();
 
   const mutation = useMutation({
@@ -61,16 +64,16 @@ export function EditProfileDialog({
         salaryMax,
       });
 
-      if (!result.ok) throw new Error(result.message);
+      if (!result.ok) throw new ActionError(result.code);
       return result.data;
     },
     onSuccess: () => {
-      toast.success("Préférences mises à jour");
+      toast.success(t.profile.toasts.preferencesUpdated);
       onOpenChange(false);
       router.refresh();
     },
-    onError: () => {
-      toast.error("Une erreur est survenue, réessaie.");
+    onError: (error) => {
+      toast.error(actionErrorMessage(t, error));
     },
   });
 
@@ -94,7 +97,7 @@ export function EditProfileDialog({
       >
         <DialogHeader className="mb-[22px] flex-row items-center justify-between">
           <DialogTitle className="font-sans text-[18px] font-extrabold text-[#14161c]">
-            Préférences de recherche
+            {t.profile.dialogs.editProfile.title}
           </DialogTitle>
           <DialogClose
             render={
@@ -105,7 +108,7 @@ export function EditProfileDialog({
             }
           >
             <XIcon className="size-4" />
-            <span className="sr-only">Fermer</span>
+            <span className="sr-only">{t.common.close}</span>
           </DialogClose>
         </DialogHeader>
 
@@ -121,14 +124,16 @@ export function EditProfileDialog({
             {(field) => (
               <div className="space-y-1.5">
                 <Label htmlFor={field.name} className={fieldLabelClassName}>
-                  Poste(s) visé(s)
+                  {t.profile.dialogs.editProfile.positionsLabel}
                 </Label>
                 <TagInput
                   id={field.name}
                   value={field.state.value}
                   onChange={field.handleChange}
                   onBlur={field.handleBlur}
-                  placeholder="Ex. Data Engineer, puis Entrée"
+                  placeholder={
+                    t.profile.dialogs.editProfile.positionsPlaceholder
+                  }
                 />
               </div>
             )}
@@ -138,14 +143,16 @@ export function EditProfileDialog({
             {(field) => (
               <div className="space-y-1.5">
                 <Label htmlFor={field.name} className={fieldLabelClassName}>
-                  Localisation(s)
+                  {t.profile.dialogs.editProfile.locationsLabel}
                 </Label>
                 <TagInput
                   id={field.name}
                   value={field.state.value}
                   onChange={field.handleChange}
                   onBlur={field.handleBlur}
-                  placeholder="Ex. Paris, puis Entrée"
+                  placeholder={
+                    t.profile.dialogs.editProfile.locationsPlaceholder
+                  }
                 />
               </div>
             )}
@@ -157,10 +164,11 @@ export function EditProfileDialog({
               validators={{
                 onChange: ({ value, fieldApi }) => {
                   if (value.trim() === "") return undefined;
-                  if (Number.isNaN(Number(value))) return "Invalide";
+                  if (Number.isNaN(Number(value)))
+                    return t.profile.dialogs.editProfile.invalid;
                   const max = fieldApi.form.getFieldValue("salaryMax");
                   if (max && max.trim() !== "" && Number(value) > Number(max)) {
-                    return "Min > max";
+                    return t.profile.dialogs.editProfile.minGreaterThanMax;
                   }
                   return undefined;
                 },
@@ -169,7 +177,7 @@ export function EditProfileDialog({
               {(field) => (
                 <div className="space-y-1.5">
                   <Label htmlFor={field.name} className={fieldLabelClassName}>
-                    Salaire min (k€)
+                    {t.profile.dialogs.editProfile.salaryMinLabel}
                   </Label>
                   <Input
                     id={field.name}
@@ -195,7 +203,7 @@ export function EditProfileDialog({
               {(field) => (
                 <div className="space-y-1.5">
                   <Label htmlFor={field.name} className={fieldLabelClassName}>
-                    Salaire max (k€)
+                    {t.profile.dialogs.editProfile.salaryMaxLabel}
                   </Label>
                   <Input
                     id={field.name}
@@ -220,7 +228,7 @@ export function EditProfileDialog({
               className="h-auto rounded-[9px] px-[18px] py-[11px] text-[13px] font-bold text-[#6b6b76] hover:bg-transparent hover:text-[#14161c]"
               onClick={() => onOpenChange(false)}
             >
-              Annuler
+              {t.common.cancel}
             </Button>
             <form.Subscribe
               selector={(state) =>
@@ -237,7 +245,7 @@ export function EditProfileDialog({
                     color: "var(--brand-foreground)",
                   }}
                 >
-                  Enregistrer
+                  {t.profile.dialogs.editProfile.save}
                 </Button>
               )}
             </form.Subscribe>

@@ -13,6 +13,7 @@ import type {
   SankeyData,
   SankeyNode as SankeyNodeDatum,
 } from "@/lib/sankey/aggregate";
+import { useT } from "@/lib/i18n/locale-provider";
 
 interface LinkDatum {
   source: string;
@@ -42,6 +43,7 @@ function greenLinksAbove(a: LayoutLink, b: LayoutLink): number {
 }
 
 export function SankeyChart({ data }: { data: SankeyData }) {
+  const t = useT();
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(800);
 
@@ -84,8 +86,7 @@ export function SankeyChart({ data }: { data: SankeyData }) {
   if (data.nodes.length === 0) {
     return (
       <div className="flex h-[420px] items-center justify-center px-4 text-center text-sm text-muted-foreground">
-        Aucune transition pour l&apos;instant — déplace une carte vers une autre
-        colonne pour voir apparaître le premier flux.
+        {t.sankey.empty}
       </div>
     );
   }
@@ -100,7 +101,7 @@ export function SankeyChart({ data }: { data: SankeyData }) {
         width={width}
         height={HEIGHT}
         role="img"
-        aria-label="Diagramme de flux des candidatures entre colonnes"
+        aria-label={t.sankey.ariaLabel}
       >
         <g>
           {layout.links.map((link: LayoutLink, index: number) => {
@@ -138,7 +139,7 @@ export function SankeyChart({ data }: { data: SankeyData }) {
                   rx={2}
                   fill={categoryColor(node.isLostStage)}
                 >
-                  <title>{`${node.name} : ${node.value}`}</title>
+                  <title>{`${node.name} : ${node.cardCount}`}</title>
                 </rect>
                 <text
                   x={isLeftHalf ? x1 + 6 : x0 - 6}
@@ -147,7 +148,7 @@ export function SankeyChart({ data }: { data: SankeyData }) {
                   textAnchor={isLeftHalf ? "start" : "end"}
                   className="fill-foreground text-xs font-medium"
                 >
-                  {node.name} ({node.value})
+                  {node.name} ({node.cardCount})
                 </text>
               </g>
             );

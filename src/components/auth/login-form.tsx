@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -10,10 +11,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/auth/password-input";
-import { LoginSchema, type LoginInput } from "@/lib/validation/auth";
+import { createLoginSchema, type LoginInput } from "@/lib/validation/auth";
+import { actionErrorMessage, AuthClientError } from "@/lib/i18n/errors";
+import { useT } from "@/lib/i18n/locale-provider";
 
 export function LoginForm() {
+  const t = useT();
   const router = useRouter();
+  const LoginSchema = useMemo(() => createLoginSchema(t.auth.validation), [t]);
 
   const mutation = useMutation({
     mutationFn: async (values: LoginInput) => {
@@ -22,13 +27,14 @@ export function LoginForm() {
         password: values.password,
         callbackURL: "/",
       });
-      if (error) throw new Error(error.message ?? "Identifiants invalides");
+      if (error) throw new AuthClientError(error.code);
     },
     onSuccess: () => {
       router.push("/");
     },
     onError: (error) => {
-      toast.error(error.message);
+      const code = error instanceof AuthClientError ? error.code : undefined;
+      toast.error(actionErrorMessage(t, code));
     },
   });
 
@@ -61,13 +67,13 @@ export function LoginForm() {
               htmlFor={field.name}
               className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
             >
-              Email
+              {t.auth.login.emailLabel}
             </Label>
             <Input
               id={field.name}
               name={field.name}
               type="email"
-              placeholder="nom@example.com"
+              placeholder={t.auth.login.emailPlaceholder}
               className="h-11 border-2 border-input bg-muted/30 text-base"
               value={field.state.value}
               onBlur={field.handleBlur}
@@ -96,12 +102,12 @@ export function LoginForm() {
               htmlFor={field.name}
               className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
             >
-              Mot de passe
+              {t.auth.login.passwordLabel}
             </Label>
             <PasswordInput
               id={field.name}
               name={field.name}
-              placeholder="••••••••"
+              placeholder={t.auth.login.passwordPlaceholder}
               className="h-11 border-2 border-input bg-muted/30 text-base"
               value={field.state.value}
               onBlur={field.handleBlur}
@@ -125,7 +131,7 @@ export function LoginForm() {
             className="h-11 w-full text-base"
             disabled={!canSubmit || isSubmitting}
           >
-            Se connecter
+            {t.auth.login.submit}
           </Button>
         )}
       </form.Subscribe>

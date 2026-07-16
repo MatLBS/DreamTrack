@@ -54,12 +54,15 @@ export async function createApplication(
   if (targetColumnId) {
     const column = await getColumnById(targetColumnId);
     if (!column) {
-      throw new ServiceError("NOT_FOUND", `Column ${targetColumnId} not found`);
+      throw new ServiceError(
+        "COLUMN_NOT_FOUND",
+        `Column ${targetColumnId} not found`,
+      );
     }
   } else {
     const [entry] = await listColumns();
     if (!entry) {
-      throw new ServiceError("CONFLICT", "No columns exist yet");
+      throw new ServiceError("NO_COLUMNS", "No columns exist yet");
     }
     targetColumnId = entry.id;
   }
@@ -82,12 +85,18 @@ export async function updateApplicationDetails(
   const patch = parseInput(UpdateApplicationSchema, input);
   const application = await getApplicationById(id);
   if (!application) {
-    throw new ServiceError("NOT_FOUND", `Application ${id} not found`);
+    throw new ServiceError(
+      "APPLICATION_NOT_FOUND",
+      `Application ${id} not found`,
+    );
   }
 
   const updated = await updateApplication(id, patch);
   if (!updated) {
-    throw new ServiceError("NOT_FOUND", `Application ${id} not found`);
+    throw new ServiceError(
+      "APPLICATION_NOT_FOUND",
+      `Application ${id} not found`,
+    );
   }
   return updated;
 }
@@ -101,12 +110,18 @@ export async function moveApplication(
 
   const application = await getApplicationById(id);
   if (!application) {
-    throw new ServiceError("NOT_FOUND", `Application ${id} not found`);
+    throw new ServiceError(
+      "APPLICATION_NOT_FOUND",
+      `Application ${id} not found`,
+    );
   }
 
   const targetColumn = await getColumnById(toColumnId);
   if (!targetColumn) {
-    throw new ServiceError("NOT_FOUND", `Column ${toColumnId} not found`);
+    throw new ServiceError(
+      "COLUMN_NOT_FOUND",
+      `Column ${toColumnId} not found`,
+    );
   }
 
   const targetSize = await countApplicationsInColumn(toColumnId);
@@ -136,7 +151,10 @@ export async function getApplicationStats(): Promise<ApplicationStats> {
 export async function deleteApplication(id: string): Promise<void> {
   const application = await getApplicationById(id);
   if (!application) {
-    throw new ServiceError("NOT_FOUND", `Application ${id} not found`);
+    throw new ServiceError(
+      "APPLICATION_NOT_FOUND",
+      `Application ${id} not found`,
+    );
   }
 
   await removeApplicationAndCloseGap(

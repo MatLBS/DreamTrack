@@ -89,19 +89,19 @@ export async function setColumnCategory(
   const { isLostStage } = parseInput(SetColumnCategorySchema, input);
   const column = await getColumnById(id);
   if (!column) {
-    throw new ServiceError("NOT_FOUND", `Column ${id} not found`);
+    throw new ServiceError("COLUMN_NOT_FOUND", `Column ${id} not found`);
   }
 
   if (column.position === 0) {
     throw new ServiceError(
-      "VALIDATION",
+      "ENTRY_COLUMN_CATEGORY",
       "Entry column category cannot be changed",
     );
   }
 
   const updated = await updateColumn(id, { isLostStage });
   if (!updated) {
-    throw new ServiceError("NOT_FOUND", `Column ${id} not found`);
+    throw new ServiceError("COLUMN_NOT_FOUND", `Column ${id} not found`);
   }
   return updated;
 }
@@ -113,12 +113,12 @@ export async function renameColumn(
   const { name } = parseInput(RenameColumnSchema, input);
   const column = await getColumnById(id);
   if (!column) {
-    throw new ServiceError("NOT_FOUND", `Column ${id} not found`);
+    throw new ServiceError("COLUMN_NOT_FOUND", `Column ${id} not found`);
   }
 
   const updated = await updateColumn(id, { name });
   if (!updated) {
-    throw new ServiceError("NOT_FOUND", `Column ${id} not found`);
+    throw new ServiceError("COLUMN_NOT_FOUND", `Column ${id} not found`);
   }
   return updated;
 }
@@ -130,7 +130,7 @@ export async function reorderColumn(
   const { index } = parseInput(ReorderColumnSchema, input);
   const column = await getColumnById(id);
   if (!column) {
-    throw new ServiceError("NOT_FOUND", `Column ${id} not found`);
+    throw new ServiceError("COLUMN_NOT_FOUND", `Column ${id} not found`);
   }
 
   const existing = await listColumns();
@@ -139,7 +139,7 @@ export async function reorderColumn(
     column.position >= existing.length - TERMINAL_COUNT;
   if (isProtectedPosition) {
     throw new ServiceError(
-      "VALIDATION",
+      "PROTECTED_COLUMN_REORDER",
       "Entry and terminal columns cannot be reordered",
     );
   }
@@ -151,17 +151,20 @@ export async function reorderColumn(
 export async function deleteColumn(id: string): Promise<void> {
   const column = await getColumnById(id);
   if (!column) {
-    throw new ServiceError("NOT_FOUND", `Column ${id} not found`);
+    throw new ServiceError("COLUMN_NOT_FOUND", `Column ${id} not found`);
   }
 
   if (column.isDefault) {
-    throw new ServiceError("CONFLICT", "Default columns cannot be deleted");
+    throw new ServiceError(
+      "DEFAULT_COLUMN_DELETE",
+      "Default columns cannot be deleted",
+    );
   }
 
   const applicationCount = await countApplicationsInColumn(id);
   if (applicationCount > 0) {
     throw new ServiceError(
-      "CONFLICT",
+      "COLUMN_NOT_EMPTY",
       "Column must be empty before it can be deleted",
     );
   }

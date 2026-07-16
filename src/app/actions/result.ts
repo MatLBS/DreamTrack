@@ -1,8 +1,9 @@
 import { ServiceError, type ServiceErrorCode } from "@/services/errors";
 
+export type ActionErrorCode = ServiceErrorCode | "UNKNOWN";
+
 export type ActionResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; code: ServiceErrorCode | "UNKNOWN"; message: string };
+  { ok: true; data: T } | { ok: false; code: ActionErrorCode; message: string };
 
 /** Uniformise une action serveur : capture `ServiceError` en résultat sérialisable. */
 export async function runAction<T>(

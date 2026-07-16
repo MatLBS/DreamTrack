@@ -24,10 +24,10 @@ const MAX_AVATAR_BYTES = 3 * 1024 * 1024;
 async function saveAvatar(file: File): Promise<string> {
   const extension = ALLOWED_AVATAR_TYPES[file.type];
   if (!extension) {
-    throw new ServiceError("VALIDATION", "Unsupported image type");
+    throw new ServiceError("UNSUPPORTED_IMAGE_TYPE", "Unsupported image type");
   }
   if (file.size > MAX_AVATAR_BYTES) {
-    throw new ServiceError("VALIDATION", "Image is too large (max 3MB)");
+    throw new ServiceError("IMAGE_TOO_LARGE", "Image is too large (max 3MB)");
   }
 
   const dir = path.join(process.cwd(), "public", "uploads", "avatars");

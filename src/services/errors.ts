@@ -1,7 +1,17 @@
 import type { ZodType } from "zod";
 
 export type ServiceErrorCode =
-  "NOT_FOUND" | "VALIDATION" | "CONFLICT" | "UNAUTHORIZED";
+  | "VALIDATION"
+  | "UNAUTHORIZED"
+  | "COLUMN_NOT_FOUND"
+  | "APPLICATION_NOT_FOUND"
+  | "ENTRY_COLUMN_CATEGORY"
+  | "PROTECTED_COLUMN_REORDER"
+  | "DEFAULT_COLUMN_DELETE"
+  | "COLUMN_NOT_EMPTY"
+  | "NO_COLUMNS"
+  | "UNSUPPORTED_IMAGE_TYPE"
+  | "IMAGE_TOO_LARGE";
 
 export class ServiceError extends Error {
   constructor(

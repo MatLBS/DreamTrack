@@ -26,6 +26,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Column } from "@/db/schema";
+import { ActionError, actionErrorMessage } from "@/lib/i18n/errors";
+import { useT } from "@/lib/i18n/locale-provider";
 
 const fieldLabelClassName =
   "text-[11px] font-bold tracking-[0.3px] text-[#6b6b76] uppercase";
@@ -54,6 +56,7 @@ export function ColumnDialog({
   onOpenChange,
   columns,
 }: ColumnDialogProps) {
+  const t = useT();
   const queryClient = useQueryClient();
   const predecessors = getInsertablePredecessors(columns);
   const defaultAfterColumnId = predecessors.at(-1)?.id ?? "";
@@ -63,7 +66,7 @@ export function ColumnDialog({
       const afterColumn = predecessors.find(
         (c) => c.id === values.afterColumnId,
       );
-      if (!afterColumn) throw new Error("Colonne de référence introuvable");
+      if (!afterColumn) throw new Error("Reference column not found");
 
       const result = await createColumnAction({
         name: values.name.trim(),
@@ -71,18 +74,18 @@ export function ColumnDialog({
         isLostStage: !values.advancesCandidacy,
       });
 
-      if (!result.ok) throw new Error(result.message);
+      if (!result.ok) throw new ActionError(result.code);
       return result.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["board"] });
       queryClient.invalidateQueries({ queryKey: ["sankey"] });
-      toast.success("Colonne ajoutée");
+      toast.success(t.kanban.toasts.columnCreated);
       onOpenChange(false);
       form.reset();
     },
-    onError: () => {
-      toast.error("Une erreur est survenue, réessaie.");
+    onError: (error) => {
+      toast.error(actionErrorMessage(t, error));
     },
   });
 
@@ -105,7 +108,7 @@ export function ColumnDialog({
       >
         <DialogHeader className="mb-[22px] flex-row items-center justify-between">
           <DialogTitle className="font-sans text-[18px] font-extrabold text-[#14161c]">
-            Ajouter une colonne
+            {t.kanban.dialogs.column.title}
           </DialogTitle>
           <DialogClose
             render={
@@ -116,7 +119,7 @@ export function ColumnDialog({
             }
           >
             <XIcon className="size-4" />
-            <span className="sr-only">Fermer</span>
+            <span className="sr-only">{t.common.close}</span>
           </DialogClose>
         </DialogHeader>
 
@@ -132,18 +135,20 @@ export function ColumnDialog({
             name="name"
             validators={{
               onChange: ({ value }) =>
-                value.trim().length === 0 ? "Le nom est requis" : undefined,
+                value.trim().length === 0
+                  ? t.kanban.dialogs.column.nameRequired
+                  : undefined,
             }}
           >
             {(field) => (
               <div className="space-y-1.5">
                 <Label htmlFor={field.name} className={fieldLabelClassName}>
-                  Nom
+                  {t.kanban.dialogs.column.nameLabel}
                 </Label>
                 <Input
                   id={field.name}
                   name={field.name}
-                  placeholder="Nom de la colonne"
+                  placeholder={t.kanban.dialogs.column.namePlaceholder}
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
@@ -162,7 +167,7 @@ export function ColumnDialog({
             {(field) => (
               <div className="space-y-1.5">
                 <Label htmlFor={field.name} className={fieldLabelClassName}>
-                  Insérer après
+                  {t.kanban.dialogs.column.afterLabel}
                 </Label>
                 <Select
                   value={field.state.value}
@@ -172,10 +177,12 @@ export function ColumnDialog({
                     id={field.name}
                     className={`${fieldInputClassName} w-full justify-between`}
                   >
-                    <SelectValue placeholder="Choisir une colonne">
+                    <SelectValue
+                      placeholder={t.kanban.dialogs.column.choosePlaceholder}
+                    >
                       {(value: string | null) =>
                         predecessors.find((c) => c.id === value)?.name ??
-                        "Choisir une colonne"
+                        t.kanban.dialogs.column.choosePlaceholder
                       }
                     </SelectValue>
                   </SelectTrigger>
@@ -206,7 +213,7 @@ export function ColumnDialog({
                   htmlFor={field.name}
                   className="flex items-center gap-2 text-[13px] font-normal text-[#3a3a42]"
                 >
-                  Cette étape fait avancer la candidature
+                  {t.kanban.dialogs.column.advancesLabel}
                   <span
                     aria-hidden
                     className="size-2 rounded-full"
@@ -228,7 +235,7 @@ export function ColumnDialog({
               className="h-auto rounded-[9px] px-[18px] py-[11px] text-[13px] font-bold text-[#6b6b76] hover:bg-transparent hover:text-[#14161c]"
               onClick={() => onOpenChange(false)}
             >
-              Annuler
+              {t.common.cancel}
             </Button>
             <form.Subscribe
               selector={(state) =>
@@ -247,7 +254,7 @@ export function ColumnDialog({
                     color: "var(--brand-foreground)",
                   }}
                 >
-                  Ajouter
+                  {t.kanban.dialogs.column.add}
                 </Button>
               )}
             </form.Subscribe>

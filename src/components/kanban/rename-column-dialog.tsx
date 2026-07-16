@@ -16,6 +16,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Column } from "@/db/schema";
+import { ActionError, actionErrorMessage } from "@/lib/i18n/errors";
+import { useT } from "@/lib/i18n/locale-provider";
 
 interface RenameColumnDialogProps {
   open: boolean;
@@ -28,23 +30,24 @@ export function RenameColumnDialog({
   onOpenChange,
   column,
 }: RenameColumnDialogProps) {
+  const t = useT();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: async (name: string) => {
-      if (!column) throw new Error("Colonne introuvable");
+      if (!column) throw new Error("Column not found");
       const result = await renameColumnAction(column.id, { name });
-      if (!result.ok) throw new Error(result.message);
+      if (!result.ok) throw new ActionError(result.code);
       return result.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["board"] });
       queryClient.invalidateQueries({ queryKey: ["sankey"] });
-      toast.success("Colonne renommée");
+      toast.success(t.kanban.toasts.columnRenamed);
       onOpenChange(false);
     },
-    onError: () => {
-      toast.error("Une erreur est survenue, réessaie.");
+    onError: (error) => {
+      toast.error(actionErrorMessage(t, error));
     },
   });
 
@@ -59,7 +62,7 @@ export function RenameColumnDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Renommer la colonne</DialogTitle>
+          <DialogTitle>{t.kanban.dialogs.rename.title}</DialogTitle>
         </DialogHeader>
 
         <form
@@ -74,12 +77,16 @@ export function RenameColumnDialog({
             name="name"
             validators={{
               onChange: ({ value }) =>
-                value.trim().length === 0 ? "Le nom est requis" : undefined,
+                value.trim().length === 0
+                  ? t.kanban.dialogs.rename.nameRequired
+                  : undefined,
             }}
           >
             {(field) => (
               <div className="space-y-1">
-                <Label htmlFor={field.name}>Nom</Label>
+                <Label htmlFor={field.name}>
+                  {t.kanban.dialogs.rename.nameLabel}
+                </Label>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -102,7 +109,7 @@ export function RenameColumnDialog({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Annuler
+              {t.common.cancel}
             </Button>
             <form.Subscribe
               selector={(state) =>
@@ -111,7 +118,7 @@ export function RenameColumnDialog({
             >
               {([canSubmit, isSubmitting]) => (
                 <Button type="submit" disabled={!canSubmit || isSubmitting}>
-                  Enregistrer
+                  {t.kanban.dialogs.rename.save}
                 </Button>
               )}
             </form.Subscribe>

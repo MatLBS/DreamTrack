@@ -3,6 +3,8 @@
 import { useState, type KeyboardEvent } from "react";
 import { XIcon } from "lucide-react";
 
+import { useT } from "@/lib/i18n/locale-provider";
+
 interface TagInputProps {
   id?: string;
   value: string[];
@@ -22,6 +24,7 @@ export function TagInput({
   onBlur,
   placeholder,
 }: TagInputProps) {
+  const t = useT();
   const [text, setText] = useState("");
 
   function addTag() {
@@ -72,7 +75,7 @@ export function TagInput({
               {tag}
               <button
                 type="button"
-                aria-label={`Retirer ${tag}`}
+                aria-label={t.profile.tagInput.removeTag(tag)}
                 onClick={() => removeTag(index)}
                 className="flex size-4 items-center justify-center rounded-full text-[#9a9aa3] transition-colors hover:bg-[#e6e6ea] hover:text-[#6b6b76]"
               >

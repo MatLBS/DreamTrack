@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-provider";
 
 interface ModifyButtonProps {
   onClick: () => void;
@@ -8,6 +9,7 @@ interface ModifyButtonProps {
 }
 
 export function ModifyButton({ onClick, className }: ModifyButtonProps) {
+  const t = useT();
   return (
     <button
       type="button"
@@ -17,7 +19,7 @@ export function ModifyButton({ onClick, className }: ModifyButtonProps) {
         className,
       )}
     >
-      Modifier
+      {t.profile.modify}
     </button>
   );
 }

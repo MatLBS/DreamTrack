@@ -22,6 +22,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { Application } from "@/db/schema";
+import { ActionError, actionErrorMessage } from "@/lib/i18n/errors";
+import { useT } from "@/lib/i18n/locale-provider";
 
 const fieldLabelClassName =
   "text-[11px] font-bold tracking-[0.3px] text-[#6b6b76] uppercase";
@@ -48,6 +50,7 @@ export function ApplicationDialog({
   application,
   defaultColumnId,
 }: ApplicationDialogProps) {
+  const t = useT();
   const queryClient = useQueryClient();
   const isEdit = Boolean(application);
 
@@ -66,18 +69,22 @@ export function ApplicationDialog({
             columnId: defaultColumnId,
           });
 
-      if (!result.ok) throw new Error(result.message);
+      if (!result.ok) throw new ActionError(result.code);
       return result.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["board"] });
       if (!isEdit) queryClient.invalidateQueries({ queryKey: ["sankey"] });
-      toast.success(isEdit ? "Candidature mise à jour" : "Candidature ajoutée");
+      toast.success(
+        isEdit
+          ? t.kanban.toasts.applicationUpdated
+          : t.kanban.toasts.applicationCreated,
+      );
       onOpenChange(false);
       form.reset();
     },
-    onError: () => {
-      toast.error("Une erreur est survenue, réessaie.");
+    onError: (error) => {
+      toast.error(actionErrorMessage(t, error));
     },
   });
 
@@ -101,7 +108,9 @@ export function ApplicationDialog({
       >
         <DialogHeader className="mb-[22px] flex-row items-center justify-between">
           <DialogTitle className="font-sans text-[18px] font-extrabold text-[#14161c]">
-            {isEdit ? "Modifier la candidature" : "Ajouter une candidature"}
+            {isEdit
+              ? t.kanban.dialogs.application.titleEdit
+              : t.kanban.dialogs.application.titleAdd}
           </DialogTitle>
           <DialogClose
             render={
@@ -112,7 +121,7 @@ export function ApplicationDialog({
             }
           >
             <XIcon className="size-4" />
-            <span className="sr-only">Fermer</span>
+            <span className="sr-only">{t.common.close}</span>
           </DialogClose>
         </DialogHeader>
 
@@ -129,19 +138,19 @@ export function ApplicationDialog({
             validators={{
               onChange: ({ value }) =>
                 value.trim().length === 0
-                  ? "L'entreprise est requise"
+                  ? t.kanban.dialogs.application.companyRequired
                   : undefined,
             }}
           >
             {(field) => (
               <div className="space-y-1.5">
                 <Label htmlFor={field.name} className={fieldLabelClassName}>
-                  Entreprise
+                  {t.kanban.dialogs.application.companyLabel}
                 </Label>
                 <Input
                   id={field.name}
                   name={field.name}
-                  placeholder="Nom de l'entreprise"
+                  placeholder={t.kanban.dialogs.application.companyPlaceholder}
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
@@ -160,18 +169,20 @@ export function ApplicationDialog({
             name="role"
             validators={{
               onChange: ({ value }) =>
-                value.trim().length === 0 ? "Le poste est requis" : undefined,
+                value.trim().length === 0
+                  ? t.kanban.dialogs.application.roleRequired
+                  : undefined,
             }}
           >
             {(field) => (
               <div className="space-y-1.5">
                 <Label htmlFor={field.name} className={fieldLabelClassName}>
-                  Poste
+                  {t.kanban.dialogs.application.roleLabel}
                 </Label>
                 <Input
                   id={field.name}
                   name={field.name}
-                  placeholder="Intitulé du poste"
+                  placeholder={t.kanban.dialogs.application.rolePlaceholder}
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
@@ -195,7 +206,7 @@ export function ApplicationDialog({
                   new URL(value);
                   return undefined;
                 } catch {
-                  return "URL invalide";
+                  return t.kanban.dialogs.application.urlInvalid;
                 }
               },
             }}
@@ -203,12 +214,12 @@ export function ApplicationDialog({
             {(field) => (
               <div className="space-y-1.5">
                 <Label htmlFor={field.name} className={fieldLabelClassName}>
-                  Lien de l&apos;offre
+                  {t.kanban.dialogs.application.urlLabel}
                 </Label>
                 <Input
                   id={field.name}
                   name={field.name}
-                  placeholder="https://..."
+                  placeholder={t.kanban.dialogs.application.urlPlaceholder}
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
@@ -227,13 +238,13 @@ export function ApplicationDialog({
             {(field) => (
               <div className="space-y-1.5">
                 <Label htmlFor={field.name} className={fieldLabelClassName}>
-                  Notes
+                  {t.kanban.dialogs.application.notesLabel}
                 </Label>
                 <Textarea
                   id={field.name}
                   name={field.name}
                   rows={3}
-                  placeholder="Optionnel"
+                  placeholder={t.kanban.dialogs.application.notesPlaceholder}
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
@@ -250,7 +261,7 @@ export function ApplicationDialog({
               className="h-auto rounded-[9px] px-[18px] py-[11px] text-[13px] font-bold text-[#6b6b76] hover:bg-transparent hover:text-[#14161c]"
               onClick={() => onOpenChange(false)}
             >
-              Annuler
+              {t.common.cancel}
             </Button>
             <form.Subscribe
               selector={(state) =>
@@ -267,7 +278,9 @@ export function ApplicationDialog({
                     color: "var(--brand-foreground)",
                   }}
                 >
-                  {isEdit ? "Enregistrer" : "Ajouter"}
+                  {isEdit
+                    ? t.kanban.dialogs.application.save
+                    : t.kanban.dialogs.application.add}
                 </Button>
               )}
             </form.Subscribe>

@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ActionError, actionErrorMessage } from "@/lib/i18n/errors";
+import { useT } from "@/lib/i18n/locale-provider";
 
 const fieldLabelClassName =
   "text-[11px] font-bold tracking-[0.3px] text-[#6b6b76] uppercase";
@@ -43,6 +45,7 @@ export function EditAccountDialog({
   onOpenChange,
   user,
 }: EditAccountDialogProps) {
+  const t = useT();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -72,15 +75,15 @@ export function EditAccountDialog({
       if (avatarFile) formData.set("avatar", avatarFile);
 
       const result = await updateAccountAction(formData);
-      if (!result.ok) throw new Error(result.message);
+      if (!result.ok) throw new ActionError(result.code);
     },
     onSuccess: () => {
-      toast.success("Compte mis à jour");
+      toast.success(t.profile.toasts.accountUpdated);
       handleOpenChange(false);
       router.refresh();
     },
-    onError: () => {
-      toast.error("Une erreur est survenue, réessaie.");
+    onError: (error) => {
+      toast.error(actionErrorMessage(t, error));
     },
   });
 
@@ -101,7 +104,7 @@ export function EditAccountDialog({
       >
         <DialogHeader className="mb-[22px] flex-row items-center justify-between">
           <DialogTitle className="font-sans text-[18px] font-extrabold text-[#14161c]">
-            Modifier le compte
+            {t.profile.dialogs.editAccount.title}
           </DialogTitle>
           <DialogClose
             render={
@@ -112,7 +115,7 @@ export function EditAccountDialog({
             }
           >
             <XIcon className="size-4" />
-            <span className="sr-only">Fermer</span>
+            <span className="sr-only">{t.common.close}</span>
           </DialogClose>
         </DialogHeader>
 
@@ -128,7 +131,7 @@ export function EditAccountDialog({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              aria-label="Changer la photo de profil"
+              aria-label={t.profile.dialogs.editAccount.changePhotoAria}
               className="group relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#eee5cc] text-[18px] font-extrabold text-[#8a6d1a]"
             >
               {avatarSrc ? (
@@ -161,18 +164,20 @@ export function EditAccountDialog({
             name="name"
             validators={{
               onChange: ({ value }) =>
-                value.trim().length === 0 ? "Le nom est requis" : undefined,
+                value.trim().length === 0
+                  ? t.profile.dialogs.editAccount.nameRequired
+                  : undefined,
             }}
           >
             {(field) => (
               <div className="space-y-1.5">
                 <Label htmlFor={field.name} className={fieldLabelClassName}>
-                  Nom
+                  {t.profile.dialogs.editAccount.nameLabel}
                 </Label>
                 <Input
                   id={field.name}
                   name={field.name}
-                  placeholder="Ton nom"
+                  placeholder={t.profile.dialogs.editAccount.namePlaceholder}
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(event) => field.handleChange(event.target.value)}
@@ -194,7 +199,7 @@ export function EditAccountDialog({
               className="h-auto rounded-[9px] px-[18px] py-[11px] text-[13px] font-bold text-[#6b6b76] hover:bg-transparent hover:text-[#14161c]"
               onClick={() => handleOpenChange(false)}
             >
-              Annuler
+              {t.common.cancel}
             </Button>
             <form.Subscribe
               selector={(state) =>
@@ -211,7 +216,7 @@ export function EditAccountDialog({
                     color: "var(--brand-foreground)",
                   }}
                 >
-                  Enregistrer
+                  {t.profile.dialogs.editAccount.save}
                 </Button>
               )}
             </form.Subscribe>

@@ -6,10 +6,8 @@ import { LogOut } from "lucide-react";
 
 import { signOut } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
-
-type Locale = "fr" | "en";
-
-const LOCALE_STORAGE_KEY = "locale";
+import { LOCALES } from "@/lib/i18n";
+import { useLocale } from "@/lib/i18n/locale-provider";
 
 const cardClassName =
   "rounded-[16px] border border-[#e6e6ea] bg-white p-[28px]";
@@ -20,17 +18,8 @@ const rowClassName =
 
 export function AccountSettingsCard() {
   const router = useRouter();
-  const [locale, setLocale] = useState<Locale>(() => {
-    if (typeof window === "undefined") return "fr";
-    const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY);
-    return stored === "en" ? "en" : "fr";
-  });
+  const { locale, setLocale, t } = useLocale();
   const [isSigningOut, setIsSigningOut] = useState(false);
-
-  const handleLocaleChange = (next: Locale) => {
-    setLocale(next);
-    window.localStorage.setItem(LOCALE_STORAGE_KEY, next);
-  };
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
@@ -40,17 +29,18 @@ export function AccountSettingsCard() {
 
   return (
     <div className={cardClassName}>
-      <div className={sectionLabelClassName}>PARAMÈTRES DU COMPTE</div>
+      <div className={sectionLabelClassName}>
+        {t.profile.accountSettings.title}
+      </div>
       <div className="flex flex-col gap-3">
         <div className={rowClassName}>
-          <span>Langue</span>
+          <span>{t.profile.accountSettings.languageLabel}</span>
           <div className="flex rounded-[9px] border border-[#e6e6ea] bg-white p-1">
-            {(["fr", "en"] as const).map((option) => (
+            {LOCALES.map((option) => (
               <button
                 key={option}
                 type="button"
-                onClick={() => handleLocaleChange(option)}
-                suppressHydrationWarning
+                onClick={() => setLocale(option)}
                 className={cn(
                   "rounded-[7px] px-[14px] py-1.5 text-[12.5px] font-bold uppercase transition-colors",
                   locale === option
@@ -75,7 +65,7 @@ export function AccountSettingsCard() {
         >
           <span className="flex items-center gap-2">
             <LogOut className="size-4" />
-            Se déconnecter
+            {t.profile.accountSettings.signOut}
           </span>
         </button>
       </div>

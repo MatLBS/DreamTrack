@@ -17,6 +17,7 @@ import {
 import type { Column } from "@/db/schema";
 import type { BoardColumn } from "@/services/application";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/locale-provider";
 
 import { ApplicationCard } from "./card";
 
@@ -39,6 +40,7 @@ export function KanbanColumn({
   onRenameColumn,
   onDeleteColumn,
 }: KanbanColumnProps) {
+  const t = useT();
   const { setNodeRef, isOver } = useDroppable({ id: column.id });
   const isEntryColumn = column.position === 0;
 
@@ -50,10 +52,10 @@ export function KanbanColumn({
             type="button"
             aria-label={
               isEntryColumn
-                ? "Étape d'entrée — catégorie fixe"
+                ? t.kanban.entryColumnAria
                 : column.isLostStage
-                  ? "Marquée comme perdue — cliquer pour repasser en avancement"
-                  : "Marquée comme avancement — cliquer pour marquer comme perdue"
+                  ? t.kanban.lostStageAria
+                  : t.kanban.advancingStageAria
             }
             disabled={isEntryColumn}
             onClick={onToggleCategory}
@@ -74,17 +76,17 @@ export function KanbanColumn({
             render={<Button variant="ghost" size="icon-sm" />}
           >
             <MoreVertical className="size-4 text-muted-foreground" />
-            <span className="sr-only">Options de la colonne</span>
+            <span className="sr-only">{t.kanban.columnOptionsAria}</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => onRenameColumn(column)}>
-              Renommer
+              {t.kanban.rename}
             </DropdownMenuItem>
             <DropdownMenuItem
               variant="destructive"
               onClick={() => onDeleteColumn(column.id)}
             >
-              Supprimer
+              {t.kanban.delete}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -94,7 +96,7 @@ export function KanbanColumn({
         className="-mt-2 text-[11px] font-semibold"
         style={{ color: "var(--brand)" }}
       >
-        {column.applications.length} candidatures
+        {t.kanban.applicationsCount(column.applications.length)}
       </p>
 
       <Button
@@ -131,7 +133,7 @@ export function KanbanColumn({
         </SortableContext>
         {column.applications.length === 0 && (
           <p className="py-5 text-center text-xs text-muted-foreground/70">
-            Aucune candidature
+            {t.kanban.emptyColumn}
           </p>
         )}
       </div>
