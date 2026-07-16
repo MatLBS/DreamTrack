@@ -9,8 +9,8 @@ import { cn } from "@/lib/utils";
 import { LOCALES } from "@/lib/i18n";
 import { useLocale } from "@/lib/i18n/locale-provider";
 
-const cardClassName =
-  "rounded-[16px] border border-[#e6e6ea] bg-white p-[28px]";
+import { SpotlightCard } from "./spotlight-card";
+
 const sectionLabelClassName =
   "mb-[18px] text-[12px] font-bold tracking-[0.4px] text-[#6b6b76]";
 const rowClassName =
@@ -28,7 +28,7 @@ export function AccountSettingsCard() {
   };
 
   return (
-    <div className={cardClassName}>
+    <SpotlightCard>
       <div className={sectionLabelClassName}>
         {t.profile.accountSettings.title}
       </div>
@@ -69,6 +69,6 @@ export function AccountSettingsCard() {
           </span>
         </button>
       </div>
-    </div>
+    </SpotlightCard>
   );
 }

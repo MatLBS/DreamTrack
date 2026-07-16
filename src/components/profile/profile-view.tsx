@@ -11,6 +11,7 @@ import { AccountSettingsCard } from "./account-settings-card";
 import { EditAccountDialog } from "./edit-account-dialog";
 import { EditProfileDialog } from "./edit-profile-dialog";
 import { ModifyButton } from "./modify-button";
+import { SpotlightCard } from "./spotlight-card";
 import { TagList } from "./tag-list";
 
 interface ProfileUser {
@@ -43,8 +44,6 @@ function formatSalary(
   return t.profile.salaryUpToMax(max!);
 }
 
-const cardClassName =
-  "rounded-[16px] border border-[#e6e6ea] bg-white p-[28px]";
 const sectionLabelClassName =
   "mb-[18px] text-[12px] font-bold tracking-[0.4px] text-[#6b6b76]";
 const preferenceRowClassName =
@@ -58,15 +57,15 @@ export function ProfileView({ user, profile, stats }: ProfileViewProps) {
   const [accountEditOpen, setAccountEditOpen] = useState(false);
 
   return (
-    <div className="mx-auto max-w-[1280px] p-6 pt-24">
+    <div className="mx-auto max-w-[1680px] p-6 pt-24">
       <h1 className="mb-8 text-[28px] font-extrabold text-[#14161c]">
         {t.profile.title}
       </h1>
 
-      <div className="flex flex-wrap items-start gap-10">
-        <div className="min-w-[380px] flex-1 space-y-6">
-          <div className={`flex items-center gap-5 ${cardClassName}`}>
-            <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#eee5cc] text-[19px] font-extrabold text-[#8a6d1a]">
+      <div className="flex flex-wrap items-start gap-[58px]">
+        <div className="min-w-[504px] flex-1 space-y-[38px]">
+          <SpotlightCard className="flex items-center gap-6">
+            <div className="flex size-[116px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#eee5cc] text-[19px] font-extrabold text-[#8a6d1a]">
               {user.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -85,9 +84,9 @@ export function ProfileView({ user, profile, stats }: ProfileViewProps) {
               <div className="text-[13.5px] text-[#6b6b76]">{user.email}</div>
             </div>
             <ModifyButton onClick={() => setAccountEditOpen(true)} />
-          </div>
+          </SpotlightCard>
 
-          <div className={cardClassName}>
+          <SpotlightCard>
             <div className="mb-[18px] flex items-center justify-between">
               <div className="text-[12px] font-bold tracking-[0.4px] text-[#6b6b76]">
                 {t.profile.preferencesSection}
@@ -110,41 +109,41 @@ export function ProfileView({ user, profile, stats }: ProfileViewProps) {
                 </span>
               </div>
             </div>
-          </div>
+          </SpotlightCard>
         </div>
 
-        <div className="w-[360px] flex-none space-y-6">
-          <div className={cardClassName}>
+        <div className="w-[480px] flex-none space-y-[38px]">
+          <SpotlightCard>
             <div className={sectionLabelClassName}>
               {t.profile.statsSection}
             </div>
-            <div className="grid grid-cols-2 gap-3.5">
-              <div className="rounded-[12px] bg-[#f7f7f8] p-5 text-center">
-                <div className="text-[27px] font-extrabold text-[#14161c]">
+            <div className="grid grid-cols-2 gap-[19px]">
+              <div className="rounded-[12px] bg-[#f7f7f8] p-[29px] text-center">
+                <div className="text-[38px] font-extrabold text-[#14161c]">
                   {stats.total}
                 </div>
                 <div className="mt-1 text-[12px] text-[#6b6b76]">
                   {t.profile.totalLabel}
                 </div>
               </div>
-              <div className="rounded-[12px] bg-[#f7f7f8] p-5 text-center">
-                <div className="text-[27px] font-extrabold text-[#14161c]">
+              <div className="rounded-[12px] bg-[#f7f7f8] p-[29px] text-center">
+                <div className="text-[38px] font-extrabold text-[#14161c]">
                   {stats.responseRate}%
                 </div>
                 <div className="mt-1 text-[12px] text-[#6b6b76]">
                   {t.profile.responseRateLabel}
                 </div>
               </div>
-              <div className="rounded-[12px] bg-[#f7f7f8] p-5 text-center">
-                <div className="text-[27px] font-extrabold text-[#14161c]">
+              <div className="rounded-[12px] bg-[#f7f7f8] p-[29px] text-center">
+                <div className="text-[38px] font-extrabold text-[#14161c]">
                   {stats.pending}
                 </div>
                 <div className="mt-1 text-[12px] text-[#6b6b76]">
                   {t.profile.pendingLabel}
                 </div>
               </div>
-              <div className="rounded-[12px] bg-[#f7f7f8] p-5 text-center">
-                <div className="text-[27px] font-extrabold text-[#14161c]">
+              <div className="rounded-[12px] bg-[#f7f7f8] p-[29px] text-center">
+                <div className="text-[38px] font-extrabold text-[#14161c]">
                   {stats.offers}
                 </div>
                 <div className="mt-1 text-[12px] text-[#6b6b76]">
@@ -152,7 +151,7 @@ export function ProfileView({ user, profile, stats }: ProfileViewProps) {
                 </div>
               </div>
             </div>
-          </div>
+          </SpotlightCard>
 
           <AccountSettingsCard />
         </div>
