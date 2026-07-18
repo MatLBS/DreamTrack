@@ -19,6 +19,7 @@ import {
   updateApplication,
 } from "@/queries/application";
 import { getColumnById, listColumns } from "@/queries/column";
+import { deleteApplicationIcon } from "@/lib/uploads/application-icon";
 
 import { parseInput, ServiceError } from "./errors";
 
@@ -98,6 +99,14 @@ export async function updateApplicationDetails(
       `Application ${id} not found`,
     );
   }
+
+  // "iconUrl" in patch : le champ n'est présent que si l'appelant l'a
+  // explicitement envoyé (remplacement ou retrait à null) — un simple test
+  // sur la valeur ne distinguerait pas ça d'un champ non touché.
+  if ("iconUrl" in patch && patch.iconUrl !== application.iconUrl) {
+    await deleteApplicationIcon(application.iconUrl);
+  }
+
   return updated;
 }
 
@@ -162,4 +171,6 @@ export async function deleteApplication(id: string): Promise<void> {
     application.columnId,
     application.position,
   );
+
+  await deleteApplicationIcon(application.iconUrl);
 }
