@@ -19,6 +19,7 @@ export const fr = {
     emptyColumn: "Aucune candidature",
     addColumn: "Ajouter une colonne",
     sankeyTitle: "Flux des candidatures",
+    downloadSankeyAria: "Télécharger le diagramme en PNG",
     offerLink: "Offre",
     entryColumnAria: "Étape d'entrée — catégorie fixe",
     lostStageAria: "Marquée comme perdue — cliquer pour repasser en avancement",
@@ -41,6 +42,7 @@ export const fr = {
       deleteFailed: "Impossible de supprimer la candidature",
       categoryFailed: "Impossible de changer la catégorie",
       deleteColumnFailed: "Impossible de supprimer la colonne",
+      downloadSankeyFailed: "Impossible de télécharger le diagramme",
     },
     dialogs: {
       application: {
