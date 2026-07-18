@@ -11,7 +11,13 @@ export type ServiceErrorCode =
   | "COLUMN_NOT_EMPTY"
   | "NO_COLUMNS"
   | "UNSUPPORTED_IMAGE_TYPE"
-  | "IMAGE_TOO_LARGE";
+  | "IMAGE_TOO_LARGE"
+  | "LLM_KEY_MISSING"
+  | "LLM_KEY_INVALID"
+  | "PAGE_FETCH_FAILED"
+  | "PAGE_BLOCKED"
+  | "NOT_A_JOB_POSTING"
+  | "LLM_REQUEST_FAILED";
 
 export class ServiceError extends Error {
   constructor(
