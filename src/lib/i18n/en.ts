@@ -21,6 +21,7 @@ export const en: Dictionary = {
     emptyColumn: "No applications",
     addColumn: "Add a column",
     sankeyTitle: "Application flow",
+    downloadSankeyAria: "Download the diagram as PNG",
     offerLink: "Job offer",
     entryColumnAria: "Entry stage — fixed category",
     lostStageAria: "Marked as lost — click to mark as advancing",
@@ -42,6 +43,7 @@ export const en: Dictionary = {
       deleteFailed: "Could not delete the application",
       categoryFailed: "Could not change the category",
       deleteColumnFailed: "Could not delete the column",
+      downloadSankeyFailed: "Could not download the diagram",
     },
     dialogs: {
       application: {

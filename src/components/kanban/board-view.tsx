@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -13,7 +13,7 @@ import {
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { Download, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import type { Application, Column } from "@/db/schema";
 import type { SankeyData } from "@/lib/sankey/aggregate";
 import { SankeyChart } from "@/components/sankey/sankey-chart";
+import { downloadSankeyAsPng } from "@/lib/sankey/download-sankey";
 import type { BoardColumn } from "@/services/application";
 import { actionErrorMessage } from "@/lib/i18n/errors";
 import { useT } from "@/lib/i18n/locale-provider";
@@ -88,6 +89,7 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
   const [renameDialogState, setRenameDialogState] = useState<
     { open: false } | { open: true; column: Column }
   >({ open: false });
+  const sankeySvgRef = useRef<SVGSVGElement>(null);
 
   const boardQuery = useQuery({
     queryKey: ["board"],
@@ -183,6 +185,16 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
     },
     onError: () => toast.error(t.kanban.toasts.deleteColumnFailed),
   });
+
+  async function handleDownloadSankey() {
+    const svg = sankeySvgRef.current;
+    if (!svg) return;
+    try {
+      await downloadSankeyAsPng(svg);
+    } catch {
+      toast.error(t.kanban.toasts.downloadSankeyFailed);
+    }
+  }
 
   function findColumnByCardId(cardId: string): BoardColumn | undefined {
     return board.find((column) =>
@@ -295,8 +307,21 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
       </DndContext>
 
       <div className="min-w-0 rounded-2xl border bg-card p-6">
-        <h2 className="text-[15px] font-extrabold">{t.kanban.sankeyTitle}</h2>
-        <SankeyChart data={sankeyQuery.data} />
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="text-[15px] font-extrabold">
+            {t.kanban.sankeyTitle}
+          </h2>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={t.kanban.downloadSankeyAria}
+            disabled={sankeyQuery.data.nodes.length === 0}
+            onClick={handleDownloadSankey}
+          >
+            <Download className="size-4" />
+          </Button>
+        </div>
+        <SankeyChart ref={sankeySvgRef} data={sankeyQuery.data} />
       </div>
 
       <ApplicationDialog
