@@ -6,10 +6,12 @@ import type { Profile } from "@/db/schema";
 import type { ApplicationStats } from "@/lib/stats/aggregate";
 import { useT } from "@/lib/i18n/locale-provider";
 import type { Dictionary } from "@/lib/i18n";
+import type { LlmCredentialSummary } from "@/services/llm-credential";
 
 import { AccountSettingsCard } from "./account-settings-card";
 import { EditAccountDialog } from "./edit-account-dialog";
 import { EditProfileDialog } from "./edit-profile-dialog";
+import { LlmKeyCard } from "./llm-key-card";
 import { ModifyButton } from "./modify-button";
 import { SpotlightCard } from "./spotlight-card";
 import { TagList } from "./tag-list";
@@ -24,6 +26,7 @@ interface ProfileViewProps {
   user: ProfileUser;
   profile: Profile | null;
   stats: ApplicationStats;
+  llmKeySummary: LlmCredentialSummary | null;
 }
 
 function getInitials(name: string): string {
@@ -51,7 +54,12 @@ const preferenceRowClassName =
 const preferenceListRowClassName =
   "flex flex-col gap-2.5 rounded-[12px] bg-[#f7f7f8] px-[18px] py-[14px] text-[14px] text-[#3a3a42]";
 
-export function ProfileView({ user, profile, stats }: ProfileViewProps) {
+export function ProfileView({
+  user,
+  profile,
+  stats,
+  llmKeySummary,
+}: ProfileViewProps) {
   const t = useT();
   const [editOpen, setEditOpen] = useState(false);
   const [accountEditOpen, setAccountEditOpen] = useState(false);
@@ -110,6 +118,8 @@ export function ProfileView({ user, profile, stats }: ProfileViewProps) {
               </div>
             </div>
           </SpotlightCard>
+
+          <LlmKeyCard initialSummary={llmKeySummary} />
         </div>
 
         <div className="w-[480px] flex-none space-y-[38px]">

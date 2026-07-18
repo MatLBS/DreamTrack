@@ -36,6 +36,20 @@
       "when": 1783515813541,
       "tag": "0004_add_is_no_reply_stage",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1784404712360,
+      "tag": "0005_add_llm_credentials",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1784405008772,
+      "tag": "0006_add_application_icon_url",
+      "breakpoints": true
     }
   ]
 }

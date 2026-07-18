@@ -41,6 +41,8 @@ export const applications = sqliteTable("applications", {
   role: text("role").notNull(),
   url: text("url"),
   notes: text("notes"),
+  /** Chemin public d'une icône uploadée (`/uploads/icons/<uuid>.<ext>`). Prime sur le logo auto-détecté. */
+  iconUrl: text("icon_url"),
   columnId: text("column_id")
     .notNull()
     .references(() => columns.id, { onDelete: "restrict" }),
@@ -116,6 +118,35 @@ export const profiles = sqliteTable("profiles", {
 
 export type Profile = typeof profiles.$inferSelect;
 export type NewProfile = typeof profiles.$inferInsert;
+
+/**
+ * Clé API LLM fournie par l'utilisateur (BYOK — Anthropic ou OpenAI). Une ligne
+ * par utilisateur (upsert). `keyPreview` (ex. "sk-ant-…4f2a") est la forme
+ * affichée dans l'UI ; `apiKey` (clé en clair) n'est jamais renvoyée au client,
+ * seulement lue côté serveur pour appeler le provider.
+ */
+export const llmCredentials = sqliteTable("llm_credentials", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .unique()
+    .references(() => user.id, { onDelete: "cascade" }),
+  provider: text("provider", { enum: ["anthropic", "openai"] }).notNull(),
+  apiKey: text("api_key").notNull(),
+  keyPreview: text("key_preview").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date())
+    .$onUpdate(() => new Date()),
+});
+
+export type LlmCredential = typeof llmCredentials.$inferSelect;
+export type NewLlmCredential = typeof llmCredentials.$inferInsert;
 
 /**
  * Tables Better Auth (générées via `npx @better-auth/cli generate`).

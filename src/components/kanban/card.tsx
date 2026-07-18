@@ -6,6 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ExternalLink, MoreVertical } from "lucide-react";
 
 import type { Application } from "@/db/schema";
+import { CompanyLogo } from "@/components/brand/company-logo";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -59,11 +60,17 @@ export function ApplicationCard({
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="truncate text-[13px] font-bold">{application.role}</p>
-          <p className="truncate text-xs text-muted-foreground">
-            {application.company}
-          </p>
+        <div className="flex min-w-0 items-center gap-2">
+          <CompanyLogo
+            company={application.company}
+            iconUrl={application.iconUrl}
+          />
+          <div className="min-w-0">
+            <p className="truncate text-[13px] font-bold">{application.role}</p>
+            <p className="truncate text-xs text-muted-foreground">
+              {application.company}
+            </p>
+          </div>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger

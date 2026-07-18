@@ -46,7 +46,7 @@ export async function countApplicationsInColumn(
 }
 
 export type ApplicationPatch = Partial<
-  Pick<NewApplication, "company" | "role" | "url" | "notes">
+  Pick<NewApplication, "company" | "role" | "url" | "notes" | "iconUrl">
 >;
 
 export async function updateApplication(
@@ -70,6 +70,7 @@ export async function insertApplicationWithTransition({
   role,
   url,
   notes,
+  iconUrl,
   columnId,
   position,
 }: {
@@ -77,13 +78,14 @@ export async function insertApplicationWithTransition({
   role: string;
   url?: string | null;
   notes?: string | null;
+  iconUrl?: string | null;
   columnId: string;
   position: number;
 }): Promise<Application> {
   return db.transaction(async (tx) => {
     const [application] = await tx
       .insert(applications)
-      .values({ company, role, url, notes, columnId, position })
+      .values({ company, role, url, notes, iconUrl, columnId, position })
       .returning();
 
     await tx.insert(transitions).values({

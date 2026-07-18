@@ -28,6 +28,7 @@ function makeApplication(id: string, columnId: string): Application {
     role: "Engineer",
     url: null,
     notes: null,
+    iconUrl: null,
     columnId,
     position: 0,
     createdAt: new Date(),

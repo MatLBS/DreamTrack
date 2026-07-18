@@ -5,6 +5,11 @@ export const CreateApplicationSchema = z.object({
   role: z.string().trim().min(1),
   url: z.url().nullable().optional(),
   notes: z.string().nullable().optional(),
+  iconUrl: z
+    .string()
+    .regex(/^\/uploads\/icons\/[0-9a-f-]+\.(png|svg)$/)
+    .nullable()
+    .optional(),
   columnId: z.string().min(1).optional(),
 });
 

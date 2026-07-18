@@ -71,6 +71,17 @@ describe("application service", () => {
         }),
       ).rejects.toThrow(ServiceError);
     });
+
+    it("stores the icon URL when provided", async () => {
+      const application = await createApplication({
+        company: "Acme",
+        role: "SWE",
+        iconUrl: "/uploads/icons/11111111-1111-1111-1111-111111111111.png",
+      });
+      expect(application.iconUrl).toBe(
+        "/uploads/icons/11111111-1111-1111-1111-111111111111.png",
+      );
+    });
   });
 
   describe("moveApplication", () => {
@@ -141,6 +152,46 @@ describe("application service", () => {
       });
       expect(updated.notes).toBe("Great fit");
       expect(updated.company).toBe("Acme");
+    });
+
+    it("replaces the icon URL", async () => {
+      const application = await createApplication({
+        company: "Acme",
+        role: "SWE",
+        iconUrl: "/uploads/icons/11111111-1111-1111-1111-111111111111.png",
+      });
+      const updated = await updateApplicationDetails(application.id, {
+        iconUrl: "/uploads/icons/22222222-2222-2222-2222-222222222222.svg",
+      });
+      expect(updated.iconUrl).toBe(
+        "/uploads/icons/22222222-2222-2222-2222-222222222222.svg",
+      );
+    });
+
+    it("clears the icon URL when explicitly set to null", async () => {
+      const application = await createApplication({
+        company: "Acme",
+        role: "SWE",
+        iconUrl: "/uploads/icons/11111111-1111-1111-1111-111111111111.png",
+      });
+      const updated = await updateApplicationDetails(application.id, {
+        iconUrl: null,
+      });
+      expect(updated.iconUrl).toBeNull();
+    });
+
+    it("leaves the icon URL untouched when the field is omitted", async () => {
+      const application = await createApplication({
+        company: "Acme",
+        role: "SWE",
+        iconUrl: "/uploads/icons/11111111-1111-1111-1111-111111111111.png",
+      });
+      const updated = await updateApplicationDetails(application.id, {
+        notes: "Great fit",
+      });
+      expect(updated.iconUrl).toBe(
+        "/uploads/icons/11111111-1111-1111-1111-111111111111.png",
+      );
     });
   });
 
