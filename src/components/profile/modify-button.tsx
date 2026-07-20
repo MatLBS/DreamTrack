@@ -15,7 +15,7 @@ export function ModifyButton({ onClick, className }: ModifyButtonProps) {
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-[9px] border border-[#e6e6ea] px-6 py-[14px] text-[17px] font-bold text-[#14161c] transition-colors hover:bg-[#f7f7f8]",
+        "rounded-[9px] border border-border px-6 py-[14px] text-[17px] font-bold text-foreground transition-colors hover:bg-muted",
         className,
       )}
     >

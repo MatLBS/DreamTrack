@@ -23,9 +23,9 @@ import { ActionError, actionErrorMessage } from "@/lib/i18n/errors";
 import { useT } from "@/lib/i18n/locale-provider";
 
 const fieldLabelClassName =
-  "text-[11px] font-bold tracking-[0.3px] text-[#6b6b76] uppercase";
+  "text-[11px] font-bold tracking-[0.3px] text-muted-foreground uppercase";
 const fieldInputClassName =
-  "h-auto rounded-[9px] border-[1.5px] border-[#d5d5db] bg-[#fafafb] px-[14px] py-[11px] text-[13.5px] text-[#3a3a42] shadow-[inset_0_1px_2px_rgba(20,20,20,0.04)] placeholder:text-[#9a9aa3] focus-visible:border-[#7F1734] focus-visible:ring-0";
+  "h-auto rounded-[9px] border-[1.5px] border-input bg-muted px-[14px] py-[11px] text-[13.5px] text-foreground shadow-[inset_0_1px_2px_rgba(20,20,20,0.04)] placeholder:text-muted-foreground focus-visible:border-[var(--brand)] focus-visible:ring-0";
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -100,17 +100,17 @@ export function EditAccountDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="gap-0 rounded-[16px] bg-white pt-[26px] pr-[28px] pb-[22px] pl-[28px] text-[#14161c] shadow-[0_20px_50px_rgba(20,20,20,0.18)] ring-0 sm:max-w-[380px]"
+        className="gap-0 rounded-[16px] bg-popover pt-[26px] pr-[28px] pb-[22px] pl-[28px] text-foreground shadow-[0_20px_50px_rgba(20,20,20,0.18)] ring-0 sm:max-w-[380px]"
       >
         <DialogHeader className="mb-[22px] flex-row items-center justify-between">
-          <DialogTitle className="font-sans text-[18px] font-extrabold text-[#14161c]">
+          <DialogTitle className="font-sans text-[18px] font-extrabold text-foreground">
             {t.profile.dialogs.editAccount.title}
           </DialogTitle>
           <DialogClose
             render={
               <button
                 type="button"
-                className="flex size-[26px] shrink-0 items-center justify-center rounded-[8px] text-[#9a9aa3] transition-colors hover:bg-[#f2f2f4] hover:text-[#6b6b76]"
+                className="flex size-[26px] shrink-0 items-center justify-center rounded-[8px] text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               />
             }
           >
@@ -132,7 +132,7 @@ export function EditAccountDialog({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               aria-label={t.profile.dialogs.editAccount.changePhotoAria}
-              className="group relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#eee5cc] text-[18px] font-extrabold text-[#8a6d1a]"
+              className="group relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-amber-100 text-[18px] font-extrabold text-amber-800 dark:bg-amber-950 dark:text-amber-300"
             >
               {avatarSrc ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -196,7 +196,7 @@ export function EditAccountDialog({
             <Button
               type="button"
               variant="ghost"
-              className="h-auto rounded-[9px] px-[18px] py-[11px] text-[13px] font-bold text-[#6b6b76] hover:bg-transparent hover:text-[#14161c]"
+              className="h-auto rounded-[9px] px-[18px] py-[11px] text-[13px] font-bold text-muted-foreground hover:bg-transparent hover:text-foreground"
               onClick={() => handleOpenChange(false)}
             >
               {t.common.cancel}

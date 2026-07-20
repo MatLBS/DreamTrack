@@ -142,6 +142,10 @@ export const fr = {
     accountSettings: {
       title: "PARAMÈTRES DU COMPTE",
       languageLabel: "Langue",
+      themeLabel: "Thème",
+      themeLight: "Clair",
+      themeDark: "Sombre",
+      themeSystem: "Système",
       signOut: "Se déconnecter",
     },
     llmKey: {

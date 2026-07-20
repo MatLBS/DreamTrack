@@ -31,9 +31,9 @@ import { ActionError, actionErrorMessage } from "@/lib/i18n/errors";
 import { useT } from "@/lib/i18n/locale-provider";
 
 const fieldLabelClassName =
-  "text-[11px] font-bold tracking-[0.3px] text-[#6b6b76] uppercase";
+  "text-[11px] font-bold tracking-[0.3px] text-muted-foreground uppercase";
 const fieldInputClassName =
-  "h-auto rounded-[9px] border-[1.5px] border-[#d5d5db] bg-[#fafafb] px-[14px] py-[11px] text-[13.5px] text-[#3a3a42] shadow-[inset_0_1px_2px_rgba(20,20,20,0.04)] placeholder:text-[#9a9aa3] focus-visible:border-[#7F1734] focus-visible:ring-0";
+  "h-auto rounded-[9px] border-[1.5px] border-input bg-muted px-[14px] py-[11px] text-[13.5px] text-foreground shadow-[inset_0_1px_2px_rgba(20,20,20,0.04)] placeholder:text-muted-foreground focus-visible:border-[var(--brand)] focus-visible:ring-0";
 
 interface ApplicationFormValues {
   company: string;
@@ -156,10 +156,10 @@ export function ApplicationDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="gap-0 rounded-[16px] bg-white pt-[26px] pr-[28px] pb-[22px] pl-[28px] text-[#14161c] shadow-[0_20px_50px_rgba(20,20,20,0.18)] ring-0 sm:max-w-[420px]"
+        className="gap-0 rounded-[16px] bg-popover pt-[26px] pr-[28px] pb-[22px] pl-[28px] text-foreground shadow-[0_20px_50px_rgba(20,20,20,0.18)] ring-0 sm:max-w-[420px]"
       >
         <DialogHeader className="mb-[22px] flex-row items-center justify-between">
-          <DialogTitle className="font-sans text-[18px] font-extrabold text-[#14161c]">
+          <DialogTitle className="font-sans text-[18px] font-extrabold text-foreground">
             {isEdit
               ? t.kanban.dialogs.application.titleEdit
               : t.kanban.dialogs.application.titleAdd}
@@ -168,7 +168,7 @@ export function ApplicationDialog({
             render={
               <button
                 type="button"
-                className="flex size-[26px] shrink-0 items-center justify-center rounded-[8px] text-[#9a9aa3] transition-colors hover:bg-[#f2f2f4] hover:text-[#6b6b76]"
+                className="flex size-[26px] shrink-0 items-center justify-center rounded-[8px] text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               />
             }
           >
@@ -261,7 +261,7 @@ export function ApplicationDialog({
                           aria-label={
                             t.kanban.dialogs.application.iconChooseAria
                           }
-                          className="group relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border-[1.5px] border-[#d5d5db] bg-[#fafafb]"
+                          className="group relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border-[1.5px] border-input bg-muted"
                         >
                           {hasVisibleIcon ? (
                             <CompanyLogo
@@ -270,14 +270,14 @@ export function ApplicationDialog({
                               className="size-full rounded-none bg-transparent"
                             />
                           ) : (
-                            <ImagePlus className="size-5 text-[#9a9aa3]" />
+                            <ImagePlus className="size-5 text-muted-foreground" />
                           )}
                           <span className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
                             <Camera className="size-4 text-white" />
                           </span>
                         </button>
                         <div className="flex flex-col items-start gap-1">
-                          <p className="text-[11px] text-[#9a9aa3]">
+                          <p className="text-[11px] text-muted-foreground">
                             {t.kanban.dialogs.application.iconHint}
                           </p>
                           {canRemove && (
@@ -290,7 +290,7 @@ export function ApplicationDialog({
                                   fileInputRef.current.value = "";
                                 }
                               }}
-                              className="text-[11px] font-bold text-[#7F1734] hover:underline"
+                              className="text-[11px] font-bold text-[var(--brand)] hover:underline"
                             >
                               {t.kanban.dialogs.application.iconRemove}
                             </button>
@@ -416,7 +416,7 @@ export function ApplicationDialog({
                 <Button
                   type="button"
                   variant="ghost"
-                  className="h-auto rounded-[9px] px-[18px] py-[11px] text-[13px] font-bold text-[#6b6b76] hover:bg-transparent hover:text-[#14161c]"
+                  className="h-auto rounded-[9px] px-[18px] py-[11px] text-[13px] font-bold text-muted-foreground hover:bg-transparent hover:text-foreground"
                   onClick={() => handleOpenChange(false)}
                 >
                   {t.common.cancel}
@@ -468,7 +468,7 @@ export function ApplicationDialog({
                   <Button
                     type="button"
                     variant="ghost"
-                    className="h-auto rounded-[9px] px-[18px] py-[11px] text-[13px] font-bold text-[#6b6b76] hover:bg-transparent hover:text-[#14161c]"
+                    className="h-auto rounded-[9px] px-[18px] py-[11px] text-[13px] font-bold text-muted-foreground hover:bg-transparent hover:text-foreground"
                     onClick={() => handleOpenChange(false)}
                   >
                     {t.common.cancel}

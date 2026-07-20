@@ -63,21 +63,21 @@ export function TagInput({
           addTag();
           onBlur?.();
         }}
-        className="h-auto w-full rounded-[9px] border-[1.5px] border-[#d5d5db] bg-[#fafafb] px-[14px] py-[11px] text-[13.5px] text-[#3a3a42] shadow-[inset_0_1px_2px_rgba(20,20,20,0.04)] outline-none placeholder:text-[#9a9aa3] focus-visible:border-[#7F1734]"
+        className="h-auto w-full rounded-[9px] border-[1.5px] border-input bg-muted px-[14px] py-[11px] text-[13.5px] text-foreground shadow-[inset_0_1px_2px_rgba(20,20,20,0.04)] outline-none placeholder:text-muted-foreground focus-visible:border-[var(--brand)]"
       />
       {value.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {value.map((tag, index) => (
             <span
               key={`${tag}-${index}`}
-              className="inline-flex items-center gap-1 rounded-[8px] border border-[#e6e6ea] bg-white py-1.5 pr-1.5 pl-3 text-[12px] font-bold text-[#3a3a42]"
+              className="inline-flex items-center gap-1 rounded-[8px] border border-border bg-card py-1.5 pr-1.5 pl-3 text-[12px] font-bold text-foreground"
             >
               {tag}
               <button
                 type="button"
                 aria-label={t.profile.tagInput.removeTag(tag)}
                 onClick={() => removeTag(index)}
-                className="flex size-4 items-center justify-center rounded-full text-[#9a9aa3] transition-colors hover:bg-[#e6e6ea] hover:text-[#6b6b76]"
+                className="flex size-4 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               >
                 <XIcon className="size-3" />
               </button>

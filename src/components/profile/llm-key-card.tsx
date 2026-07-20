@@ -18,9 +18,9 @@ import { ModifyButton } from "./modify-button";
 import { SpotlightCard } from "./spotlight-card";
 
 const sectionLabelClassName =
-  "mb-[18px] text-[12px] font-bold tracking-[0.4px] text-[#6b6b76]";
+  "mb-[18px] text-[12px] font-bold tracking-[0.4px] text-muted-foreground";
 const rowClassName =
-  "flex items-center justify-between rounded-[12px] bg-[#f7f7f8] px-[18px] py-[14px] text-[14px] text-[#3a3a42]";
+  "flex items-center justify-between rounded-[12px] bg-muted px-[18px] py-[14px] text-[14px] text-foreground";
 
 interface LlmKeyCardProps {
   initialSummary: LlmCredentialSummary | null;
@@ -75,7 +75,7 @@ export function LlmKeyCard({ initialSummary }: LlmKeyCardProps) {
               onClick={() => removeMutation.mutate()}
               disabled={removeMutation.isPending}
               aria-label={t.profile.llmKey.remove}
-              className="flex size-7 shrink-0 items-center justify-center rounded-[8px] text-[#b3261e] transition-colors hover:bg-[#f9e9e8] disabled:opacity-60"
+              className="flex size-7 shrink-0 items-center justify-center rounded-[8px] text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-60"
             >
               <Trash2 className="size-4" />
             </button>

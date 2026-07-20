@@ -48,11 +48,11 @@ function formatSalary(
 }
 
 const sectionLabelClassName =
-  "mb-[18px] text-[12px] font-bold tracking-[0.4px] text-[#6b6b76]";
+  "mb-[18px] text-[12px] font-bold tracking-[0.4px] text-muted-foreground";
 const preferenceRowClassName =
-  "flex items-center justify-between rounded-[12px] bg-[#f7f7f8] px-[18px] py-[14px] text-[14px] text-[#3a3a42]";
+  "flex items-center justify-between rounded-[12px] bg-muted px-[18px] py-[14px] text-[14px] text-foreground";
 const preferenceListRowClassName =
-  "flex flex-col gap-2.5 rounded-[12px] bg-[#f7f7f8] px-[18px] py-[14px] text-[14px] text-[#3a3a42]";
+  "flex flex-col gap-2.5 rounded-[12px] bg-muted px-[18px] py-[14px] text-[14px] text-foreground";
 
 export function ProfileView({
   user,
@@ -66,14 +66,14 @@ export function ProfileView({
 
   return (
     <div className="mx-auto max-w-[1680px] p-6 pt-24">
-      <h1 className="mb-8 text-[28px] font-extrabold text-[#14161c]">
+      <h1 className="mb-8 text-[28px] font-extrabold text-foreground">
         {t.profile.title}
       </h1>
 
       <div className="flex flex-wrap items-start gap-[58px]">
         <div className="min-w-[504px] flex-1 space-y-[38px]">
           <SpotlightCard className="flex items-center gap-6">
-            <div className="flex size-[116px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#eee5cc] text-[19px] font-extrabold text-[#8a6d1a]">
+            <div className="flex size-[116px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-amber-100 text-[19px] font-extrabold text-amber-800 dark:bg-amber-950 dark:text-amber-300">
               {user.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -86,17 +86,17 @@ export function ProfileView({
               )}
             </div>
             <div className="flex-1">
-              <div className="text-[19px] font-extrabold text-[#14161c]">
+              <div className="text-[19px] font-extrabold text-foreground">
                 {user.name}
               </div>
-              <div className="text-[13.5px] text-[#6b6b76]">{user.email}</div>
+              <div className="text-[13.5px] text-muted-foreground">{user.email}</div>
             </div>
             <ModifyButton onClick={() => setAccountEditOpen(true)} />
           </SpotlightCard>
 
           <SpotlightCard>
             <div className="mb-[18px] flex items-center justify-between">
-              <div className="text-[12px] font-bold tracking-[0.4px] text-[#6b6b76]">
+              <div className="text-[12px] font-bold tracking-[0.4px] text-muted-foreground">
                 {t.profile.preferencesSection}
               </div>
               <ModifyButton onClick={() => setEditOpen(true)} />
@@ -128,35 +128,35 @@ export function ProfileView({
               {t.profile.statsSection}
             </div>
             <div className="grid grid-cols-2 gap-[19px]">
-              <div className="rounded-[12px] bg-[#f7f7f8] p-[29px] text-center">
-                <div className="text-[38px] font-extrabold text-[#14161c]">
+              <div className="rounded-[12px] bg-muted p-[29px] text-center">
+                <div className="text-[38px] font-extrabold text-foreground">
                   {stats.total}
                 </div>
-                <div className="mt-1 text-[12px] text-[#6b6b76]">
+                <div className="mt-1 text-[12px] text-muted-foreground">
                   {t.profile.totalLabel}
                 </div>
               </div>
-              <div className="rounded-[12px] bg-[#f7f7f8] p-[29px] text-center">
-                <div className="text-[38px] font-extrabold text-[#14161c]">
+              <div className="rounded-[12px] bg-muted p-[29px] text-center">
+                <div className="text-[38px] font-extrabold text-foreground">
                   {stats.responseRate}%
                 </div>
-                <div className="mt-1 text-[12px] text-[#6b6b76]">
+                <div className="mt-1 text-[12px] text-muted-foreground">
                   {t.profile.responseRateLabel}
                 </div>
               </div>
-              <div className="rounded-[12px] bg-[#f7f7f8] p-[29px] text-center">
-                <div className="text-[38px] font-extrabold text-[#14161c]">
+              <div className="rounded-[12px] bg-muted p-[29px] text-center">
+                <div className="text-[38px] font-extrabold text-foreground">
                   {stats.pending}
                 </div>
-                <div className="mt-1 text-[12px] text-[#6b6b76]">
+                <div className="mt-1 text-[12px] text-muted-foreground">
                   {t.profile.pendingLabel}
                 </div>
               </div>
-              <div className="rounded-[12px] bg-[#f7f7f8] p-[29px] text-center">
-                <div className="text-[38px] font-extrabold text-[#14161c]">
+              <div className="rounded-[12px] bg-muted p-[29px] text-center">
+                <div className="text-[38px] font-extrabold text-foreground">
                   {stats.offers}
                 </div>
-                <div className="mt-1 text-[12px] text-[#6b6b76]">
+                <div className="mt-1 text-[12px] text-muted-foreground">
                   {t.profile.offersLabel}
                 </div>
               </div>

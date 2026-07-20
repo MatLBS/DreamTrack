@@ -16,7 +16,7 @@ export function TagList({ items }: TagListProps) {
       {items.map((item) => (
         <span
           key={item}
-          className="rounded-[8px] border border-[#e6e6ea] bg-white px-3 py-1.5 text-[12px] font-bold text-[#3a3a42]"
+          className="rounded-[8px] border border-border bg-card px-3 py-1.5 text-[12px] font-bold text-foreground"
         >
           {item}
         </span>

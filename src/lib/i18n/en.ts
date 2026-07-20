@@ -143,6 +143,10 @@ export const en: Dictionary = {
     accountSettings: {
       title: "ACCOUNT SETTINGS",
       languageLabel: "Language",
+      themeLabel: "Theme",
+      themeLight: "Light",
+      themeDark: "Dark",
+      themeSystem: "System",
       signOut: "Sign out",
     },
     llmKey: {
