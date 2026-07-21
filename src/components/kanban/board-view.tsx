@@ -30,12 +30,14 @@ import type { Application, Column } from "@/db/schema";
 import type { SankeyData } from "@/lib/sankey/aggregate";
 import { SankeyChart } from "@/components/sankey/sankey-chart";
 import { downloadSankeyAsPng } from "@/lib/sankey/download-sankey";
+import { findAcceptedColumn } from "@/lib/kanban/terminal-columns";
 import type { BoardColumn } from "@/services/application";
 import { actionErrorMessage } from "@/lib/i18n/errors";
 import { useT } from "@/lib/i18n/locale-provider";
 
 import { ApplicationCard } from "./card";
 import { ApplicationDialog } from "./application-dialog";
+import { CelebrationConfetti } from "./celebration-confetti";
 import { ColumnDialog } from "./column-dialog";
 import { KanbanColumn } from "./column";
 import { RenameColumnDialog } from "./rename-column-dialog";
@@ -81,6 +83,7 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
   const t = useT();
   const queryClient = useQueryClient();
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [celebrating, setCelebrating] = useState(false);
   const [dialogState, setDialogState] = useState<
     | { open: false }
     | { open: true; application?: Application; columnId?: string }
@@ -238,6 +241,13 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
       if (fromIndex === toIndex) return;
     }
 
+    if (toColumnId !== sourceColumn.id) {
+      const acceptedColumn = findAcceptedColumn(board);
+      if (acceptedColumn && toColumnId === acceptedColumn.id) {
+        setCelebrating(true);
+      }
+    }
+
     moveMutation.mutate({ applicationId: activeId, toColumnId, toIndex });
   }
 
@@ -247,6 +257,10 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
 
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-4 p-4 mt-10">
+      {celebrating && (
+        <CelebrationConfetti onFinished={() => setCelebrating(false)} />
+      )}
+
       <h1 className="text-[22px] font-extrabold">{t.kanban.pageTitle}</h1>
 
       <DndContext
