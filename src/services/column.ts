@@ -34,17 +34,18 @@ const DEFAULT_COLUMNS = [
   { name: "Rejected", isLostStage: true, isNoReplyStage: false },
 ] as const;
 
-export async function getColumns(): Promise<Column[]> {
-  return listColumns();
+export async function getColumns(userId: string): Promise<Column[]> {
+  return listColumns(userId);
 }
 
-/** Seed idempotent des 6 colonnes par défaut (no-op si des colonnes existent déjà). */
-export async function ensureDefaultColumns(): Promise<void> {
-  const existing = await listColumns();
+/** Seed idempotent des 6 colonnes par défaut pour cet utilisateur (no-op s'il en a déjà). */
+export async function ensureDefaultColumns(userId: string): Promise<void> {
+  const existing = await listColumns(userId);
   if (existing.length > 0) return;
 
   await insertColumns(
     DEFAULT_COLUMNS.map(({ name, isLostStage, isNoReplyStage }, position) => ({
+      userId,
       name,
       position,
       isDefault: true,
@@ -65,12 +66,16 @@ function assertIndexInFreeZone(index: number, columnCount: number): void {
   }
 }
 
-export async function createColumn(input: CreateColumnInput): Promise<Column> {
+export async function createColumn(
+  userId: string,
+  input: CreateColumnInput,
+): Promise<Column> {
   const { name, index, isLostStage } = parseInput(CreateColumnSchema, input);
-  const existing = await listColumns();
+  const existing = await listColumns(userId);
   assertIndexInFreeZone(index, existing.length);
 
   return insertColumnAt({
+    userId,
     name,
     position: index,
     isDefault: false,
@@ -83,11 +88,12 @@ export async function createColumn(input: CreateColumnInput): Promise<Column> {
  * n'est ni un succès ni un échec — sa catégorie est fixe et non modifiable.
  */
 export async function setColumnCategory(
+  userId: string,
   id: string,
   input: SetColumnCategoryInput,
 ): Promise<Column> {
   const { isLostStage } = parseInput(SetColumnCategorySchema, input);
-  const column = await getColumnById(id);
+  const column = await getColumnById(userId, id);
   if (!column) {
     throw new ServiceError("COLUMN_NOT_FOUND", `Column ${id} not found`);
   }
@@ -99,7 +105,7 @@ export async function setColumnCategory(
     );
   }
 
-  const updated = await updateColumn(id, { isLostStage });
+  const updated = await updateColumn(userId, id, { isLostStage });
   if (!updated) {
     throw new ServiceError("COLUMN_NOT_FOUND", `Column ${id} not found`);
   }
@@ -107,16 +113,17 @@ export async function setColumnCategory(
 }
 
 export async function renameColumn(
+  userId: string,
   id: string,
   input: RenameColumnInput,
 ): Promise<Column> {
   const { name } = parseInput(RenameColumnSchema, input);
-  const column = await getColumnById(id);
+  const column = await getColumnById(userId, id);
   if (!column) {
     throw new ServiceError("COLUMN_NOT_FOUND", `Column ${id} not found`);
   }
 
-  const updated = await updateColumn(id, { name });
+  const updated = await updateColumn(userId, id, { name });
   if (!updated) {
     throw new ServiceError("COLUMN_NOT_FOUND", `Column ${id} not found`);
   }
@@ -124,16 +131,17 @@ export async function renameColumn(
 }
 
 export async function reorderColumn(
+  userId: string,
   id: string,
   input: ReorderColumnInput,
 ): Promise<Column> {
   const { index } = parseInput(ReorderColumnSchema, input);
-  const column = await getColumnById(id);
+  const column = await getColumnById(userId, id);
   if (!column) {
     throw new ServiceError("COLUMN_NOT_FOUND", `Column ${id} not found`);
   }
 
-  const existing = await listColumns();
+  const existing = await listColumns(userId);
   const isProtectedPosition =
     column.position === 0 ||
     column.position >= existing.length - TERMINAL_COUNT;
@@ -145,11 +153,11 @@ export async function reorderColumn(
   }
   assertIndexInFreeZone(index, existing.length);
 
-  return moveColumnToPosition(id, column.position, index);
+  return moveColumnToPosition(userId, id, column.position, index);
 }
 
-export async function deleteColumn(id: string): Promise<void> {
-  const column = await getColumnById(id);
+export async function deleteColumn(userId: string, id: string): Promise<void> {
+  const column = await getColumnById(userId, id);
   if (!column) {
     throw new ServiceError("COLUMN_NOT_FOUND", `Column ${id} not found`);
   }
@@ -161,7 +169,7 @@ export async function deleteColumn(id: string): Promise<void> {
     );
   }
 
-  const applicationCount = await countApplicationsInColumn(id);
+  const applicationCount = await countApplicationsInColumn(userId, id);
   if (applicationCount > 0) {
     throw new ServiceError(
       "COLUMN_NOT_EMPTY",
@@ -169,5 +177,5 @@ export async function deleteColumn(id: string): Promise<void> {
     );
   }
 
-  await removeColumnAndCloseGap(id, column.position);
+  await removeColumnAndCloseGap(userId, id, column.position);
 }

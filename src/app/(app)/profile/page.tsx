@@ -12,7 +12,7 @@ export default async function ProfilePage() {
 
   const [profile, stats, llmKeySummary] = await Promise.all([
     getProfile(session.user.id),
-    getApplicationStats(),
+    getApplicationStats(session.user.id),
     getLlmCredentialSummary(session.user.id),
   ]);
 

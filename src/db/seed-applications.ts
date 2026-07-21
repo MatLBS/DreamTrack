@@ -1,4 +1,8 @@
+import { asc } from "drizzle-orm";
+
+import { db } from "@/db";
 import type { Application } from "@/db/schema";
+import { user } from "@/db/schema";
 import { createApplication, moveApplication } from "@/services/application";
 import { listColumns } from "@/queries/column";
 
@@ -77,7 +81,15 @@ function findColumn(columns: { id: string; name: string }[], name: string) {
 }
 
 async function main() {
-  const columns = await listColumns();
+  const [firstUser] = await db.select().from(user).orderBy(asc(user.createdAt));
+  if (!firstUser) {
+    throw new Error(
+      "No user found — sign up once (npm run dev, then /signup) before seeding applications.",
+    );
+  }
+  const userId = firstUser.id;
+
+  const columns = await listColumns(userId);
   const jobsApplied = findColumn(columns, "Jobs applied to");
   const replies = findColumn(columns, "Replies");
   const rejections = findColumn(columns, "Rejections");
@@ -88,7 +100,7 @@ async function main() {
   const applications: Application[] = [];
   for (const entry of ENTRIES) {
     applications.push(
-      await createApplication({ ...entry, columnId: jobsApplied.id }),
+      await createApplication(userId, { ...entry, columnId: jobsApplied.id }),
     );
   }
 
@@ -98,7 +110,7 @@ async function main() {
     for (let i = 0; i < count; i++) {
       const application = applications[cursor++];
       moved.push(
-        await moveApplication(application.id, {
+        await moveApplication(userId, application.id, {
           toColumnId,
           toIndex: APPEND_AT_END,
         }),
@@ -115,7 +127,7 @@ async function main() {
   async function moveFromReplies(count: number, toColumnId: string) {
     for (let i = 0; i < count; i++) {
       const application = movedToReplies[repliesCursor++];
-      await moveApplication(application.id, {
+      await moveApplication(userId, application.id, {
         toColumnId,
         toIndex: APPEND_AT_END,
       });

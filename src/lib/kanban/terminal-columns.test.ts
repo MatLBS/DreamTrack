@@ -7,6 +7,7 @@ import { findAcceptedColumn } from "./terminal-columns";
 function makeColumn(id: string, position: number, isLostStage = false): Column {
   return {
     id,
+    userId: "user-1",
     name: id,
     position,
     isDefault: true,

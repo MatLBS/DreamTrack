@@ -3,13 +3,23 @@ import { and, asc, eq, gt, gte, lt, lte, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { columns, type Column, type NewColumn } from "@/db/schema";
 
-/** Toutes les colonnes, triées par ordre d'affichage. */
-export async function listColumns(): Promise<Column[]> {
-  return db.select().from(columns).orderBy(asc(columns.position));
+/** Toutes les colonnes d'un utilisateur, triées par ordre d'affichage. */
+export async function listColumns(userId: string): Promise<Column[]> {
+  return db
+    .select()
+    .from(columns)
+    .where(eq(columns.userId, userId))
+    .orderBy(asc(columns.position));
 }
 
-export async function getColumnById(id: string): Promise<Column | undefined> {
-  const [column] = await db.select().from(columns).where(eq(columns.id, id));
+export async function getColumnById(
+  userId: string,
+  id: string,
+): Promise<Column | undefined> {
+  const [column] = await db
+    .select()
+    .from(columns)
+    .where(and(eq(columns.id, id), eq(columns.userId, userId)));
   return column;
 }
 
@@ -18,32 +28,36 @@ export type ColumnPatch = Partial<
 >;
 
 export async function updateColumn(
+  userId: string,
   id: string,
   patch: ColumnPatch,
 ): Promise<Column | undefined> {
   const [column] = await db
     .update(columns)
     .set(patch)
-    .where(eq(columns.id, id))
+    .where(and(eq(columns.id, id), eq(columns.userId, userId)))
     .returning();
   return column;
 }
 
-/** Insert simple en masse — utilisé uniquement par le seed (table vide, aucun décalage requis). */
+/** Insert simple en masse — utilisé uniquement par le seed (aucune colonne existante pour cet utilisateur, aucun décalage requis). */
 export async function insertColumns(values: NewColumn[]): Promise<Column[]> {
   return db.insert(columns).values(values).returning();
 }
 
 /**
- * Insère une nouvelle colonne à `position` : décale les colonnes existantes
- * (>= position) de +1, puis insère la nouvelle à ce slot. Atomique.
+ * Insère une nouvelle colonne à `position` pour cet utilisateur : décale ses
+ * colonnes existantes (>= position) de +1, puis insère la nouvelle à ce slot.
+ * Atomique.
  */
 export async function insertColumnAt({
+  userId,
   name,
   position,
   isDefault,
   isLostStage,
 }: {
+  userId: string;
   name: string;
   position: number;
   isDefault: boolean;
@@ -53,21 +67,23 @@ export async function insertColumnAt({
     await tx
       .update(columns)
       .set({ position: sql`${columns.position} + 1` })
-      .where(gte(columns.position, position));
+      .where(and(eq(columns.userId, userId), gte(columns.position, position)));
 
     const [column] = await tx
       .insert(columns)
-      .values({ name, position, isDefault, isLostStage })
+      .values({ userId, name, position, isDefault, isLostStage })
       .returning();
     return column;
   });
 }
 
 /**
- * Déplace une colonne de `fromPosition` vers `toPosition`, en décalant les
- * colonnes intermédiaires pour combler/ouvrir le slot. Atomique.
+ * Déplace une colonne de `fromPosition` vers `toPosition` pour cet
+ * utilisateur, en décalant les colonnes intermédiaires pour combler/ouvrir
+ * le slot. Atomique.
  */
 export async function moveColumnToPosition(
+  userId: string,
   id: string,
   fromPosition: number,
   toPosition: number,
@@ -79,6 +95,7 @@ export async function moveColumnToPosition(
         .set({ position: sql`${columns.position} - 1` })
         .where(
           and(
+            eq(columns.userId, userId),
             gt(columns.position, fromPosition),
             lte(columns.position, toPosition),
           ),
@@ -89,6 +106,7 @@ export async function moveColumnToPosition(
         .set({ position: sql`${columns.position} + 1` })
         .where(
           and(
+            eq(columns.userId, userId),
             gte(columns.position, toPosition),
             lt(columns.position, fromPosition),
           ),
@@ -98,26 +116,29 @@ export async function moveColumnToPosition(
     const [column] = await tx
       .update(columns)
       .set({ position: toPosition })
-      .where(eq(columns.id, id))
+      .where(and(eq(columns.id, id), eq(columns.userId, userId)))
       .returning();
     return column;
   });
 }
 
 /**
- * Supprime une colonne et referme le trou (décale de -1 les colonnes situées
- * après elle). Atomique.
+ * Supprime une colonne de cet utilisateur et referme le trou (décale de -1
+ * les colonnes situées après elle). Atomique.
  */
 export async function removeColumnAndCloseGap(
+  userId: string,
   id: string,
   position: number,
 ): Promise<void> {
   await db.transaction(async (tx) => {
-    await tx.delete(columns).where(eq(columns.id, id));
+    await tx
+      .delete(columns)
+      .where(and(eq(columns.id, id), eq(columns.userId, userId)));
 
     await tx
       .update(columns)
       .set({ position: sql`${columns.position} - 1` })
-      .where(gt(columns.position, position));
+      .where(and(eq(columns.userId, userId), gt(columns.position, position)));
   });
 }
