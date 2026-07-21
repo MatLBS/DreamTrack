@@ -1,4 +1,5 @@
 import type { Application, Column } from "@/db/schema";
+import { findAcceptedColumn } from "@/lib/kanban/terminal-columns";
 
 export interface ApplicationStats {
   total: number;
@@ -36,8 +37,7 @@ export function aggregateStats(
   const terminalColumns = [...columns]
     .sort((a, b) => a.position - b.position)
     .slice(-2);
-  const acceptedColumn =
-    terminalColumns.find((column) => !column.isLostStage) ?? terminalColumns[0];
+  const acceptedColumn = findAcceptedColumn(columns) ?? terminalColumns[0];
 
   const noReplyColumnIds = new Set(
     columns
