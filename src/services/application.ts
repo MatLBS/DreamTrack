@@ -23,6 +23,7 @@ import {
 import { getColumnById, listColumns } from "@/queries/column";
 import { deleteApplicationIcon } from "@/lib/uploads/application-icon";
 
+import { ensureDefaultColumns } from "./column";
 import { parseInput, ServiceError } from "./errors";
 
 export interface BoardColumn extends Column {
@@ -30,10 +31,14 @@ export interface BoardColumn extends Column {
 }
 
 /** Colonnes ordonnées avec leurs cartes ordonnées — agrégat pour le Kanban. */
-export async function getBoard(): Promise<BoardColumn[]> {
+export async function getBoard(userId: string): Promise<BoardColumn[]> {
+  // Filet pour les comptes créés avant le hook de seed à l'inscription — no-op
+  // dès qu'une colonne existe déjà pour cet utilisateur.
+  await ensureDefaultColumns(userId);
+
   const [columns, applications] = await Promise.all([
-    listColumns(),
-    listApplications(),
+    listColumns(userId),
+    listApplications(userId),
   ]);
 
   return columns.map((column) => ({
@@ -49,13 +54,14 @@ export async function getBoard(): Promise<BoardColumn[]> {
  * d'entrée (1re colonne) — et écrit la transition de création.
  */
 export async function createApplication(
+  userId: string,
   input: CreateApplicationInput,
 ): Promise<Application> {
   const { columnId, ...values } = parseInput(CreateApplicationSchema, input);
 
   let targetColumnId = columnId;
   if (targetColumnId) {
-    const column = await getColumnById(targetColumnId);
+    const column = await getColumnById(userId, targetColumnId);
     if (!column) {
       throw new ServiceError(
         "COLUMN_NOT_FOUND",
@@ -63,17 +69,18 @@ export async function createApplication(
       );
     }
   } else {
-    const [entry] = await listColumns();
+    const [entry] = await listColumns(userId);
     if (!entry) {
       throw new ServiceError("NO_COLUMNS", "No columns exist yet");
     }
     targetColumnId = entry.id;
   }
 
-  const maxPosition = await getMaxPositionInColumn(targetColumnId);
+  const maxPosition = await getMaxPositionInColumn(userId, targetColumnId);
   const position = (maxPosition ?? -1) + 1;
 
   return insertApplicationWithTransition({
+    userId,
     ...values,
     columnId: targetColumnId,
     position,
@@ -82,11 +89,12 @@ export async function createApplication(
 
 /** Édite les champs de la carte (company/role/url/notes) — pas de transition. */
 export async function updateApplicationDetails(
+  userId: string,
   id: string,
   input: UpdateApplicationInput,
 ): Promise<Application> {
   const patch = parseInput(UpdateApplicationSchema, input);
-  const application = await getApplicationById(id);
+  const application = await getApplicationById(userId, id);
   if (!application) {
     throw new ServiceError(
       "APPLICATION_NOT_FOUND",
@@ -94,7 +102,7 @@ export async function updateApplicationDetails(
     );
   }
 
-  const updated = await updateApplication(id, patch);
+  const updated = await updateApplication(userId, id, patch);
   if (!updated) {
     throw new ServiceError(
       "APPLICATION_NOT_FOUND",
@@ -114,12 +122,13 @@ export async function updateApplicationDetails(
 
 /** Déplace une carte (autre colonne ou réordonnancement intra-colonne). */
 export async function moveApplication(
+  userId: string,
   id: string,
   input: MoveApplicationInput,
 ): Promise<Application> {
   const { toColumnId, toIndex } = parseInput(MoveApplicationSchema, input);
 
-  const application = await getApplicationById(id);
+  const application = await getApplicationById(userId, id);
   if (!application) {
     throw new ServiceError(
       "APPLICATION_NOT_FOUND",
@@ -127,7 +136,7 @@ export async function moveApplication(
     );
   }
 
-  const targetColumn = await getColumnById(toColumnId);
+  const targetColumn = await getColumnById(userId, toColumnId);
   if (!targetColumn) {
     throw new ServiceError(
       "COLUMN_NOT_FOUND",
@@ -135,12 +144,13 @@ export async function moveApplication(
     );
   }
 
-  const targetSize = await countApplicationsInColumn(toColumnId);
+  const targetSize = await countApplicationsInColumn(userId, toColumnId);
   const maxIndex =
     application.columnId === toColumnId ? targetSize - 1 : targetSize;
   const clampedIndex = Math.max(0, Math.min(toIndex, maxIndex));
 
   return moveApplicationQuery({
+    userId,
     applicationId: id,
     fromColumnId: application.columnId,
     toColumnId,
@@ -151,12 +161,13 @@ export async function moveApplication(
 
 /** Bascule le statut prioritaire (étoile) d'une carte — pas de transition. */
 export async function setApplicationFavorite(
+  userId: string,
   id: string,
   input: SetApplicationFavoriteInput,
 ): Promise<Application> {
   const { isFavorite } = parseInput(SetApplicationFavoriteSchema, input);
 
-  const updated = await updateApplication(id, { isFavorite });
+  const updated = await updateApplication(userId, id, { isFavorite });
   if (!updated) {
     throw new ServiceError(
       "APPLICATION_NOT_FOUND",
@@ -167,17 +178,22 @@ export async function setApplicationFavorite(
 }
 
 /** Statistiques agrégées (candidatures, taux de réponse, en attente, offres). */
-export async function getApplicationStats(): Promise<ApplicationStats> {
+export async function getApplicationStats(
+  userId: string,
+): Promise<ApplicationStats> {
   const [columns, applications] = await Promise.all([
-    listColumns(),
-    listApplications(),
+    listColumns(userId),
+    listApplications(userId),
   ]);
 
   return aggregateStats(columns, applications);
 }
 
-export async function deleteApplication(id: string): Promise<void> {
-  const application = await getApplicationById(id);
+export async function deleteApplication(
+  userId: string,
+  id: string,
+): Promise<void> {
+  const application = await getApplicationById(userId, id);
   if (!application) {
     throw new ServiceError(
       "APPLICATION_NOT_FOUND",
@@ -186,6 +202,7 @@ export async function deleteApplication(id: string): Promise<void> {
   }
 
   await removeApplicationAndCloseGap(
+    userId,
     id,
     application.columnId,
     application.position,

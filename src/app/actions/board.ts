@@ -1,6 +1,7 @@
 "use server";
 
 import type { SankeyData } from "@/lib/sankey/aggregate";
+import { requireAuth } from "@/lib/auth-guard";
 import { getBoard, type BoardColumn } from "@/services/application";
 import { getSankeyData } from "@/services/sankey";
 
@@ -10,9 +11,11 @@ import { getSankeyData } from "@/services/sankey";
  * via Server Action).
  */
 export async function getBoardAction(): Promise<BoardColumn[]> {
-  return getBoard();
+  const session = await requireAuth();
+  return getBoard(session.user.id);
 }
 
 export async function getSankeyAction(): Promise<SankeyData> {
-  return getSankeyData();
+  const session = await requireAuth();
+  return getSankeyData(session.user.id);
 }

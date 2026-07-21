@@ -299,8 +299,15 @@
           "notNull": true,
           "autoincrement": false
         },
-        "encrypted_key": {
-          "name": "encrypted_key",
+        "provider": {
+          "name": "provider",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "api_key": {
+          "name": "api_key",
           "type": "text",
           "primaryKey": false,
           "notNull": true,

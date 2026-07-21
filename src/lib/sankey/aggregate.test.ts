@@ -12,6 +12,7 @@ function makeColumn(
 ): Column {
   return {
     id,
+    userId: "user-1",
     name,
     position,
     isDefault: true,

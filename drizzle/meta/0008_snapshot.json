@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "d9bfd075-94d2-487c-88f7-5c94674bf017",
-  "prevId": "949e0997-b575-4984-9411-4e921717da1d",
+  "id": "4990d133-b95f-4fb3-8ccd-d7a123a532d0",
+  "prevId": "a3eca5ae-00d5-4bf0-b86a-afde4b138461",
   "tables": {
     "account": {
       "name": "account",
@@ -132,6 +132,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "company": {
           "name": "company",
           "type": "text",
@@ -167,6 +174,14 @@
           "notNull": false,
           "autoincrement": false
         },
+        "is_favorite": {
+          "name": "is_favorite",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
         "column_id": {
           "name": "column_id",
           "type": "text",
@@ -196,8 +211,23 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "applications_user_column_position_idx": {
+          "name": "applications_user_column_position_idx",
+          "columns": ["user_id", "column_id", "position"],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
+        "applications_user_id_user_id_fk": {
+          "name": "applications_user_id_user_id_fk",
+          "tableFrom": "applications",
+          "tableTo": "user",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "applications_column_id_columns_id_fk": {
           "name": "applications_column_id_columns_id_fk",
           "tableFrom": "applications",
@@ -219,6 +249,13 @@
           "name": "id",
           "type": "text",
           "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
@@ -268,8 +305,24 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
-      "foreignKeys": {},
+      "indexes": {
+        "columns_user_position_idx": {
+          "name": "columns_user_position_idx",
+          "columns": ["user_id", "position"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "columns_user_id_user_id_fk": {
+          "name": "columns_user_id_user_id_fk",
+          "tableFrom": "columns",
+          "tableTo": "user",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}

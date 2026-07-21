@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import type { Application } from "@/db/schema";
+import { requireAuth } from "@/lib/auth-guard";
 import { saveApplicationIcon } from "@/lib/uploads/application-icon";
 import type {
   MoveApplicationInput,
@@ -53,9 +54,10 @@ export async function createApplicationAction(
   formData: FormData,
 ): Promise<ActionResult<Application>> {
   const result = await runAction(async () => {
+    const session = await requireAuth();
     const iconPatch = await resolveIconPatch(formData);
     const columnId = optionalStringField(formData, "columnId");
-    return createApplication({
+    return createApplication(session.user.id, {
       company: requiredStringField(formData, "company"),
       role: requiredStringField(formData, "role"),
       url: optionalStringField(formData, "url"),
@@ -73,8 +75,9 @@ export async function updateApplicationAction(
   formData: FormData,
 ): Promise<ActionResult<Application>> {
   const result = await runAction(async () => {
+    const session = await requireAuth();
     const iconPatch = await resolveIconPatch(formData);
-    return updateApplicationDetails(id, {
+    return updateApplicationDetails(session.user.id, id, {
       company: requiredStringField(formData, "company"),
       role: requiredStringField(formData, "role"),
       url: optionalStringField(formData, "url"),
@@ -90,7 +93,10 @@ export async function moveApplicationAction(
   id: string,
   input: MoveApplicationInput,
 ): Promise<ActionResult<Application>> {
-  const result = await runAction(() => moveApplication(id, input));
+  const result = await runAction(async () => {
+    const session = await requireAuth();
+    return moveApplication(session.user.id, id, input);
+  });
   if (result.ok) revalidatePath("/");
   return result;
 }
@@ -99,7 +105,10 @@ export async function setApplicationFavoriteAction(
   id: string,
   input: SetApplicationFavoriteInput,
 ): Promise<ActionResult<Application>> {
-  const result = await runAction(() => setApplicationFavorite(id, input));
+  const result = await runAction(async () => {
+    const session = await requireAuth();
+    return setApplicationFavorite(session.user.id, id, input);
+  });
   if (result.ok) revalidatePath("/");
   return result;
 }
@@ -107,7 +116,10 @@ export async function setApplicationFavoriteAction(
 export async function deleteApplicationAction(
   id: string,
 ): Promise<ActionResult<void>> {
-  const result = await runAction(() => deleteApplication(id));
+  const result = await runAction(async () => {
+    const session = await requireAuth();
+    return deleteApplication(session.user.id, id);
+  });
   if (result.ok) revalidatePath("/");
   return result;
 }

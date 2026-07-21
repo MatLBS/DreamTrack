@@ -12,6 +12,7 @@ function makeColumn(
 ): Column {
   return {
     id,
+    userId: "user-1",
     name: id,
     position,
     isDefault: true,
@@ -24,6 +25,7 @@ function makeColumn(
 function makeApplication(id: string, columnId: string): Application {
   return {
     id,
+    userId: "user-1",
     company: "Acme",
     role: "Engineer",
     url: null,

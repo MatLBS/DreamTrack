@@ -8,40 +8,51 @@ import {
   type NewApplication,
 } from "@/db/schema";
 
-/** Toutes les cartes, triées par position (le service les regroupe par colonne). */
-export async function listApplications(): Promise<Application[]> {
-  return db.select().from(applications).orderBy(asc(applications.position));
+/** Toutes les cartes d'un utilisateur, triées par position (le service les regroupe par colonne). */
+export async function listApplications(userId: string): Promise<Application[]> {
+  return db
+    .select()
+    .from(applications)
+    .where(eq(applications.userId, userId))
+    .orderBy(asc(applications.position));
 }
 
 export async function getApplicationById(
+  userId: string,
   id: string,
 ): Promise<Application | undefined> {
   const [application] = await db
     .select()
     .from(applications)
-    .where(eq(applications.id, id));
+    .where(and(eq(applications.id, id), eq(applications.userId, userId)));
   return application;
 }
 
 /** Plus grande position dans une colonne (`null` si vide) — pour ajouter en fin de colonne. */
 export async function getMaxPositionInColumn(
+  userId: string,
   columnId: string,
 ): Promise<number | null> {
   const [row] = await db
     .select({ max: sql<number | null>`max(${applications.position})` })
     .from(applications)
-    .where(eq(applications.columnId, columnId));
+    .where(
+      and(eq(applications.userId, userId), eq(applications.columnId, columnId)),
+    );
   return row?.max ?? null;
 }
 
 /** Nombre de cartes dans une colonne — utilisé par le guard de suppression de colonne. */
 export async function countApplicationsInColumn(
+  userId: string,
   columnId: string,
 ): Promise<number> {
   const [row] = await db
     .select({ count: sql<number>`count(*)` })
     .from(applications)
-    .where(eq(applications.columnId, columnId));
+    .where(
+      and(eq(applications.userId, userId), eq(applications.columnId, columnId)),
+    );
   return row?.count ?? 0;
 }
 
@@ -53,22 +64,24 @@ export type ApplicationPatch = Partial<
 >;
 
 export async function updateApplication(
+  userId: string,
   id: string,
   patch: ApplicationPatch,
 ): Promise<Application | undefined> {
   const [application] = await db
     .update(applications)
     .set(patch)
-    .where(eq(applications.id, id))
+    .where(and(eq(applications.id, id), eq(applications.userId, userId)))
     .returning();
   return application;
 }
 
 /**
- * Crée une carte et écrit l'événement de création (`fromColumnId = null`)
- * dans le même mouvement. Atomique.
+ * Crée une carte pour cet utilisateur et écrit l'événement de création
+ * (`fromColumnId = null`) dans le même mouvement. Atomique.
  */
 export async function insertApplicationWithTransition({
+  userId,
   company,
   role,
   url,
@@ -77,6 +90,7 @@ export async function insertApplicationWithTransition({
   columnId,
   position,
 }: {
+  userId: string;
   company: string;
   role: string;
   url?: string | null;
@@ -88,7 +102,16 @@ export async function insertApplicationWithTransition({
   return db.transaction(async (tx) => {
     const [application] = await tx
       .insert(applications)
-      .values({ company, role, url, notes, iconUrl, columnId, position })
+      .values({
+        userId,
+        company,
+        role,
+        url,
+        notes,
+        iconUrl,
+        columnId,
+        position,
+      })
       .returning();
 
     await tx.insert(transitions).values({
@@ -102,18 +125,20 @@ export async function insertApplicationWithTransition({
 }
 
 /**
- * Déplace une carte : referme le trou dans l'ancienne colonne, ouvre le slot
- * dans la nouvelle (ou décale la plage intra-colonne en cas de réordonnancement),
- * met à jour la carte, et écrit la transition uniquement si la colonne change.
- * Atomique.
+ * Déplace une carte de cet utilisateur : referme le trou dans l'ancienne
+ * colonne, ouvre le slot dans la nouvelle (ou décale la plage intra-colonne
+ * en cas de réordonnancement), met à jour la carte, et écrit la transition
+ * uniquement si la colonne change. Atomique.
  */
 export async function moveApplication({
+  userId,
   applicationId,
   fromColumnId,
   toColumnId,
   fromPosition,
   toPosition,
 }: {
+  userId: string;
   applicationId: string;
   fromColumnId: string;
   toColumnId: string;
@@ -128,6 +153,7 @@ export async function moveApplication({
           .set({ position: sql`${applications.position} - 1` })
           .where(
             and(
+              eq(applications.userId, userId),
               eq(applications.columnId, fromColumnId),
               gt(applications.position, fromPosition),
               lte(applications.position, toPosition),
@@ -139,6 +165,7 @@ export async function moveApplication({
           .set({ position: sql`${applications.position} + 1` })
           .where(
             and(
+              eq(applications.userId, userId),
               eq(applications.columnId, fromColumnId),
               gte(applications.position, toPosition),
               lt(applications.position, fromPosition),
@@ -151,6 +178,7 @@ export async function moveApplication({
         .set({ position: sql`${applications.position} - 1` })
         .where(
           and(
+            eq(applications.userId, userId),
             eq(applications.columnId, fromColumnId),
             gt(applications.position, fromPosition),
           ),
@@ -161,6 +189,7 @@ export async function moveApplication({
         .set({ position: sql`${applications.position} + 1` })
         .where(
           and(
+            eq(applications.userId, userId),
             eq(applications.columnId, toColumnId),
             gte(applications.position, toPosition),
           ),
@@ -170,7 +199,12 @@ export async function moveApplication({
     const [application] = await tx
       .update(applications)
       .set({ columnId: toColumnId, position: toPosition })
-      .where(eq(applications.id, applicationId))
+      .where(
+        and(
+          eq(applications.id, applicationId),
+          eq(applications.userId, userId),
+        ),
+      )
       .returning();
 
     if (fromColumnId !== toColumnId) {
@@ -186,22 +220,26 @@ export async function moveApplication({
 }
 
 /**
- * Supprime une carte (le cascade supprime ses transitions) et referme le trou
- * dans sa colonne. Atomique.
+ * Supprime une carte de cet utilisateur (le cascade supprime ses transitions)
+ * et referme le trou dans sa colonne. Atomique.
  */
 export async function removeApplicationAndCloseGap(
+  userId: string,
   id: string,
   columnId: string,
   position: number,
 ): Promise<void> {
   await db.transaction(async (tx) => {
-    await tx.delete(applications).where(eq(applications.id, id));
+    await tx
+      .delete(applications)
+      .where(and(eq(applications.id, id), eq(applications.userId, userId)));
 
     await tx
       .update(applications)
       .set({ position: sql`${applications.position} - 1` })
       .where(
         and(
+          eq(applications.userId, userId),
           eq(applications.columnId, columnId),
           gt(applications.position, position),
         ),
