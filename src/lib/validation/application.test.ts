@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { CreateApplicationSchema } from "./application";
+import {
+  CreateApplicationSchema,
+  SetApplicationFavoriteSchema,
+} from "./application";
 
 describe("CreateApplicationSchema iconUrl", () => {
   it("accepts a well-formed uploaded icon path", () => {
@@ -50,5 +53,23 @@ describe("CreateApplicationSchema iconUrl", () => {
       iconUrl: "/uploads/icons/11111111-1111-1111-1111-111111111111.exe",
     });
     expect(result.success).toBe(false);
+  });
+});
+
+describe("SetApplicationFavoriteSchema", () => {
+  it("accepts a boolean isFavorite", () => {
+    expect(
+      SetApplicationFavoriteSchema.safeParse({ isFavorite: true }).success,
+    ).toBe(true);
+    expect(
+      SetApplicationFavoriteSchema.safeParse({ isFavorite: false }).success,
+    ).toBe(true);
+  });
+
+  it("rejects a missing or non-boolean isFavorite", () => {
+    expect(SetApplicationFavoriteSchema.safeParse({}).success).toBe(false);
+    expect(
+      SetApplicationFavoriteSchema.safeParse({ isFavorite: "yes" }).success,
+    ).toBe(false);
   });
 });

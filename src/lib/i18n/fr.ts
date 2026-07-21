@@ -31,6 +31,8 @@ export const fr = {
     cardActionsAria: "Actions",
     editCard: "Modifier",
     deleteCard: "Supprimer",
+    markFavoriteAria: "Marquer comme prioritaire",
+    unmarkFavoriteAria: "Retirer la priorité",
     toasts: {
       applicationDeleted: "Candidature supprimée",
       applicationCreated: "Candidature ajoutée",
@@ -40,6 +42,7 @@ export const fr = {
       columnDeleted: "Colonne supprimée",
       moveFailed: "Impossible de déplacer la carte",
       deleteFailed: "Impossible de supprimer la candidature",
+      favoriteFailed: "Impossible de mettre à jour la priorité",
       categoryFailed: "Impossible de changer la catégorie",
       deleteColumnFailed: "Impossible de supprimer la colonne",
       downloadSankeyFailed: "Impossible de télécharger le diagramme",

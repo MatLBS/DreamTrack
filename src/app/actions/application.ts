@@ -4,11 +4,15 @@ import { revalidatePath } from "next/cache";
 
 import type { Application } from "@/db/schema";
 import { saveApplicationIcon } from "@/lib/uploads/application-icon";
-import type { MoveApplicationInput } from "@/lib/validation/application";
+import type {
+  MoveApplicationInput,
+  SetApplicationFavoriteInput,
+} from "@/lib/validation/application";
 import {
   createApplication,
   deleteApplication,
   moveApplication,
+  setApplicationFavorite,
   updateApplicationDetails,
 } from "@/services/application";
 
@@ -87,6 +91,15 @@ export async function moveApplicationAction(
   input: MoveApplicationInput,
 ): Promise<ActionResult<Application>> {
   const result = await runAction(() => moveApplication(id, input));
+  if (result.ok) revalidatePath("/");
+  return result;
+}
+
+export async function setApplicationFavoriteAction(
+  id: string,
+  input: SetApplicationFavoriteInput,
+): Promise<ActionResult<Application>> {
+  const result = await runAction(() => setApplicationFavorite(id, input));
   if (result.ok) revalidatePath("/");
   return result;
 }

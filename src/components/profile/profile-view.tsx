@@ -89,7 +89,9 @@ export function ProfileView({
               <div className="text-[19px] font-extrabold text-foreground">
                 {user.name}
               </div>
-              <div className="text-[13.5px] text-muted-foreground">{user.email}</div>
+              <div className="text-[13.5px] text-muted-foreground">
+                {user.email}
+              </div>
             </div>
             <ModifyButton onClick={() => setAccountEditOpen(true)} />
           </SpotlightCard>

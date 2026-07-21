@@ -32,6 +32,8 @@ export const en: Dictionary = {
     cardActionsAria: "Actions",
     editCard: "Edit",
     deleteCard: "Delete",
+    markFavoriteAria: "Mark as priority",
+    unmarkFavoriteAria: "Remove priority",
     toasts: {
       applicationDeleted: "Application deleted",
       applicationCreated: "Application added",
@@ -41,6 +43,7 @@ export const en: Dictionary = {
       columnDeleted: "Column deleted",
       moveFailed: "Could not move the card",
       deleteFailed: "Could not delete the application",
+      favoriteFailed: "Could not update priority",
       categoryFailed: "Could not change the category",
       deleteColumnFailed: "Could not delete the column",
       downloadSankeyFailed: "Could not download the diagram",

@@ -1,7 +1,9 @@
 import { buildExportableSvgMarkup, sankeyExportFilename } from "./export-svg";
 
 function readCssVar(name: string): string {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue(name)
+    .trim();
 }
 
 function triggerDownload(blob: Blob, filename: string): void {

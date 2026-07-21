@@ -29,6 +29,7 @@ function makeApplication(id: string, columnId: string): Application {
     url: null,
     notes: null,
     iconUrl: null,
+    isFavorite: false,
     columnId,
     position: 0,
     createdAt: new Date(),

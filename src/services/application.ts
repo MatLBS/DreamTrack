@@ -2,9 +2,11 @@ import type { Application, Column } from "@/db/schema";
 import {
   CreateApplicationSchema,
   MoveApplicationSchema,
+  SetApplicationFavoriteSchema,
   UpdateApplicationSchema,
   type CreateApplicationInput,
   type MoveApplicationInput,
+  type SetApplicationFavoriteInput,
   type UpdateApplicationInput,
 } from "@/lib/validation/application";
 import { aggregateStats, type ApplicationStats } from "@/lib/stats/aggregate";
@@ -145,6 +147,23 @@ export async function moveApplication(
     fromPosition: application.position,
     toPosition: clampedIndex,
   });
+}
+
+/** Bascule le statut prioritaire (étoile) d'une carte — pas de transition. */
+export async function setApplicationFavorite(
+  id: string,
+  input: SetApplicationFavoriteInput,
+): Promise<Application> {
+  const { isFavorite } = parseInput(SetApplicationFavoriteSchema, input);
+
+  const updated = await updateApplication(id, { isFavorite });
+  if (!updated) {
+    throw new ServiceError(
+      "APPLICATION_NOT_FOUND",
+      `Application ${id} not found`,
+    );
+  }
+  return updated;
 }
 
 /** Statistiques agrégées (candidatures, taux de réponse, en attente, offres). */

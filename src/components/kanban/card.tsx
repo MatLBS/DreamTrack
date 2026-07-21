@@ -3,7 +3,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { formatDistanceToNow } from "date-fns";
-import { ExternalLink, MoreVertical } from "lucide-react";
+import { ExternalLink, MoreVertical, Star } from "lucide-react";
 
 import type { Application } from "@/db/schema";
 import { CompanyLogo } from "@/components/brand/company-logo";
@@ -22,6 +22,7 @@ interface ApplicationCardProps {
   application: Application;
   onEdit?: () => void;
   onDelete?: () => void;
+  onToggleFavorite?: () => void;
   isOverlay?: boolean;
 }
 
@@ -29,6 +30,7 @@ export function ApplicationCard({
   application,
   onEdit,
   onDelete,
+  onToggleFavorite,
   isOverlay,
 }: ApplicationCardProps) {
   const t = useT();
@@ -72,22 +74,44 @@ export function ApplicationCard({
             </p>
           </div>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={<Button variant="ghost" size="icon-sm" />}
+        <div className="flex shrink-0 items-center">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onClick={onToggleFavorite}
           >
-            <MoreVertical className="size-4 text-muted-foreground/60" />
-            <span className="sr-only">{t.kanban.cardActionsAria}</span>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={onEdit}>
-              {t.kanban.editCard}
-            </DropdownMenuItem>
-            <DropdownMenuItem variant="destructive" onClick={onDelete}>
-              {t.kanban.deleteCard}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <Star
+              className={cn(
+                "size-4",
+                application.isFavorite
+                  ? "fill-amber-400 text-amber-400"
+                  : "text-muted-foreground/60",
+              )}
+            />
+            <span className="sr-only">
+              {application.isFavorite
+                ? t.kanban.unmarkFavoriteAria
+                : t.kanban.markFavoriteAria}
+            </span>
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={<Button variant="ghost" size="icon-sm" />}
+            >
+              <MoreVertical className="size-4 text-muted-foreground/60" />
+              <span className="sr-only">{t.kanban.cardActionsAria}</span>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={onEdit}>
+                {t.kanban.editCard}
+              </DropdownMenuItem>
+              <DropdownMenuItem variant="destructive" onClick={onDelete}>
+                {t.kanban.deleteCard}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {application.url && (

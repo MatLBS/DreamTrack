@@ -8,6 +8,7 @@ import {
   deleteApplication,
   getBoard,
   moveApplication,
+  setApplicationFavorite,
   updateApplicationDetails,
 } from "@/services/application";
 import { getColumns } from "@/services/column";
@@ -192,6 +193,38 @@ describe("application service", () => {
       expect(updated.iconUrl).toBe(
         "/uploads/icons/11111111-1111-1111-1111-111111111111.png",
       );
+    });
+  });
+
+  describe("setApplicationFavorite", () => {
+    it("marks a card as favorite and can unmark it, without writing a transition", async () => {
+      const application = await createApplication({
+        company: "Acme",
+        role: "SWE",
+      });
+      expect(application.isFavorite).toBe(false);
+
+      const marked = await setApplicationFavorite(application.id, {
+        isFavorite: true,
+      });
+      expect(marked.isFavorite).toBe(true);
+
+      const unmarked = await setApplicationFavorite(application.id, {
+        isFavorite: false,
+      });
+      expect(unmarked.isFavorite).toBe(false);
+
+      const rows = await db
+        .select()
+        .from(transitions)
+        .where(eq(transitions.applicationId, application.id));
+      expect(rows).toHaveLength(1); // only the creation transition
+    });
+
+    it("throws NOT_FOUND for an unknown application", async () => {
+      await expect(
+        setApplicationFavorite("unknown-id", { isFavorite: true }),
+      ).rejects.toThrow(ServiceError);
     });
   });
 

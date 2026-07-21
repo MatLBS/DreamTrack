@@ -46,7 +46,10 @@ export async function countApplicationsInColumn(
 }
 
 export type ApplicationPatch = Partial<
-  Pick<NewApplication, "company" | "role" | "url" | "notes" | "iconUrl">
+  Pick<
+    NewApplication,
+    "company" | "role" | "url" | "notes" | "iconUrl" | "isFavorite"
+  >
 >;
 
 export async function updateApplication(

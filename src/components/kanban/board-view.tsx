@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import {
   deleteApplicationAction,
   moveApplicationAction,
+  setApplicationFavoriteAction,
 } from "@/app/actions/application";
 import { getBoardAction, getSankeyAction } from "@/app/actions/board";
 import {
@@ -138,6 +139,43 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["board"] });
       queryClient.invalidateQueries({ queryKey: ["sankey"] });
+    },
+  });
+
+  const favoriteMutation = useMutation({
+    mutationFn: ({
+      applicationId,
+      isFavorite,
+    }: {
+      applicationId: string;
+      isFavorite: boolean;
+    }) => setApplicationFavoriteAction(applicationId, { isFavorite }),
+    onMutate: async ({ applicationId, isFavorite }) => {
+      await queryClient.cancelQueries({ queryKey: ["board"] });
+      const previousBoard = queryClient.getQueryData<BoardColumn[]>(["board"]);
+      queryClient.setQueryData<BoardColumn[]>(["board"], (old) =>
+        old?.map((column) => ({
+          ...column,
+          applications: column.applications.map((application) =>
+            application.id === applicationId
+              ? { ...application, isFavorite }
+              : application,
+          ),
+        })),
+      );
+      return { previousBoard };
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.previousBoard) {
+        queryClient.setQueryData(["board"], context.previousBoard);
+      }
+      toast.error(t.kanban.toasts.favoriteFailed);
+    },
+    onSuccess: (result) => {
+      if (!result.ok) toast.error(actionErrorMessage(t, result.code));
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["board"] });
     },
   });
 
@@ -284,6 +322,9 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
               onDeleteApplication={(applicationId) =>
                 deleteMutation.mutate(applicationId)
               }
+              onToggleApplicationFavorite={(applicationId, isFavorite) =>
+                favoriteMutation.mutate({ applicationId, isFavorite })
+              }
               onToggleCategory={() =>
                 toggleCategoryMutation.mutate({
                   columnId: column.id,
@@ -322,9 +363,7 @@ export function BoardView({ initialBoard, initialSankey }: BoardViewProps) {
 
       <div className="min-w-0 rounded-2xl border bg-card p-6">
         <div className="flex items-center justify-between gap-2">
-          <h2 className="text-[15px] font-extrabold">
-            {t.kanban.sankeyTitle}
-          </h2>
+          <h2 className="text-[15px] font-extrabold">{t.kanban.sankeyTitle}</h2>
           <Button
             variant="ghost"
             size="icon"

@@ -25,6 +25,7 @@ interface KanbanColumnProps {
   column: BoardColumn;
   onEditApplication: (applicationId: string) => void;
   onDeleteApplication: (applicationId: string) => void;
+  onToggleApplicationFavorite: (applicationId: string, next: boolean) => void;
   onToggleCategory: () => void;
   onAddApplication: (columnId: string) => void;
   onRenameColumn: (column: Column) => void;
@@ -35,6 +36,7 @@ export function KanbanColumn({
   column,
   onEditApplication,
   onDeleteApplication,
+  onToggleApplicationFavorite,
   onToggleCategory,
   onAddApplication,
   onRenameColumn,
@@ -128,6 +130,12 @@ export function KanbanColumn({
               application={application}
               onEdit={() => onEditApplication(application.id)}
               onDelete={() => onDeleteApplication(application.id)}
+              onToggleFavorite={() =>
+                onToggleApplicationFavorite(
+                  application.id,
+                  !application.isFavorite,
+                )
+              }
             />
           ))}
         </SortableContext>

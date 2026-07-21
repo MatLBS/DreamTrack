@@ -43,6 +43,10 @@ export const applications = sqliteTable("applications", {
   notes: text("notes"),
   /** Chemin public d'une icône uploadée (`/uploads/icons/<uuid>.<ext>`). Prime sur le logo auto-détecté. */
   iconUrl: text("icon_url"),
+  /** Candidature marquée comme prioritaire (étoile) par l'utilisateur. */
+  isFavorite: integer("is_favorite", { mode: "boolean" })
+    .notNull()
+    .default(false),
   columnId: text("column_id")
     .notNull()
     .references(() => columns.id, { onDelete: "restrict" }),
