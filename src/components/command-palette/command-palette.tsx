@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { Kanban, Monitor, Moon, Plus, Radar, Sun, User } from "lucide-react";
 import { useTheme } from "next-themes";
 
+import { getBoardAction } from "@/app/actions/board";
+import { CompanyLogo } from "@/components/brand/company-logo";
 import { ApplicationDialog } from "@/components/kanban/application-dialog";
 import {
   CommandDialog,
@@ -28,6 +31,23 @@ export function CommandPalette() {
   const { setTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+
+  const boardQuery = useQuery({
+    queryKey: ["board"],
+    queryFn: getBoardAction,
+    enabled: open,
+  });
+
+  const searchableApplications = useMemo(
+    () =>
+      (boardQuery.data ?? []).flatMap((column) =>
+        column.applications.map((application) => ({
+          ...application,
+          columnName: column.name,
+        })),
+      ),
+    [boardQuery.data],
+  );
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -112,6 +132,32 @@ export function CommandPalette() {
               </CommandItem>
             ))}
           </CommandGroup>
+
+          {searchableApplications.length > 0 && (
+            <CommandGroup heading={t.commandPalette.groupApplications}>
+              {searchableApplications.map((application) => (
+                <CommandItem
+                  key={application.id}
+                  value={`${application.company} ${application.role}`}
+                  onSelect={() => goTo("/application-track")}
+                >
+                  <CompanyLogo
+                    company={application.company}
+                    iconUrl={application.iconUrl}
+                  />
+                  <span className="flex flex-1 items-baseline gap-1.5 truncate">
+                    <span className="font-medium">{application.company}</span>
+                    <span className="truncate text-muted-foreground">
+                      {application.role}
+                    </span>
+                  </span>
+                  <span className="shrink-0 text-xs text-muted-foreground">
+                    {application.columnName}
+                  </span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
         </CommandList>
       </CommandDialog>
 
