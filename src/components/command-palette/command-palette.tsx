@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Kanban, Monitor, Moon, Radar, Sun, User } from "lucide-react";
+import { Kanban, Monitor, Moon, Plus, Radar, Sun, User } from "lucide-react";
 import { useTheme } from "next-themes";
 
+import { ApplicationDialog } from "@/components/kanban/application-dialog";
 import {
   CommandDialog,
   CommandEmpty,
@@ -26,6 +27,7 @@ export function CommandPalette() {
   const router = useRouter();
   const { setTheme } = useTheme();
   const [open, setOpen] = useState(false);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -50,50 +52,73 @@ export function CommandPalette() {
   };
 
   return (
-    <CommandDialog
-      open={open}
-      onOpenChange={setOpen}
-      title={t.commandPalette.placeholder}
-      description={t.commandPalette.placeholder}
-    >
-      <CommandInput placeholder={t.commandPalette.placeholder} />
-      <CommandList>
-        <CommandEmpty>{t.commandPalette.empty}</CommandEmpty>
+    <>
+      <CommandDialog
+        open={open}
+        onOpenChange={setOpen}
+        title={t.commandPalette.placeholder}
+        description={t.commandPalette.placeholder}
+      >
+        <CommandInput placeholder={t.commandPalette.placeholder} />
+        <CommandList>
+          <CommandEmpty>{t.commandPalette.empty}</CommandEmpty>
 
-        <CommandGroup heading={t.commandPalette.groupNavigation}>
-          <CommandItem
-            value={t.nav.applicationTrack}
-            onSelect={() => goTo("/application-track")}
-          >
-            <Kanban />
-            {t.nav.applicationTrack}
-          </CommandItem>
-          <CommandItem value={t.nav.aiWatch} onSelect={() => goTo("/ai-watch")}>
-            <Radar />
-            {t.nav.aiWatch}
-          </CommandItem>
-          <CommandItem value={t.nav.profile} onSelect={() => goTo("/profile")}>
-            <User />
-            {t.nav.profile}
-          </CommandItem>
-        </CommandGroup>
-
-        <CommandGroup heading={t.commandPalette.groupTheme}>
-          {THEME_OPTIONS.map(({ value, icon: Icon }) => (
+          <CommandGroup heading={t.commandPalette.groupActions}>
             <CommandItem
-              key={value}
-              value={themeLabels[value]}
+              value={t.commandPalette.createApplication}
               onSelect={() => {
-                setTheme(value);
                 setOpen(false);
+                setCreateDialogOpen(true);
               }}
             >
-              <Icon />
-              {themeLabels[value]}
+              <Plus />
+              {t.commandPalette.createApplication}
             </CommandItem>
-          ))}
-        </CommandGroup>
-      </CommandList>
-    </CommandDialog>
+          </CommandGroup>
+
+          <CommandGroup heading={t.commandPalette.groupNavigation}>
+            <CommandItem
+              value={t.nav.applicationTrack}
+              onSelect={() => goTo("/application-track")}
+            >
+              <Kanban />
+              {t.nav.applicationTrack}
+            </CommandItem>
+            <CommandItem
+              value={t.nav.aiWatch}
+              onSelect={() => goTo("/ai-watch")}
+            >
+              <Radar />
+              {t.nav.aiWatch}
+            </CommandItem>
+            <CommandItem value={t.nav.profile} onSelect={() => goTo("/profile")}>
+              <User />
+              {t.nav.profile}
+            </CommandItem>
+          </CommandGroup>
+
+          <CommandGroup heading={t.commandPalette.groupTheme}>
+            {THEME_OPTIONS.map(({ value, icon: Icon }) => (
+              <CommandItem
+                key={value}
+                value={themeLabels[value]}
+                onSelect={() => {
+                  setTheme(value);
+                  setOpen(false);
+                }}
+              >
+                <Icon />
+                {themeLabels[value]}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
+
+      <ApplicationDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+      />
+    </>
   );
 }
