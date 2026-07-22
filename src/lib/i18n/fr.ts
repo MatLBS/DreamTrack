@@ -210,6 +210,15 @@ export const fr = {
     title: "Veille IA",
     comingSoon: "Bientôt disponible",
   },
+  commandPalette: {
+    placeholder: "Rechercher une action ou une candidature…",
+    empty: "Aucun résultat.",
+    groupActions: "Actions",
+    groupNavigation: "Navigation",
+    groupTheme: "Thème",
+    groupApplications: "Candidatures",
+    createApplication: "Ajouter une candidature",
+  },
   errors: {
     VALIDATION: "Données invalides",
     UNAUTHORIZED: "Session expirée, reconnecte-toi",

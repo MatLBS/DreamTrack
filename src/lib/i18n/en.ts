@@ -211,6 +211,15 @@ export const en: Dictionary = {
     title: "AI Watch",
     comingSoon: "Coming soon",
   },
+  commandPalette: {
+    placeholder: "Search an action or an application…",
+    empty: "No results found.",
+    groupActions: "Actions",
+    groupNavigation: "Navigation",
+    groupTheme: "Theme",
+    groupApplications: "Applications",
+    createApplication: "Add an application",
+  },
   errors: {
     VALIDATION: "Invalid data",
     UNAUTHORIZED: "Session expired, please sign in again",
