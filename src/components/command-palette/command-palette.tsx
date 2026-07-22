@@ -10,6 +10,7 @@ import { getBoardAction } from "@/app/actions/board";
 import { CompanyLogo } from "@/components/brand/company-logo";
 import { ApplicationDialog } from "@/components/kanban/application-dialog";
 import {
+  Command,
   CommandDialog,
   CommandEmpty,
   CommandGroup,
@@ -79,86 +80,91 @@ export function CommandPalette() {
         title={t.commandPalette.placeholder}
         description={t.commandPalette.placeholder}
       >
-        <CommandInput placeholder={t.commandPalette.placeholder} />
-        <CommandList>
-          <CommandEmpty>{t.commandPalette.empty}</CommandEmpty>
+        <Command>
+          <CommandInput placeholder={t.commandPalette.placeholder} />
+          <CommandList>
+            <CommandEmpty>{t.commandPalette.empty}</CommandEmpty>
 
-          <CommandGroup heading={t.commandPalette.groupActions}>
-            <CommandItem
-              value={t.commandPalette.createApplication}
-              onSelect={() => {
-                setOpen(false);
-                setCreateDialogOpen(true);
-              }}
-            >
-              <Plus />
-              {t.commandPalette.createApplication}
-            </CommandItem>
-          </CommandGroup>
-
-          <CommandGroup heading={t.commandPalette.groupNavigation}>
-            <CommandItem
-              value={t.nav.applicationTrack}
-              onSelect={() => goTo("/application-track")}
-            >
-              <Kanban />
-              {t.nav.applicationTrack}
-            </CommandItem>
-            <CommandItem
-              value={t.nav.aiWatch}
-              onSelect={() => goTo("/ai-watch")}
-            >
-              <Radar />
-              {t.nav.aiWatch}
-            </CommandItem>
-            <CommandItem value={t.nav.profile} onSelect={() => goTo("/profile")}>
-              <User />
-              {t.nav.profile}
-            </CommandItem>
-          </CommandGroup>
-
-          <CommandGroup heading={t.commandPalette.groupTheme}>
-            {THEME_OPTIONS.map(({ value, icon: Icon }) => (
+            <CommandGroup heading={t.commandPalette.groupActions}>
               <CommandItem
-                key={value}
-                value={themeLabels[value]}
+                value={t.commandPalette.createApplication}
                 onSelect={() => {
-                  setTheme(value);
                   setOpen(false);
+                  setCreateDialogOpen(true);
                 }}
               >
-                <Icon />
-                {themeLabels[value]}
+                <Plus />
+                {t.commandPalette.createApplication}
               </CommandItem>
-            ))}
-          </CommandGroup>
+            </CommandGroup>
 
-          {searchableApplications.length > 0 && (
-            <CommandGroup heading={t.commandPalette.groupApplications}>
-              {searchableApplications.map((application) => (
+            <CommandGroup heading={t.commandPalette.groupNavigation}>
+              <CommandItem
+                value={t.nav.applicationTrack}
+                onSelect={() => goTo("/application-track")}
+              >
+                <Kanban />
+                {t.nav.applicationTrack}
+              </CommandItem>
+              <CommandItem
+                value={t.nav.aiWatch}
+                onSelect={() => goTo("/ai-watch")}
+              >
+                <Radar />
+                {t.nav.aiWatch}
+              </CommandItem>
+              <CommandItem
+                value={t.nav.profile}
+                onSelect={() => goTo("/profile")}
+              >
+                <User />
+                {t.nav.profile}
+              </CommandItem>
+            </CommandGroup>
+
+            <CommandGroup heading={t.commandPalette.groupTheme}>
+              {THEME_OPTIONS.map(({ value, icon: Icon }) => (
                 <CommandItem
-                  key={application.id}
-                  value={`${application.company} ${application.role}`}
-                  onSelect={() => goTo("/application-track")}
+                  key={value}
+                  value={themeLabels[value]}
+                  onSelect={() => {
+                    setTheme(value);
+                    setOpen(false);
+                  }}
                 >
-                  <CompanyLogo
-                    company={application.company}
-                    iconUrl={application.iconUrl}
-                  />
-                  <span className="flex flex-1 items-baseline gap-1.5 truncate">
-                    <span className="font-medium">{application.company}</span>
-                    <span className="truncate text-muted-foreground">
-                      {application.role}
-                    </span>
-                  </span>
-                  <span className="shrink-0 text-xs text-muted-foreground">
-                    {application.columnName}
-                  </span>
+                  <Icon />
+                  {themeLabels[value]}
                 </CommandItem>
               ))}
             </CommandGroup>
-          )}
-        </CommandList>
+
+            {searchableApplications.length > 0 && (
+              <CommandGroup heading={t.commandPalette.groupApplications}>
+                {searchableApplications.map((application) => (
+                  <CommandItem
+                    key={application.id}
+                    value={`${application.company} ${application.role}`}
+                    onSelect={() => goTo("/application-track")}
+                  >
+                    <CompanyLogo
+                      company={application.company}
+                      iconUrl={application.iconUrl}
+                    />
+                    <span className="flex flex-1 items-baseline gap-1.5 truncate">
+                      <span className="font-medium">{application.company}</span>
+                      <span className="truncate text-muted-foreground">
+                        {application.role}
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-xs text-muted-foreground">
+                      {application.columnName}
+                    </span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
+          </CommandList>
+        </Command>
       </CommandDialog>
 
       <ApplicationDialog
