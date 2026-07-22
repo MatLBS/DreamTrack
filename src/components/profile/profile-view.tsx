@@ -10,6 +10,7 @@ import type { LlmCredentialSummary } from "@/services/llm-credential";
 
 import { AccountSettingsCard } from "./account-settings-card";
 import { EditAccountDialog } from "./edit-account-dialog";
+import { EditCandidateProfileDialog } from "./edit-candidate-profile-dialog";
 import { EditProfileDialog } from "./edit-profile-dialog";
 import { LlmKeyCard } from "./llm-key-card";
 import { ModifyButton } from "./modify-button";
@@ -62,6 +63,7 @@ export function ProfileView({
 }: ProfileViewProps) {
   const t = useT();
   const [editOpen, setEditOpen] = useState(false);
+  const [candidateEditOpen, setCandidateEditOpen] = useState(false);
   const [accountEditOpen, setAccountEditOpen] = useState(false);
 
   return (
@@ -121,7 +123,45 @@ export function ProfileView({
             </div>
           </SpotlightCard>
 
-          <LlmKeyCard initialSummary={llmKeySummary} />
+          <SpotlightCard>
+            <div className="mb-[18px] flex items-center justify-between">
+              <div className="text-[12px] font-bold tracking-[0.4px] text-muted-foreground">
+                {t.profile.candidateSection}
+              </div>
+              <ModifyButton onClick={() => setCandidateEditOpen(true)} />
+            </div>
+            <div className="flex flex-col gap-3">
+              <div className={preferenceListRowClassName}>
+                <span>{t.profile.skillsLabel}</span>
+                <TagList items={profile?.skills} />
+              </div>
+              <div className={preferenceListRowClassName}>
+                <span>{t.profile.industriesLabel}</span>
+                <TagList items={profile?.industries} />
+              </div>
+              <div className={preferenceListRowClassName}>
+                <span>{t.profile.workplacePreferenceLabel}</span>
+                <TagList
+                  items={profile?.workplacePreference?.map(
+                    (value) =>
+                      t.profile.workplaceOptions[
+                        value as keyof typeof t.profile.workplaceOptions
+                      ] ?? value,
+                  )}
+                />
+              </div>
+              <div className={preferenceRowClassName}>
+                <span>{t.profile.yearsOfExperienceLabel}</span>
+                <span className="font-bold">
+                  {profile?.yearsOfExperience != null
+                    ? t.profile.yearsOfExperienceValue(
+                        profile.yearsOfExperience,
+                      )
+                    : t.profile.notProvided}
+                </span>
+              </div>
+            </div>
+          </SpotlightCard>
         </div>
 
         <div className="w-[480px] flex-none space-y-[38px]">
@@ -165,6 +205,8 @@ export function ProfileView({
             </div>
           </SpotlightCard>
 
+          <LlmKeyCard initialSummary={llmKeySummary} />
+
           <AccountSettingsCard />
         </div>
       </div>
@@ -172,6 +214,11 @@ export function ProfileView({
       <EditProfileDialog
         open={editOpen}
         onOpenChange={setEditOpen}
+        profile={profile}
+      />
+      <EditCandidateProfileDialog
+        open={candidateEditOpen}
+        onOpenChange={setCandidateEditOpen}
         profile={profile}
       />
       <EditAccountDialog

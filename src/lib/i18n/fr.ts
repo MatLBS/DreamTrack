@@ -117,6 +117,17 @@ export const fr = {
     salaryRange: (min: number, max: number) => `${min}–${max}k€`,
     salaryFromMin: (min: number) => `À partir de ${min}k€`,
     salaryUpToMax: (max: number) => `Jusqu'à ${max}k€`,
+    candidateSection: "PROFIL CANDIDAT",
+    skillsLabel: "Compétences",
+    industriesLabel: "Secteurs",
+    workplacePreferenceLabel: "Mode de travail",
+    yearsOfExperienceLabel: "Années d'expérience",
+    yearsOfExperienceValue: (n: number) => `${n} an${n > 1 ? "s" : ""}`,
+    workplaceOptions: {
+      Remote: "Télétravail",
+      Hybrid: "Hybride",
+      Onsite: "Sur site",
+    },
     dialogs: {
       editProfile: {
         title: "Préférences de recherche",
@@ -128,6 +139,16 @@ export const fr = {
         salaryMaxLabel: "Salaire max (k€)",
         invalid: "Invalide",
         minGreaterThanMax: "Min > max",
+        save: "Enregistrer",
+      },
+      editCandidateProfile: {
+        title: "Profil candidat",
+        skillsLabel: "Compétences",
+        skillsPlaceholder: "Ex. Python, puis Entrée",
+        industriesLabel: "Secteurs",
+        industriesPlaceholder: "Ex. Fintech, puis Entrée",
+        workplacePreferenceLabel: "Mode de travail",
+        yearsOfExperienceLabel: "Années d'expérience",
         save: "Enregistrer",
       },
       editAccount: {
@@ -169,6 +190,7 @@ export const fr = {
     },
     toasts: {
       preferencesUpdated: "Préférences mises à jour",
+      candidateProfileUpdated: "Profil candidat mis à jour",
       accountUpdated: "Compte mis à jour",
       llmKeySaved: "Clé API enregistrée",
       llmKeyRemoved: "Clé API supprimée",
@@ -208,7 +230,42 @@ export const fr = {
   },
   aiWatch: {
     title: "Veille IA",
-    comingSoon: "Bientôt disponible",
+    settings: {
+      title: "Paramètres de la veille",
+      enableLabel: "Activer la veille",
+      intervalLabel: "Récurrence",
+      intervalOptions: {
+        360: "Toutes les 6 heures",
+        1440: "Quotidienne",
+        10080: "Hebdomadaire",
+      },
+      save: "Enregistrer",
+      runNow: "Lancer maintenant",
+      running: "Analyse en cours…",
+      lastRun: {
+        never: "Aucune analyse pour l'instant",
+        success: (date: string) => `Dernière analyse réussie — ${date}`,
+        error: (date: string) => `Dernière analyse échouée — ${date}`,
+      },
+    },
+    runStatus: {
+      started: "Démarrage de la veille…",
+      finished: (n: number) => `${n} offre${n > 1 ? "s" : ""} trouvée${n > 1 ? "s" : ""}`,
+      error: "La veille a échoué",
+    },
+    offers: {
+      empty: "Aucune offre pour l'instant — active la veille pour commencer.",
+      scoreLabel: (score: number) => `${score}% de correspondance`,
+      viewOffer: "Voir l'offre",
+      dismiss: "Écarter",
+    },
+    toasts: {
+      configSaved: "Paramètres de la veille enregistrés",
+      runTriggered: "Analyse lancée",
+      runFailed: "Impossible de lancer l'analyse",
+      offerDismissed: "Offre écartée",
+      dismissFailed: "Impossible d'écarter l'offre",
+    },
   },
   errors: {
     VALIDATION: "Données invalides",
@@ -233,6 +290,10 @@ export const fr = {
     PAGE_BLOCKED: "Cette page est protégée ou n'a renvoyé aucun contenu",
     NOT_A_JOB_POSTING: "Aucune offre d'emploi détectée sur cette page",
     LLM_REQUEST_FAILED: "L'extraction a échoué, réessaie",
+    AI_WATCH_CONFIG_NOT_FOUND: "Configuration de veille introuvable",
+    AI_WATCH_RUN_IN_PROGRESS: "Une analyse est déjà en cours",
+    AI_WATCH_PIPELINE_FAILED: "La veille a échoué, réessaie plus tard",
+    OFFER_NOT_FOUND: "Offre introuvable",
     UNKNOWN: "Une erreur inattendue est survenue",
   },
 } satisfies Record<string, unknown>;

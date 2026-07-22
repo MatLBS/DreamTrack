@@ -118,6 +118,17 @@ export const en: Dictionary = {
     salaryRange: (min: number, max: number) => `${min}–${max}k€`,
     salaryFromMin: (min: number) => `From ${min}k€`,
     salaryUpToMax: (max: number) => `Up to ${max}k€`,
+    candidateSection: "CANDIDATE PROFILE",
+    skillsLabel: "Skills",
+    industriesLabel: "Industries",
+    workplacePreferenceLabel: "Workplace preference",
+    yearsOfExperienceLabel: "Years of experience",
+    yearsOfExperienceValue: (n: number) => `${n} year${n === 1 ? "" : "s"}`,
+    workplaceOptions: {
+      Remote: "Remote",
+      Hybrid: "Hybrid",
+      Onsite: "Onsite",
+    },
     dialogs: {
       editProfile: {
         title: "Search preferences",
@@ -129,6 +140,16 @@ export const en: Dictionary = {
         salaryMaxLabel: "Max salary (k€)",
         invalid: "Invalid",
         minGreaterThanMax: "Min > max",
+        save: "Save",
+      },
+      editCandidateProfile: {
+        title: "Candidate profile",
+        skillsLabel: "Skills",
+        skillsPlaceholder: "e.g. Python, then Enter",
+        industriesLabel: "Industries",
+        industriesPlaceholder: "e.g. Fintech, then Enter",
+        workplacePreferenceLabel: "Workplace preference",
+        yearsOfExperienceLabel: "Years of experience",
         save: "Save",
       },
       editAccount: {
@@ -170,6 +191,7 @@ export const en: Dictionary = {
     },
     toasts: {
       preferencesUpdated: "Preferences updated",
+      candidateProfileUpdated: "Candidate profile updated",
       accountUpdated: "Account updated",
       llmKeySaved: "API key saved",
       llmKeyRemoved: "API key removed",
@@ -209,7 +231,42 @@ export const en: Dictionary = {
   },
   aiWatch: {
     title: "AI Watch",
-    comingSoon: "Coming soon",
+    settings: {
+      title: "Watch settings",
+      enableLabel: "Enable watch",
+      intervalLabel: "Recurrence",
+      intervalOptions: {
+        360: "Every 6 hours",
+        1440: "Daily",
+        10080: "Weekly",
+      },
+      save: "Save",
+      runNow: "Run now",
+      running: "Running…",
+      lastRun: {
+        never: "No run yet",
+        success: (date: string) => `Last run succeeded — ${date}`,
+        error: (date: string) => `Last run failed — ${date}`,
+      },
+    },
+    runStatus: {
+      started: "Starting the watch…",
+      finished: (n: number) => `${n} offer${n > 1 ? "s" : ""} found`,
+      error: "The watch failed",
+    },
+    offers: {
+      empty: "No offers yet — enable the watch to get started.",
+      scoreLabel: (score: number) => `${score}% match`,
+      viewOffer: "View offer",
+      dismiss: "Dismiss",
+    },
+    toasts: {
+      configSaved: "Watch settings saved",
+      runTriggered: "Run started",
+      runFailed: "Could not start the run",
+      offerDismissed: "Offer dismissed",
+      dismissFailed: "Could not dismiss the offer",
+    },
   },
   errors: {
     VALIDATION: "Invalid data",
@@ -231,6 +288,10 @@ export const en: Dictionary = {
     PAGE_BLOCKED: "That page is protected or returned no content",
     NOT_A_JOB_POSTING: "No job posting was found on that page",
     LLM_REQUEST_FAILED: "Extraction failed, try again",
+    AI_WATCH_CONFIG_NOT_FOUND: "Watch configuration not found",
+    AI_WATCH_RUN_IN_PROGRESS: "A run is already in progress",
+    AI_WATCH_PIPELINE_FAILED: "The watch failed, try again later",
+    OFFER_NOT_FOUND: "Offer not found",
     UNKNOWN: "An unexpected error occurred",
   },
 };

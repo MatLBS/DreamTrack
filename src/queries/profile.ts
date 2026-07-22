@@ -14,7 +14,17 @@ export async function getProfileByUserId(
 }
 
 export type ProfilePatch = Partial<
-  Pick<NewProfile, "desiredPositions" | "locations" | "salaryMin" | "salaryMax">
+  Pick<
+    NewProfile,
+    | "desiredPositions"
+    | "locations"
+    | "salaryMin"
+    | "salaryMax"
+    | "skills"
+    | "industries"
+    | "workplacePreference"
+    | "yearsOfExperience"
+  >
 >;
 
 /** Crée ou met à jour la ligne de préférences de l'utilisateur (une ligne par user). */
