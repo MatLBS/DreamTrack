@@ -1,9 +1,12 @@
-"""CLI de test manuel : fetch réel hiring.cafe (aucune clé API) et affichage/persistance.
+"""CLI et serveur AI Watch.
+
+Commandes :
+    fetch  : Test manuel — fetch réel hiring.cafe et affichage/persistance
+    serve  : Démarre le serveur FastAPI HTTP
 
 Usage :
-    uv run python -m ai_watch --positions "Data Scientist" --locations "Paris" --max-per-position 15
-    uv run python -m ai_watch --positions "Data Scientist" --positions "ML Engineer" --locations "Paris" --output output/offers.json
-    uv run python -m ai_watch --positions "Data Scientist" --locations "Paris" --capture tests/fixtures/hiringcafe_hits.json
+    uv run python -m ai_watch fetch --positions "Data Scientist" --locations "Paris"
+    uv run python -m ai_watch serve --host 127.0.0.1 --port 8000 --reload
 """
 
 from __future__ import annotations
@@ -16,38 +19,75 @@ from pathlib import Path
 from .fetch import HiringCafeClient, build_search_state, fetch_offers
 
 
-def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
+def create_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    # Commande fetch (CLI existant)
+    fetch_parser = subparsers.add_parser("fetch", help="Fetch et affiche des offres (test CLI)")
+    fetch_parser.add_argument(
         "--positions",
         action="append",
         required=True,
         help="Poste recherché (répétable — un fetch par poste)",
     )
-    parser.add_argument(
+    fetch_parser.add_argument(
         "--locations",
         action="append",
         default=[],
         help="Ville (répétable — couvertes en un seul fetch par poste)",
     )
-    parser.add_argument("--max-per-position", type=int, default=15)
-    parser.add_argument(
+    fetch_parser.add_argument("--max-per-position", type=int, default=15)
+    fetch_parser.add_argument(
         "--output",
         type=Path,
         default=None,
         help="Écrit les offres normalisées et dédoublonnées (JSON) dans ce fichier",
     )
-    parser.add_argument(
+    fetch_parser.add_argument(
         "--capture",
         type=Path,
         default=None,
         help="Écrit les ssrHits bruts (1er poste, toutes les villes) dans ce fichier — fixture de test",
     )
+
+    # Commande serve (nouveau)
+    serve_parser = subparsers.add_parser("serve", help="Démarre le serveur FastAPI")
+    serve_parser.add_argument("--host", default="127.0.0.1", help="Host à écouter")
+    serve_parser.add_argument("--port", type=int, default=8000, help="Port à écouter")
+    serve_parser.add_argument("--reload", action="store_true", help="Auto-reload en dev")
+
+    return parser
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = create_parser()
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
+
+    if args.command == "serve":
+        _run_server(args)
+    elif args.command == "fetch":
+        _run_fetch(args)
+
+
+def _run_server(args: argparse.Namespace) -> None:
+    """Démarre le serveur FastAPI."""
+    import uvicorn
+
+    uvicorn.run(
+        "ai_watch.server:app",
+        host=args.host,
+        port=args.port,
+        reload=args.reload,
+    )
+
+
+def _run_fetch(args: argparse.Namespace) -> None:
+    """Commande fetch (CLI de test)."""
     client = HiringCafeClient()
 
     if args.capture:
