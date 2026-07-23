@@ -23,6 +23,9 @@ export const en: Dictionary = {
     sankeyTitle: "Application flow",
     downloadSankeyAria: "Download the diagram as PNG",
     offerLink: "Job offer",
+    daysInStepAria: (days: number) =>
+      `${days} day${days === 1 ? "" : "s"} in this stage`,
+    daysInStepLessThanOne: "Less than 1 day in this stage",
     entryColumnAria: "Entry stage — fixed category",
     lostStageAria: "Marked as lost — click to mark as advancing",
     advancingStageAria: "Marked as advancing — click to mark as lost",

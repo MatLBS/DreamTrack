@@ -3,7 +3,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { formatDistanceToNow } from "date-fns";
-import { ExternalLink, MoreVertical, Star } from "lucide-react";
+import { Clock, ExternalLink, MoreVertical, Star } from "lucide-react";
 
 import type { Application } from "@/db/schema";
 import { CompanyLogo } from "@/components/brand/company-logo";
@@ -18,8 +18,16 @@ import { cn } from "@/lib/utils";
 import { dateLocales } from "@/lib/i18n/date-locales";
 import { useLocale, useT } from "@/lib/i18n/locale-provider";
 
+function formatDaysInStep(days: number, locale: "fr" | "en"): string {
+  if (days < 1) {
+    return locale === "fr" ? "< 1 j" : "< 1 d";
+  }
+  const suffix = locale === "fr" ? "j" : "d";
+  return `${days} ${suffix}`;
+}
+
 interface ApplicationCardProps {
-  application: Application;
+  application: Application & { daysInCurrentStep: number };
   onEdit?: () => void;
   onDelete?: () => void;
   onToggleFavorite?: () => void;
@@ -125,6 +133,18 @@ export function ApplicationCard({
           {t.kanban.offerLink}
         </a>
       )}
+
+      <div
+        className="mt-2 inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground"
+        aria-label={
+          application.daysInCurrentStep < 1
+            ? t.kanban.daysInStepLessThanOne
+            : t.kanban.daysInStepAria(application.daysInCurrentStep)
+        }
+      >
+        <Clock className="size-3" />
+        {formatDaysInStep(application.daysInCurrentStep, locale)}
+      </div>
 
       <p className="mt-2 text-[10.5px] text-muted-foreground">
         {formatDistanceToNow(application.createdAt, {
