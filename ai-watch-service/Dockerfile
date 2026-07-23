@@ -5,14 +5,12 @@ WORKDIR /app
 # Install uv (fast Python package installer)
 RUN pip install --no-cache-dir uv
 
-# Copy dependency files
-COPY pyproject.toml uv.lock ./
-
-# Install dependencies
-RUN uv sync --frozen --no-dev
-
-# Copy source code
+# Copy dependency files AND source code (needed for local package build)
+COPY pyproject.toml uv.lock README.md ./
 COPY src ./src
+
+# Install dependencies (will build local package)
+RUN uv sync --frozen --no-dev
 
 # Expose port
 EXPOSE 8008
