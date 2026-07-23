@@ -64,6 +64,13 @@
       "when": 1784646203248,
       "tag": "0008_multi_user_scoping",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1784648400324,
+      "tag": "0009_added_ai_tables_and_improved_profiles_table",
+      "breakpoints": true
     }
   ]
 }

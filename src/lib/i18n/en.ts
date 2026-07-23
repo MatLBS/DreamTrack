@@ -133,9 +133,9 @@ export const en: Dictionary = {
       editProfile: {
         title: "Search preferences",
         positionsLabel: "Target role(s)",
-        positionsPlaceholder: "e.g. Data Engineer, then Enter",
+        positionsPlaceholder: "e.g. Data Engineer",
         locationsLabel: "Location(s)",
-        locationsPlaceholder: "e.g. Paris, then Enter",
+        locationsPlaceholder: "e.g. Paris",
         salaryMinLabel: "Min salary (k€)",
         salaryMaxLabel: "Max salary (k€)",
         invalid: "Invalid",
@@ -145,9 +145,9 @@ export const en: Dictionary = {
       editCandidateProfile: {
         title: "Candidate profile",
         skillsLabel: "Skills",
-        skillsPlaceholder: "e.g. Python, then Enter",
+        skillsPlaceholder: "e.g. Python",
         industriesLabel: "Industries",
-        industriesPlaceholder: "e.g. Fintech, then Enter",
+        industriesPlaceholder: "e.g. Fintech",
         workplacePreferenceLabel: "Workplace preference",
         yearsOfExperienceLabel: "Years of experience",
         save: "Save",
@@ -259,6 +259,8 @@ export const en: Dictionary = {
       scoreLabel: (score: number) => `${score}% match`,
       viewOffer: "View offer",
       dismiss: "Dismiss",
+      expand: "View details",
+      addToDashboard: "Add to Dashboard",
     },
     toasts: {
       configSaved: "Watch settings saved",
@@ -266,6 +268,8 @@ export const en: Dictionary = {
       runFailed: "Could not start the run",
       offerDismissed: "Offer dismissed",
       dismissFailed: "Could not dismiss the offer",
+      addedToDashboard: "Application added to dashboard",
+      addToDashboardFailed: "Could not add to dashboard",
     },
   },
   errors: {

@@ -132,9 +132,9 @@ export const fr = {
       editProfile: {
         title: "Préférences de recherche",
         positionsLabel: "Poste(s) visé(s)",
-        positionsPlaceholder: "Ex. Data Engineer, puis Entrée",
+        positionsPlaceholder: "Ex. Data Engineer",
         locationsLabel: "Localisation(s)",
-        locationsPlaceholder: "Ex. Paris, puis Entrée",
+        locationsPlaceholder: "Ex. Paris",
         salaryMinLabel: "Salaire min (k€)",
         salaryMaxLabel: "Salaire max (k€)",
         invalid: "Invalide",
@@ -144,9 +144,9 @@ export const fr = {
       editCandidateProfile: {
         title: "Profil candidat",
         skillsLabel: "Compétences",
-        skillsPlaceholder: "Ex. Python, puis Entrée",
+        skillsPlaceholder: "Ex. Python",
         industriesLabel: "Secteurs",
-        industriesPlaceholder: "Ex. Fintech, puis Entrée",
+        industriesPlaceholder: "Ex. Fintech",
         workplacePreferenceLabel: "Mode de travail",
         yearsOfExperienceLabel: "Années d'expérience",
         save: "Enregistrer",
@@ -258,6 +258,8 @@ export const fr = {
       scoreLabel: (score: number) => `${score}% de correspondance`,
       viewOffer: "Voir l'offre",
       dismiss: "Écarter",
+      expand: "Voir les détails",
+      addToDashboard: "Ajouter au tableau de bord",
     },
     toasts: {
       configSaved: "Paramètres de la veille enregistrés",
@@ -265,6 +267,8 @@ export const fr = {
       runFailed: "Impossible de lancer l'analyse",
       offerDismissed: "Offre écartée",
       dismissFailed: "Impossible d'écarter l'offre",
+      addedToDashboard: "Candidature ajoutée au tableau de bord",
+      addToDashboardFailed: "Impossible d'ajouter au tableau de bord",
     },
   },
   errors: {

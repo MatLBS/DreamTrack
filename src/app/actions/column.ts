@@ -12,6 +12,7 @@ import type {
 import {
   createColumn,
   deleteColumn,
+  getColumns,
   renameColumn,
   setColumnCategory,
 } from "@/services/column";
@@ -62,4 +63,9 @@ export async function deleteColumnAction(
   });
   if (result.ok) revalidatePath("/");
   return result;
+}
+
+export async function listColumnsAction(): Promise<Column[]> {
+  const session = await requireAuth();
+  return getColumns(session.user.id);
 }

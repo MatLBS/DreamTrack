@@ -1,5 +1,11 @@
 import { relations, sql } from "drizzle-orm";
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  index,
+  integer,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core";
 
 /**
  * Colonnes du Kanban = nœuds du Sankey.
@@ -133,6 +139,20 @@ export const profiles = sqliteTable("profiles", {
     .default(sql`'[]'`),
   salaryMin: integer("salary_min"),
   salaryMax: integer("salary_max"),
+  skills: text("skills", { mode: "json" })
+    .$type<string[]>()
+    .notNull()
+    .default(sql`'[]'`),
+  industries: text("industries", { mode: "json" })
+    .$type<string[]>()
+    .notNull()
+    .default(sql`'[]'`),
+  workplacePreference: text("workplace_preference", { mode: "json" })
+    .$type<string[]>()
+    .notNull()
+    .default(sql`'[]'`),
+  /** Non renseigné = inconnu (pas de valeur par défaut à 0, sous peine de fausser le matching). */
+  yearsOfExperience: integer("years_of_experience"),
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .notNull()
     .$defaultFn(() => new Date()),
@@ -173,6 +193,99 @@ export const llmCredentials = sqliteTable("llm_credentials", {
 
 export type LlmCredential = typeof llmCredentials.$inferSelect;
 export type NewLlmCredential = typeof llmCredentials.$inferInsert;
+
+/**
+ * Configuration de la veille IA — une ligne par utilisateur (upsert). `lastRunAt`
+ * est la base du calcul "est-ce dû ?" (comparé à `intervalMinutes`), géré par le
+ * scheduler, jamais saisi par l'utilisateur.
+ */
+export const aiWatchConfigs = sqliteTable("ai_watch_configs", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .unique()
+    .references(() => user.id, { onDelete: "cascade" }),
+  enabled: integer("enabled", { mode: "boolean" }).notNull().default(false),
+  intervalMinutes: integer("interval_minutes").notNull().default(1440),
+  lastRunAt: integer("last_run_at", { mode: "timestamp_ms" }),
+  lastRunStatus: text("last_run_status", { enum: ["success", "error"] }),
+  lastRunError: text("last_run_error"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date())
+    .$onUpdate(() => new Date()),
+});
+
+export type AiWatchConfig = typeof aiWatchConfigs.$inferSelect;
+export type NewAiWatchConfig = typeof aiWatchConfigs.$inferInsert;
+
+/**
+ * Offre découverte par la veille et notée contre le profil de l'utilisateur.
+ * `(userId, source, externalId)` est unique : c'est ce qui déduplique entre deux
+ * runs (insertion en `onConflictDoNothing`), une même offre revue plus tard ne
+ * crée pas de doublon.
+ */
+export const jobOffers = sqliteTable(
+  "job_offers",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    source: text("source").notNull(),
+    externalId: text("external_id").notNull(),
+    company: text("company").notNull(),
+    role: text("role").notNull(),
+    url: text("url").notNull(),
+    location: text("location"),
+    description: text("description"),
+    matchScore: integer("match_score").notNull(),
+    matchReason: text("match_reason"),
+    /**
+     * Champs structurés hiring.cafe (via Apify), utilisés par le scoring et l'affichage.
+     * Tous nullables : `null` = inconnu (la normalisation Python convertit déjà les
+     * valeurs par défaut de l'acteur — `0`, `""`, `[]` — en `null` avant insertion).
+     */
+    seniorityLevel: text("seniority_level"),
+    technicalTools: text("technical_tools", { mode: "json" }).$type<string[]>(),
+    minYearsExperience: integer("min_years_experience"),
+    salaryMin: integer("salary_min"),
+    salaryMax: integer("salary_max"),
+    salaryCurrency: text("salary_currency"),
+    workplaceType: text("workplace_type"),
+    companyIndustries: text("company_industries", { mode: "json" }).$type<
+      string[]
+    >(),
+    dismissed: integer("dismissed", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    discoveredAt: integer("discovered_at", { mode: "timestamp_ms" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    uniqueIndex("job_offers_user_source_external_idx").on(
+      table.userId,
+      table.source,
+      table.externalId,
+    ),
+    index("job_offers_user_dismissed_score_idx").on(
+      table.userId,
+      table.dismissed,
+      table.matchScore,
+    ),
+  ],
+);
+
+export type JobOffer = typeof jobOffers.$inferSelect;
+export type NewJobOffer = typeof jobOffers.$inferInsert;
 
 /**
  * Tables Better Auth (générées via `npx @better-auth/cli generate`).
