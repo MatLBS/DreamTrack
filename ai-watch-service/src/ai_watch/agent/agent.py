@@ -21,9 +21,9 @@ def create_llm(provider: str, api_key: str):
         ValueError: Si provider inconnu
     """
     if provider == "anthropic":
-        return ChatAnthropic(api_key=api_key, model="claude-3-5-sonnet-20241022")
+        return ChatAnthropic(api_key=api_key, model="claude-sonnet-5")
     elif provider == "openai":
-        return ChatOpenAI(api_key=api_key, model="gpt-4o-mini")
+        return ChatOpenAI(api_key=api_key, model="gpt-4o")
     else:
         raise ValueError(f"Unknown provider: {provider}")
 
@@ -32,7 +32,7 @@ def fetch_data(state: JobsAgentState) -> dict:
     offers = fetch_offers(
         desired_positions=state["positions"],
         locations=state["locations"],
-        max_per_position=15,
+        max_per_position=50,
     )
 
     state["job_offers"] = offers
@@ -89,10 +89,10 @@ Job Offer:
 
 Candidate Profile:
 - Skills: {profile.get('skills', [])}
-- Experience: {profile.get('years_of_experience')} years
+- Experience: {profile.get('years_of_experience') or 'Not specified'} years
 - Industries: {profile.get('industries', [])}
 - Workplace preference: {profile.get('workplace_preference', [])}
-- Salary expectation: {profile.get('salary_min')}-{profile.get('salary_max')}
+- Salary expectation: {profile.get('salary_min') or 'N/A'}-{profile.get('salary_max') or 'N/A'}
 
 Provide a match score (0-100) and a clear, concise reason in French explaining why this offer matches or doesn't match the candidate's profile. Focus on key criteria: skills overlap, experience level, salary fit, workplace type, and industry alignment.
 """
@@ -115,9 +115,9 @@ def reduce_scores(state: JobsAgentState) -> dict:
         state: State contenant scored_offers
 
     Returns:
-        Dict avec scored_offers filtrées (score ≥ 50)
+        Dict avec scored_offers filtrées (score ≥ 40)
     """
-    MATCH_THRESHOLD = 50
+    MATCH_THRESHOLD = 40
 
     kept = [
         offer for offer in state["scored_offers"]

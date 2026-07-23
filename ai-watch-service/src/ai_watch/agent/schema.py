@@ -38,7 +38,7 @@ class OfferScore(TypedDict):
 
 class Profile(TypedDict):
     skills: list[str]
-    years_of_experience: int
+    years_of_experience: int | None
     industries: list[str]
     workplace_preference: list[str]
     salary_min: int | None
