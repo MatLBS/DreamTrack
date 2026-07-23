@@ -24,3 +24,31 @@ export async function listTransitions(userId: string): Promise<Transition[]> {
 
   return rows;
 }
+
+/**
+ * Récupère la dernière transition de chaque candidature pour un utilisateur.
+ * Utilisé pour calculer la durée dans l'étape courante.
+ * Retourne une Map pour lookup O(1) dans la couche service.
+ */
+export async function getLastTransitionPerApplication(
+  userId: string,
+): Promise<Map<string, Transition>> {
+  const allTransitions = await listTransitions(userId);
+
+  // Réduire pour garder seulement la dernière transition par applicationId
+  const lastTransitionsMap = new Map<string, Transition>();
+
+  for (const transition of allTransitions) {
+    const existing = lastTransitionsMap.get(transition.applicationId);
+
+    // Garder la transition la plus récente
+    if (
+      !existing ||
+      transition.createdAt.getTime() > existing.createdAt.getTime()
+    ) {
+      lastTransitionsMap.set(transition.applicationId, transition);
+    }
+  }
+
+  return lastTransitionsMap;
+}

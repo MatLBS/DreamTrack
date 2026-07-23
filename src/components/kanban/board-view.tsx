@@ -58,7 +58,7 @@ function applyOptimisticMove(
   board: BoardColumn[],
   { applicationId, toColumnId, toIndex }: MoveVariables,
 ): BoardColumn[] {
-  let moved: Application | undefined;
+  let moved: (Application & { daysInCurrentStep: number }) | undefined;
   const withoutCard = board.map((column) => {
     const found = column.applications.find((a) => a.id === applicationId);
     if (!found) return column;

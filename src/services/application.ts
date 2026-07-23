@@ -1,4 +1,6 @@
-import type { Application, Column } from "@/db/schema";
+import { differenceInDays } from "date-fns";
+
+import type { Application, Column, Transition } from "@/db/schema";
 import {
   CreateApplicationSchema,
   MoveApplicationSchema,
@@ -21,13 +23,18 @@ import {
   updateApplication,
 } from "@/queries/application";
 import { getColumnById, listColumns } from "@/queries/column";
+import { getLastTransitionPerApplication } from "@/queries/transition";
 import { deleteApplicationIcon } from "@/lib/uploads/application-icon";
 
 import { ensureDefaultColumns } from "./column";
 import { parseInput, ServiceError } from "./errors";
 
+interface ApplicationWithDuration extends Application {
+  daysInCurrentStep: number;
+}
+
 export interface BoardColumn extends Column {
-  applications: Application[];
+  applications: ApplicationWithDuration[];
 }
 
 /** Colonnes ordonnées avec leurs cartes ordonnées — agrégat pour le Kanban. */
@@ -36,16 +43,23 @@ export async function getBoard(userId: string): Promise<BoardColumn[]> {
   // dès qu'une colonne existe déjà pour cet utilisateur.
   await ensureDefaultColumns(userId);
 
-  const [columns, applications] = await Promise.all([
+  const [columns, applications, lastTransitions] = await Promise.all([
     listColumns(userId),
     listApplications(userId),
+    getLastTransitionPerApplication(userId),
   ]);
+
+  const now = new Date();
 
   return columns.map((column) => ({
     ...column,
     applications: applications
       .filter((application) => application.columnId === column.id)
-      .sort((a, b) => a.position - b.position),
+      .sort((a, b) => a.position - b.position)
+      .map((app) => ({
+        ...app,
+        daysInCurrentStep: calculateDaysInStep(app, lastTransitions, now),
+      })),
   }));
 }
 
@@ -209,4 +223,23 @@ export async function deleteApplication(
   );
 
   await deleteApplicationIcon(application.iconUrl);
+}
+
+/**
+ * Calcule le nombre de jours depuis que la carte est dans sa colonne actuelle.
+ * Utilise la dernière transition si disponible, sinon la date de création.
+ */
+function calculateDaysInStep(
+  application: Application,
+  transitionsMap: Map<string, Transition>,
+  now: Date,
+): number {
+  const lastTransition = transitionsMap.get(application.id);
+
+  // Fallback : si aucune transition trouvée, utiliser la date de création
+  const referenceDate = lastTransition
+    ? lastTransition.createdAt
+    : application.createdAt;
+
+  return differenceInDays(now, referenceDate);
 }

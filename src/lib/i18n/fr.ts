@@ -21,6 +21,9 @@ export const fr = {
     sankeyTitle: "Flux des candidatures",
     downloadSankeyAria: "Télécharger le diagramme en PNG",
     offerLink: "Offre",
+    daysInStepAria: (days: number) =>
+      `${days} jour${days > 1 ? "s" : ""} dans cette étape`,
+    daysInStepLessThanOne: "Moins d'un jour dans cette étape",
     entryColumnAria: "Étape d'entrée — catégorie fixe",
     lostStageAria: "Marquée comme perdue — cliquer pour repasser en avancement",
     advancingStageAria:
