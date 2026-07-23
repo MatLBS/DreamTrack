@@ -76,7 +76,7 @@ export function OfferDetailModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] max-w-6xl overflow-y-auto">
+      <DialogContent className="max-h-[85vh] sm:max-w-3xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             {offer.role}

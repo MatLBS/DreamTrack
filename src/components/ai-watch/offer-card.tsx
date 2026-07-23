@@ -52,7 +52,7 @@ export function OfferCard({ offer, entryColumnId }: OfferCardProps) {
   const handleMouseEnter = () => {
     hoverTimeoutRef.current = setTimeout(() => {
       setIsModalOpen(true);
-    }, 2000);
+    }, 1000);
   };
 
   const handleMouseLeave = () => {
