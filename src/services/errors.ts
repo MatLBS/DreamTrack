@@ -17,7 +17,11 @@ export type ServiceErrorCode =
   | "PAGE_FETCH_FAILED"
   | "PAGE_BLOCKED"
   | "NOT_A_JOB_POSTING"
-  | "LLM_REQUEST_FAILED";
+  | "LLM_REQUEST_FAILED"
+  | "AI_WATCH_CONFIG_NOT_FOUND"
+  | "AI_WATCH_RUN_IN_PROGRESS"
+  | "AI_WATCH_PIPELINE_FAILED"
+  | "OFFER_NOT_FOUND";
 
 export class ServiceError extends Error {
   constructor(

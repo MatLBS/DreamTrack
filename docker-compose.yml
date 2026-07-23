@@ -6,4 +6,16 @@ services:
     ports:
       - "3000:3000"
     env_file: ./.env
+    environment:
+      - AI_WATCH_PYTHON_SERVICE_URL=http://ai-watch-service:8008
+    depends_on:
+      - ai-watch-service
+    restart: unless-stopped
+
+  ai-watch-service:
+    container_name: ai-watch-service
+    build:
+      context: ./ai-watch-service
+    ports:
+      - "8008:8008"
     restart: unless-stopped

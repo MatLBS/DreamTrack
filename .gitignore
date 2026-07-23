@@ -49,3 +49,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# python (ai-watch-service)
+.venv
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+ai-watch-service/output/
+
+# agent plans and specs
+/docs/* 
