@@ -29,8 +29,45 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Deploy with Docker
+
+The application is containerized and ready for production deployment using Docker Compose.
+
+### Building and Running
+
+```bash
+# Build and start all services
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+### Persistent Storage
+
+User-uploaded content (profile pictures, application icons) is stored in a Docker volume named `dreamtrack-uploads`. This ensures that uploaded files persist across container restarts and deployments.
+
+**Important**: The volume is automatically created when you run `docker-compose up`. If you need to back up user uploads, you can:
+
+```bash
+# Backup the volume
+docker run --rm -v dreamtrack-uploads:/data -v $(pwd):/backup alpine tar czf /backup/uploads-backup.tar.gz -C /data .
+
+# Restore the volume
+docker run --rm -v dreamtrack-uploads:/data -v $(pwd):/backup alpine tar xzf /backup/uploads-backup.tar.gz -C /data
+```
+
+### Environment Variables
+
+Create a `.env` file based on `.env.example` before running the application.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+**Note**: When deploying to Vercel or other serverless platforms, you'll need to configure an external storage service (like AWS S3, Cloudinary, or Vercel Blob) for user uploads, as the filesystem is ephemeral in those environments.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

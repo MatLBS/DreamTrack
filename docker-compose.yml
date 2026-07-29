@@ -8,6 +8,9 @@ services:
     env_file: ./.env
     environment:
       - AI_WATCH_PYTHON_SERVICE_URL=http://ai-watch-service:8008
+    volumes:
+      # Persistent storage for user-uploaded content (avatars, application icons)
+      - dreamtrack-uploads:/app/public/uploads
     depends_on:
       - ai-watch-service
     restart: unless-stopped
@@ -19,3 +22,7 @@ services:
     ports:
       - "8008:8008"
     restart: unless-stopped
+
+volumes:
+  dreamtrack-uploads:
+    driver: local
