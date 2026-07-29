@@ -45,15 +45,18 @@ export async function dismissOfferForUser(
   await dismissOfferQuery(offerId);
 }
 
-/** Déclenchement manuel ("Lancer maintenant") — exige une configuration existante
- * et refuse si un run est déjà en cours pour cet utilisateur. */
+/** Déclenchement manuel ("Lancer maintenant") — crée une configuration avec des
+ * valeurs par défaut conservatives si elle n'existe pas, et refuse si un run
+ * est déjà en cours pour cet utilisateur. */
 export async function triggerRun(userId: string): Promise<void> {
-  const config = await getConfigByUserId(userId);
+  let config = await getConfigByUserId(userId);
   if (!config) {
-    throw new ServiceError(
-      "AI_WATCH_CONFIG_NOT_FOUND",
-      "No watch configuration for this user",
-    );
+    // Auto-créer une config lors du premier run manuel avec des valeurs conservatives.
+    // enabled=false garantit que le scheduler ne s'exécutera pas automatiquement.
+    config = await upsertConfig(userId, {
+      enabled: false,
+      intervalMinutes: 1440,
+    });
   }
 
   try {

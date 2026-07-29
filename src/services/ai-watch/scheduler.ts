@@ -44,10 +44,11 @@ export async function runForUser(userId: string): Promise<void> {
     if (!profile) {
       throw new Error("No profile configured for this user");
     }
-    const { provider, apiKey } = await resolveLlmCredential(userId);
+    const { provider, apiKey, modelScoring } =
+      await resolveLlmCredential(userId);
 
     const offers = await resolvePipeline().run(
-      { userId, profile, provider, apiKey },
+      { userId, profile, provider, apiKey, modelScoring },
       onProgress,
     );
 

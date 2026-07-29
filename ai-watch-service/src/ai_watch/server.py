@@ -43,8 +43,8 @@ async def run_pipeline(request: RunPipelineRequest):
         HTTPException: 500 si erreur pipeline (fetch, LLM, etc.)
     """
     try:
-        # 1. Créer le LLM avec le provider/key de l'utilisateur
-        llm = create_llm(request.provider, request.api_key)
+        # 1. Créer le LLM avec le provider/key/model de l'utilisateur
+        llm = create_llm(request.provider, request.api_key, request.model_scoring)
 
         # 2. Construire l'input state pour LangGraph
         initial_state = {

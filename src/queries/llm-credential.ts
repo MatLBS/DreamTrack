@@ -19,7 +19,7 @@ export async function getLlmCredentialByUserId(
 
 export type LlmCredentialPatch = Pick<
   NewLlmCredential,
-  "provider" | "apiKey" | "keyPreview"
+  "provider" | "apiKey" | "keyPreview" | "modelExtraction" | "modelScoring"
 >;
 
 /** Crée ou remplace la clé LLM de l'utilisateur (une ligne par user). */
