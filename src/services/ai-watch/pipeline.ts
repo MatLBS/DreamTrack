@@ -6,6 +6,7 @@ export interface AiWatchPipelineInput {
   profile: Profile;
   provider: LlmProvider;
   apiKey: string;
+  modelScoring: string | null;
 }
 
 export interface ScoredOffer {
@@ -79,6 +80,7 @@ export class RemoteHttpPipeline implements AiWatchPipeline {
         },
         provider: input.provider,
         apiKey: input.apiKey,
+        modelScoring: input.modelScoring,
       }),
     });
 

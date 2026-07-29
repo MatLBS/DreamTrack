@@ -181,7 +181,7 @@ export const en: Dictionary = {
       emptyState: "No key configured",
       keyPreviewLabel: (providerLabel: string, preview: string) =>
         `${providerLabel} — ${preview}`,
-      providers: { anthropic: "Anthropic", openai: "OpenAI" },
+      providers: { anthropic: "Anthropic", openai: "OpenAI", openrouter: "OpenRouter" },
       remove: "Remove",
       dialog: {
         title: "LLM API key",

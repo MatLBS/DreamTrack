@@ -30,8 +30,9 @@ class RunPipelineRequest(BaseModel):
 
     user_id: str = Field(alias="userId")
     profile: ProfileInput
-    provider: Literal["anthropic", "openai"]
+    provider: Literal["anthropic", "openai", "openrouter"]
     api_key: str = Field(alias="apiKey")
+    model_scoring: str | None = Field(None, alias="modelScoring")
 
 
 class ScoredOfferResponse(BaseModel):

@@ -33,7 +33,8 @@ export async function importJobFromUrl(
 ): Promise<JobImportDraft> {
   const { url } = parseInput(ImportJobFromUrlSchema, input);
 
-  const { provider, apiKey } = await resolveLlmCredential(userId);
+  const { provider, apiKey, modelExtraction } =
+    await resolveLlmCredential(userId);
 
   let html: string;
   try {
@@ -52,7 +53,13 @@ export async function importJobFromUrl(
 
   let draft;
   try {
-    draft = await extractJobPosting({ provider, apiKey, pageText, url });
+    draft = await extractJobPosting({
+      provider,
+      apiKey,
+      modelExtraction,
+      pageText,
+      url,
+    });
   } catch (error) {
     if (isAuthError(error)) {
       throw new ServiceError(

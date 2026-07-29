@@ -179,9 +179,11 @@ export const llmCredentials = sqliteTable("llm_credentials", {
     .notNull()
     .unique()
     .references(() => user.id, { onDelete: "cascade" }),
-  provider: text("provider", { enum: ["anthropic", "openai"] }).notNull(),
+  provider: text("provider", { enum: ["anthropic", "openai", "openrouter"] }).notNull(),
   apiKey: text("api_key").notNull(),
   keyPreview: text("key_preview").notNull(),
+  modelExtraction: text("model_extraction"),
+  modelScoring: text("model_scoring"),
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .notNull()
     .$defaultFn(() => new Date()),

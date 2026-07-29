@@ -180,7 +180,7 @@ export const fr = {
       emptyState: "Aucune clé configurée",
       keyPreviewLabel: (providerLabel: string, preview: string) =>
         `${providerLabel} — ${preview}`,
-      providers: { anthropic: "Anthropic", openai: "OpenAI" },
+      providers: { anthropic: "Anthropic", openai: "OpenAI", openrouter: "OpenRouter" },
       remove: "Supprimer",
       dialog: {
         title: "Clé API LLM",

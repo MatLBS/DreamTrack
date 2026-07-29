@@ -4,15 +4,38 @@ from ai_watch.fetch import fetch_offers
 from ai_watch.agent.schema import JobsAgentState, ScoredOffer, Scoring
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
+from langchain_openrouter import ChatOpenRouter
 from dataclasses import asdict
 
 
-def create_llm(provider: str, api_key: str):
+# Modèles par défaut pour le SCORING (optimisés coût/vitesse)
+DEFAULT_SCORING_MODELS = {
+    "anthropic": "claude-haiku-4-5-20251001",
+    "openai": "gpt-4o-mini",
+    "openrouter": "anthropic/claude-haiku-4.5",
+}
+
+
+def resolve_scoring_model(provider: str, custom_model: str | None) -> str:
+    """Résout le modèle à utiliser pour le scoring.
+
+    Args:
+        provider: "anthropic", "openai", ou "openrouter"
+        custom_model: Modèle custom ou None
+
+    Returns:
+        Nom du modèle à utiliser
+    """
+    return custom_model if custom_model else DEFAULT_SCORING_MODELS[provider]
+
+
+def create_llm(provider: str, api_key: str, custom_model: str | None = None):
     """Initialise le LLM approprié avec la clé fournie.
 
     Args:
-        provider: "anthropic" ou "openai"
+        provider: "anthropic", "openai", ou "openrouter"
         api_key: Clé API de l'utilisateur
+        custom_model: Modèle custom ou None (utilise le défaut du provider)
 
     Returns:
         Instance LLM configurée
@@ -20,10 +43,19 @@ def create_llm(provider: str, api_key: str):
     Raises:
         ValueError: Si provider inconnu
     """
+    model = resolve_scoring_model(provider, custom_model)
+
     if provider == "anthropic":
-        return ChatAnthropic(api_key=api_key, model="claude-sonnet-5")
+        return ChatAnthropic(api_key=api_key, model=model)
     elif provider == "openai":
-        return ChatOpenAI(api_key=api_key, model="gpt-4o")
+        return ChatOpenAI(api_key=api_key, model=model)
+    elif provider == "openrouter":
+        return ChatOpenRouter(
+            api_key=api_key,
+            model=model,
+            site_url="http://localhost:3000",
+            site_name="DreamTrack AI Watch",
+        )
     else:
         raise ValueError(f"Unknown provider: {provider}")
 
