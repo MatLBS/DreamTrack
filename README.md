@@ -1,73 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DreamTrack
 
-## Getting Started
+## Live version 📡
 
-First, run the development server:
+https://dreamtrack.164-132-44-243.sslip.io/
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Introduction
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+DreamTrack est un outil de suivi de candidatures qui combine un tableau Kanban et une
+visualisation de flux en temps réel, avec un coup de pouce de l'IA pour repérer les
+bonnes offres et évaluer vos chances avant même de postuler.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Un Kanban qui s'adapte à votre process
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Suivez chaque candidature dans un tableau en glisser-déposer, avec des colonnes
+entièrement personnalisables : ajoutez, renommez, réordonnez ou supprimez des étapes
+pour coller exactement à votre façon de chercher un emploi.
 
-## Learn More
+![Tableau Kanban de suivi de candidatures](public/readme/kanban.png)
 
-To learn more about Next.js, take a look at the following resources:
+## Visualisez votre parcours de recherche
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Chaque déplacement de carte alimente un diagramme de Sankey généré en temps réel, qui
+agrège l'ensemble de vos candidatures pour révéler où elles s'accumulent, où elles
+stagnent, et où elles aboutissent.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+![Diagramme de Sankey des flux de candidatures](public/readme/sankey.png)
 
-## Deploy with Docker
+## Un profil qui affine le matching
 
-The application is containerized and ready for production deployment using Docker Compose.
+Renseignez votre profil — poste visé, localisation, prétentions salariales,
+compétences — et suivez vos statistiques clés (candidatures envoyées, taux de réponse,
+offres reçues) en un coup d'œil.
 
-### Building and Running
+![Page de profil avec statistiques et préférences de recherche](public/readme/profil.png)
 
-```bash
-# Build and start all services
-docker-compose up -d --build
+## Repérage et scoring automatiques par IA
 
-# View logs
-docker-compose logs -f
+DreamTrack scanne les job boards pour vous, analyse chaque offre et lui attribue un
+score de correspondance basé sur votre profil : exigences techniques, niveau
+d'expérience et adéquation avec vos soft skills. Fini les heures perdues à trier des
+offres qui ne vous correspondent pas.
 
-# Stop services
-docker-compose down
-```
+## Stack Technique
 
-### Persistent Storage
-
-User-uploaded content (profile pictures, application icons) is stored in a Docker volume named `dreamtrack-uploads`. This ensures that uploaded files persist across container restarts and deployments.
-
-**Important**: The volume is automatically created when you run `docker-compose up`. If you need to back up user uploads, you can:
-
-```bash
-# Backup the volume
-docker run --rm -v dreamtrack-uploads:/data -v $(pwd):/backup alpine tar czf /backup/uploads-backup.tar.gz -C /data .
-
-# Restore the volume
-docker run --rm -v dreamtrack-uploads:/data -v $(pwd):/backup alpine tar xzf /backup/uploads-backup.tar.gz -C /data
-```
-
-### Environment Variables
-
-Create a `.env` file based on `.env.example` before running the application.
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-**Note**: When deploying to Vercel or other serverless platforms, you'll need to configure an external storage service (like AWS S3, Cloudinary, or Vercel Blob) for user uploads, as the filesystem is ephemeral in those environments.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Next.js, TypeScript, Drizzle, TanStack Query/Form, dnd-kit et d3-sankey pour une
+expérience rapide et fluide.
