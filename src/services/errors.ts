@@ -21,7 +21,8 @@ export type ServiceErrorCode =
   | "AI_WATCH_CONFIG_NOT_FOUND"
   | "AI_WATCH_RUN_IN_PROGRESS"
   | "AI_WATCH_PIPELINE_FAILED"
-  | "OFFER_NOT_FOUND";
+  | "OFFER_NOT_FOUND"
+  | "API_KEY_NOT_FOUND";
 
 export class ServiceError extends Error {
   constructor(
