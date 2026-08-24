@@ -289,6 +289,41 @@ export const jobOffers = sqliteTable(
 export type JobOffer = typeof jobOffers.$inferSelect;
 export type NewJobOffer = typeof jobOffers.$inferInsert;
 
+
+export const apiKeys = sqliteTable(
+  "api_keys",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    /** Libellé choisi par l'utilisateur ("Claude Desktop", "laptop perso"). */
+    name: text("name").notNull(),
+    /** SHA-256 hex du token complet — seule forme persistée du secret. */
+    lookupHash: text("lookup_hash").notNull(),
+    /** Forme affichable : `dt_…` + 4 derniers caractères. Jamais suffisant pour authentifier. */
+    keyPreview: text("key_preview").notNull(),
+    /** null = jamais utilisée. Écriture throttlée (au plus une fois par heure). */
+    lastUsedAt: integer("last_used_at", { mode: "timestamp_ms" }),
+    /** null = pas d'expiration. */
+    expiresAt: integer("expires_at", { mode: "timestamp_ms" }),
+    /** Révocation douce : on garde la ligne pour l'audit plutôt que de supprimer. */
+    revokedAt: integer("revoked_at", { mode: "timestamp_ms" }),
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    index("api_keys_user_idx").on(table.userId),
+    uniqueIndex("api_keys_lookup_hash_idx").on(table.lookupHash),
+  ],
+);
+
+export type ApiKey = typeof apiKeys.$inferSelect;
+export type NewApiKey = typeof apiKeys.$inferInsert;
+
 /**
  * Tables Better Auth (générées via `npx @better-auth/cli generate`).
  * Ne pas modifier la forme des colonnes à la main : régénérer via la CLI si le

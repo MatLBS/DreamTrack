@@ -2,7 +2,7 @@ import { migrate } from "drizzle-orm/libsql/migrator";
 import { beforeAll, beforeEach } from "vitest";
 
 import { db } from "@/db";
-import { applications, columns, transitions, user } from "@/db/schema";
+import { apiKeys, applications, columns, transitions, user } from "@/db/schema";
 import { ensureDefaultColumns } from "@/services/column";
 
 /** Utilisateur fixe pour les tests scopés par `userId` — créé une seule fois. */
@@ -20,5 +20,6 @@ beforeEach(async () => {
   await db.delete(transitions);
   await db.delete(applications);
   await db.delete(columns);
+  await db.delete(apiKeys);
   await ensureDefaultColumns(TEST_USER_ID);
 });

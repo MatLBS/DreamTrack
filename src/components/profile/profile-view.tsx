@@ -6,9 +6,11 @@ import type { Profile } from "@/db/schema";
 import type { ApplicationStats } from "@/lib/stats/aggregate";
 import { useT } from "@/lib/i18n/locale-provider";
 import type { Dictionary } from "@/lib/i18n";
+import type { ApiKeySummary } from "@/services/api-key";
 import type { LlmCredentialSummary } from "@/services/llm-credential";
 
 import { AccountSettingsCard } from "./account-settings-card";
+import { ApiKeysCard } from "./api-keys-card";
 import { EditAccountDialog } from "./edit-account-dialog";
 import { EditCandidateProfileDialog } from "./edit-candidate-profile-dialog";
 import { EditProfileDialog } from "./edit-profile-dialog";
@@ -28,6 +30,8 @@ interface ProfileViewProps {
   profile: Profile | null;
   stats: ApplicationStats;
   llmKeySummary: LlmCredentialSummary | null;
+  apiKeys: ApiKeySummary[];
+  mcpEndpoint: string;
 }
 
 function getInitials(name: string): string {
@@ -60,6 +64,8 @@ export function ProfileView({
   profile,
   stats,
   llmKeySummary,
+  apiKeys,
+  mcpEndpoint,
 }: ProfileViewProps) {
   const t = useT();
   const [editOpen, setEditOpen] = useState(false);
@@ -206,6 +212,8 @@ export function ProfileView({
           </SpotlightCard>
 
           <LlmKeyCard initialSummary={llmKeySummary} />
+
+          <ApiKeysCard initialKeys={apiKeys} mcpEndpoint={mcpEndpoint} />
 
           <AccountSettingsCard />
         </div>
