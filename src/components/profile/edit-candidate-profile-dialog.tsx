@@ -157,8 +157,7 @@ export function EditCandidateProfileDialog({
                   onChange={field.handleChange}
                   onBlur={field.handleBlur}
                   placeholder={
-                    t.profile.dialogs.editCandidateProfile
-                      .industriesPlaceholder
+                    t.profile.dialogs.editCandidateProfile.industriesPlaceholder
                   }
                 />
               </div>

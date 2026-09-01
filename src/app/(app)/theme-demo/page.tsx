@@ -78,10 +78,10 @@ export default function ThemeDemoPage() {
           <h2 className="text-2xl font-semibold">Compatibilité</h2>
           <div className="prose dark:prose-invert max-w-none">
             <p className="text-sm text-muted-foreground">
-              Ce composant utilise l&apos;API View Transitions qui est
-              supportée par les navigateurs modernes basés sur Chromium. Sur
-              les navigateurs qui ne supportent pas cette API (comme Firefox),
-              le changement de thème se fait instantanément sans animation.
+              Ce composant utilise l&apos;API View Transitions qui est supportée
+              par les navigateurs modernes basés sur Chromium. Sur les
+              navigateurs qui ne supportent pas cette API (comme Firefox), le
+              changement de thème se fait instantanément sans animation.
             </p>
             <ul className="text-sm space-y-1">
               <li>✅ Chrome 111+</li>

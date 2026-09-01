@@ -2,7 +2,11 @@ import cron from "node-cron";
 
 import type { AiWatchConfig } from "@/db/schema";
 import { emitRunEvent } from "@/lib/ai-watch/run-events";
-import { insertOffers, listDueConfigs, markRunFinished } from "@/queries/ai-watch";
+import {
+  insertOffers,
+  listDueConfigs,
+  markRunFinished,
+} from "@/queries/ai-watch";
 import { getProfile } from "@/services/profile";
 import { resolveLlmCredential } from "@/services/llm-credential";
 
@@ -54,17 +58,29 @@ export async function runForUser(userId: string): Promise<void> {
 
     await insertOffers(
       userId,
-      offers.map(({ source, externalId, company, role, url, location, description, matchScore, matchReason }) => ({
-        source,
-        externalId,
-        company,
-        role,
-        url,
-        location,
-        description,
-        matchScore,
-        matchReason,
-      })),
+      offers.map(
+        ({
+          source,
+          externalId,
+          company,
+          role,
+          url,
+          location,
+          description,
+          matchScore,
+          matchReason,
+        }) => ({
+          source,
+          externalId,
+          company,
+          role,
+          url,
+          location,
+          description,
+          matchScore,
+          matchReason,
+        }),
+      ),
     );
 
     await markRunFinished(userId, "success", null);

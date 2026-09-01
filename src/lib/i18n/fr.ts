@@ -180,7 +180,11 @@ export const fr = {
       emptyState: "Aucune clé configurée",
       keyPreviewLabel: (providerLabel: string, preview: string) =>
         `${providerLabel} — ${preview}`,
-      providers: { anthropic: "Anthropic", openai: "OpenAI", openrouter: "OpenRouter" },
+      providers: {
+        anthropic: "Anthropic",
+        openai: "OpenAI",
+        openrouter: "OpenRouter",
+      },
       remove: "Supprimer",
       dialog: {
         title: "Clé API LLM",
@@ -194,11 +198,13 @@ export const fr = {
     apiKeys: {
       title: "CLÉS API MCP",
       emptyState: "Aucune clé API",
-      description: "Utilisées pour connecter un client MCP (Claude Desktop, Claude Code) à ce compte.",
+      description:
+        "Utilisées pour connecter un client MCP (Claude Desktop, Claude Code) à ce compte.",
       endpointLabel: "Endpoint",
       create: "Nouvelle clé",
       remove: "Révoquer",
-      lastUsed: (relativeTime: string) => `Dernière utilisation ${relativeTime}`,
+      lastUsed: (relativeTime: string) =>
+        `Dernière utilisation ${relativeTime}`,
       neverUsed: "Jamais utilisée",
       revoked: "Révoquée",
       dialog: {
@@ -208,7 +214,8 @@ export const fr = {
         nameRequired: "Un nom est requis",
         create: "Créer",
         revealTitle: "Copiez cette clé maintenant",
-        revealWarning: "Cette clé ne sera plus jamais affichée. Conservez-la en lieu sûr.",
+        revealWarning:
+          "Cette clé ne sera plus jamais affichée. Conservez-la en lieu sûr.",
         copy: "Copier",
         copied: "Copié",
         done: "Terminé",
@@ -278,7 +285,8 @@ export const fr = {
     },
     runStatus: {
       started: "Démarrage de la veille…",
-      finished: (n: number) => `${n} offre${n > 1 ? "s" : ""} trouvée${n > 1 ? "s" : ""}`,
+      finished: (n: number) =>
+        `${n} offre${n > 1 ? "s" : ""} trouvée${n > 1 ? "s" : ""}`,
       error: "La veille a échoué",
     },
     offers: {

@@ -1,0 +1,478 @@
+{
+  "description": "Golden dataset for offline evaluation of the AI Watch scoring pipeline (score_single_offer). 8 real job offers, frozen as of 2026-08-31, scored against 2 contrasted profiles to test discrimination on seniority, location and salary fit, not just topical keyword overlap.",
+  "profiles": {
+    "mateo": {
+      "description": "Real user profile — junior AI/full-stack engineer, 2 years experience.",
+      "profile": {
+        "skills": [
+          "Python",
+          "TypeScript",
+          "LangGraph",
+          "Docker",
+          "React",
+          "Next.js",
+          "MCP",
+          "PyTorch",
+          "Numpy",
+          "Pandas",
+          "Vercel AI SDK",
+          "GitHub Actions",
+          "CI/CD",
+          "Node.js"
+        ],
+        "years_of_experience": 2,
+        "industries": [],
+        "workplace_preference": ["hybrid", "on-site", "remote"],
+        "salary_min": 35000,
+        "salary_max": 50000
+      },
+      "desired_positions": [
+        "AI Engineer",
+        "AI Software Engineer",
+        "Full-Stack Developer"
+      ],
+      "locations": ["France", "Luxembourg", "Portugal"]
+    },
+    "senior_fullstack_no_ai": {
+      "description": "Synthetic mirror persona — senior full-stack engineer, no AI/LLM background. Used to verify the scorer discriminates on the actual profile rather than on offer keywords alone: expected to invert the ranking produced for 'mateo' on seniority (5-8y minimum offers), salary (60k+) and AI-specific stack.",
+      "profile": {
+        "skills": [
+          "TypeScript",
+          "React",
+          "React Native",
+          "Node.js",
+          "Go",
+          "PostgreSQL",
+          "GraphQL",
+          "Docker",
+          "AWS",
+          "Terraform"
+        ],
+        "years_of_experience": 8,
+        "industries": ["SaaS B2B", "fintech"],
+        "workplace_preference": ["hybrid", "on-site"],
+        "salary_min": 60000,
+        "salary_max": 75000
+      },
+      "desired_positions": ["Full-Stack Developer", "Senior Software Engineer"],
+      "locations": ["France"]
+    }
+  },
+  "offers": [
+    {
+      "id": "harfanglab-ai-engineer",
+      "url": "https://harfanglab-1666711819.teamtailor.com/jobs/8196113-ai-engineer",
+      "fetched_at": "2026-08-31",
+      "offer": {
+        "external_id": "8196113",
+        "source": "teamtailor-harfanglab",
+        "apply_url": "https://harfanglab-1666711819.teamtailor.com/jobs/8196113-ai-engineer",
+        "title": "AI Engineer",
+        "core_job_title": "AI Engineer",
+        "category": "Artificial Intelligence",
+        "seniority_level": null,
+        "role_type": null,
+        "commitment": "full_time",
+        "workplace_type": "hybrid",
+        "location": "Paris, France",
+        "workplace_cities": ["Paris"],
+        "workplace_states": null,
+        "workplace_countries": ["France"],
+        "salary_min": 44000,
+        "salary_max": 54000,
+        "salary_currency": "EUR",
+        "technical_tools": [
+          "Python",
+          "LangGraph",
+          "PydanticAI",
+          "Haystack AI",
+          "Scikit-learn",
+          "PyTorch"
+        ],
+        "min_years_experience": null,
+        "bachelors_degree_requirement": null,
+        "requirements_summary": "Joins a 7-person AI team building an LLM-based system to help cybersecurity analysts investigate threats, moving toward autonomous investigation agents. Builds investigation agent pipelines (planning, tool calling, synthesis), designs an evaluation framework, evaluates foundation models on cost/latency/quality trade-offs, industrializes via CI/CD. Requires hands-on LLM experience (RAG, tool-calling, agents, chatbots) and Python reading ability; no minimum years of experience stated. Agent frameworks (LangGraph, PydanticAI, Haystack) and ML frameworks (Scikit-learn, PyTorch) are nice-to-have.",
+        "company_name": "HarfangLab",
+        "company_website": null,
+        "company_industries": ["cybersecurity"],
+        "company_employees": 130,
+        "company_hq_country": "FR",
+        "is_expired": false
+      }
+    },
+    {
+      "id": "menhir-fullstack-ai-engineer-lisbon",
+      "url": "https://join.com/companies/menhir/16612822-full-stack-ai-engineer-lisbon",
+      "fetched_at": "2026-08-31",
+      "offer": {
+        "external_id": "16612822",
+        "source": "join-menhir",
+        "apply_url": "https://join.com/companies/menhir/16612822-full-stack-ai-engineer-lisbon",
+        "title": "Full Stack AI Engineer (Lisbon)",
+        "core_job_title": "Full Stack AI Engineer",
+        "category": null,
+        "seniority_level": "junior",
+        "role_type": "generalist",
+        "commitment": "full_time",
+        "workplace_type": "on-site",
+        "location": "Lisbon, Portugal",
+        "workplace_cities": ["Lisbon"],
+        "workplace_states": null,
+        "workplace_countries": ["Portugal"],
+        "salary_min": null,
+        "salary_max": null,
+        "salary_currency": null,
+        "technical_tools": [
+          "Python",
+          "TypeScript",
+          "Twilio",
+          "WhatsApp Business API"
+        ],
+        "min_years_experience": 0,
+        "bachelors_degree_requirement": null,
+        "requirements_summary": "First engineer based in Lisbon for an AI-powered revenue-recovery platform for healthcare clinics (voice/WhatsApp AI agents). Fully generalist: AI agent orchestration, conversation flows, evaluation pipelines, prompt engineering, telephony/messaging APIs, product dashboards, and integrations. Wants a generalist who has shipped side projects, has hands-on LLM experience, is productive in Python and TypeScript, and wants ownership rather than tickets. 0 to 3 years of experience explicitly welcomed. Bonus for real-time voice systems, Twilio, WhatsApp Business API.",
+        "company_name": "Menhir",
+        "company_website": null,
+        "company_industries": ["healthtech"],
+        "company_employees": null,
+        "company_hq_country": "PT",
+        "is_expired": false
+      }
+    },
+    {
+      "id": "klaire-ai-engineer-42",
+      "url": "https://companies.intra.42.fr/en/offers/28094",
+      "fetched_at": "2026-08-31",
+      "note": "Behind 42 intra auth; content pasted by the user directly, not scraped.",
+      "offer": {
+        "external_id": "28094",
+        "source": "42-intra-klaire",
+        "apply_url": "https://companies.intra.42.fr/en/offers/28094",
+        "title": "AI Engineer",
+        "core_job_title": "AI Engineer",
+        "category": null,
+        "seniority_level": null,
+        "role_type": null,
+        "commitment": "full_time",
+        "workplace_type": "hybrid",
+        "location": "Paris, France (3 days on-site / 2 days remote)",
+        "workplace_cities": ["Paris"],
+        "workplace_states": null,
+        "workplace_countries": ["France"],
+        "salary_min": 50000,
+        "salary_max": 65000,
+        "salary_currency": "EUR",
+        "technical_tools": [
+          "TypeScript",
+          "NestJS",
+          "TypeORM",
+          "PostgreSQL",
+          "React",
+          "Vite",
+          "TanStack Query",
+          "Tailwind",
+          "Scaleway",
+          "Terraform",
+          "Grafana",
+          "Langfuse",
+          "MCP"
+        ],
+        "min_years_experience": 3,
+        "bachelors_degree_requirement": null,
+        "requirements_summary": "Klaire builds an AI system for French notaries (Klaire), handling large documents (data rooms of 4000+ pieces) with sourced, page-level citations, since a notarial act carries legal liability and requires verifiable answers, not plausible ones. Role owns backend/frontend end-to-end (TypeScript/NestJS/PostgreSQL backend, React/Vite frontend), evolves the multi-agent system (new MCP server tools, document search, extraction, sourced citations), and builds evaluations for agent chains against real cases. Requires 3+ years experience, strong TypeScript/Node and SQL, CI/CD awareness, comfort with French legal domain. ML/LLM culture (embeddings, evaluation methods) is a plus, not required.",
+        "company_name": "Klaire",
+        "company_website": null,
+        "company_industries": ["legaltech"],
+        "company_employees": null,
+        "company_hq_country": "FR",
+        "is_expired": false
+      }
+    },
+    {
+      "id": "betomorrow-ai-engineer",
+      "url": "https://betomorrow.recruitee.com/o/ai-engineer",
+      "fetched_at": "2026-08-31",
+      "offer": {
+        "external_id": "betomorrow-ai-engineer",
+        "source": "recruitee-betomorrow",
+        "apply_url": "https://betomorrow.recruitee.com/o/ai-engineer",
+        "title": "AI Engineer",
+        "core_job_title": "AI Engineer",
+        "category": null,
+        "seniority_level": "senior",
+        "role_type": null,
+        "commitment": "full_time",
+        "workplace_type": "on-site",
+        "location": "Bordeaux, France",
+        "workplace_cities": ["Bordeaux"],
+        "workplace_states": ["Nouvelle-Aquitaine"],
+        "workplace_countries": ["France"],
+        "salary_min": null,
+        "salary_max": null,
+        "salary_currency": null,
+        "technical_tools": [
+          "Python",
+          "LangChain",
+          "Google ADK",
+          "Vertex AI",
+          "Azure AI Services",
+          "FastAPI",
+          "SpringBoot",
+          "Kotlin",
+          "Nest.js",
+          "PostgreSQL",
+          "MySQL",
+          "Firestore",
+          "AWS",
+          "Azure",
+          "GCP",
+          "Terraform",
+          "GitLab CI"
+        ],
+        "min_years_experience": 5,
+        "bachelors_degree_requirement": null,
+        "requirements_summary": "BeTomorrow is a digital agency (web, mobile, AI, data) with in-house AI products (ALLY, Planea). Role carries AI expertise across client projects (luxury, health, entertainment, industry, mobility): designing, developing and industrializing generative and agentic AI solutions in production (RAG, autonomous agents, multi-agent orchestration), productionizing (deployment, monitoring, evaluation, cost/latency optimization), architecture choices (model selection, RAG vs fine-tuning), rigorous evaluation (reference datasets, benchmarks, regression tests). Requires minimum 5 years development experience with significant, demonstrable generative-AI experience in production, plus solid software engineering fundamentals and comfort with at least one cloud provider.",
+        "company_name": "BeTomorrow",
+        "company_website": null,
+        "company_industries": ["digital agency", "AI/data"],
+        "company_employees": 70,
+        "company_hq_country": "FR",
+        "is_expired": false
+      }
+    },
+    {
+      "id": "thefork-fullstack-engineer",
+      "url": "https://job-boards.greenhouse.io/thefork/jobs/8129581",
+      "fetched_at": "2026-08-31",
+      "offer": {
+        "external_id": "8129581",
+        "source": "greenhouse-thefork",
+        "apply_url": "https://job-boards.greenhouse.io/thefork/jobs/8129581",
+        "title": "Fullstack Software Engineer",
+        "core_job_title": "Fullstack Software Engineer",
+        "category": null,
+        "seniority_level": null,
+        "role_type": null,
+        "commitment": "full_time",
+        "workplace_type": "on-site",
+        "location": "Paris, France",
+        "workplace_cities": ["Paris"],
+        "workplace_states": null,
+        "workplace_countries": ["France"],
+        "salary_min": null,
+        "salary_max": null,
+        "salary_currency": null,
+        "technical_tools": ["Node.js", "TypeScript", "React", "GraphQL"],
+        "min_years_experience": null,
+        "bachelors_degree_requirement": null,
+        "requirements_summary": "TheFork (Tripadvisor Group), leading European restaurant booking platform. Role is on the Business Operations team (Billing System microservices, data flows, Content Moderation app with AI-assisted features, internal portals). Builds and ships features across a microservices architecture (Node.js/TypeScript backend, React/GraphQL frontend) following DDD/TDD/BDD, participates in product discovery, contributes to architecture decisions, collaborates with AI tooling (Claude Code) as part of daily workflow. No AI/ML domain expertise required; AI is used as a dev productivity tool, not the product itself. Mentorship from senior engineers for career growth suggests openness to less senior candidates.",
+        "company_name": "TheFork",
+        "company_website": null,
+        "company_industries": ["restaurant booking", "travel"],
+        "company_employees": null,
+        "company_hq_country": "FR",
+        "is_expired": false
+      }
+    },
+    {
+      "id": "epsor-senior-fullstack",
+      "url": "https://epsor.teamtailor.com/jobs/8139587-senior-fullstack-developer-f-h",
+      "fetched_at": "2026-08-31",
+      "offer": {
+        "external_id": "8139587",
+        "source": "teamtailor-epsor",
+        "apply_url": "https://epsor.teamtailor.com/jobs/8139587-senior-fullstack-developer-f-h",
+        "title": "Senior Fullstack Developer - F/H",
+        "core_job_title": "Senior Fullstack Developer",
+        "category": null,
+        "seniority_level": "senior",
+        "role_type": null,
+        "commitment": "full_time",
+        "workplace_type": "on-site",
+        "location": "Paris, France",
+        "workplace_cities": ["Paris"],
+        "workplace_states": null,
+        "workplace_countries": ["France"],
+        "salary_min": 60000,
+        "salary_max": 65000,
+        "salary_currency": "EUR",
+        "technical_tools": [
+          "React",
+          "React Native",
+          "Node.js",
+          "TypeScript",
+          "Go"
+        ],
+        "min_years_experience": 5,
+        "bachelors_degree_requirement": null,
+        "requirements_summary": "Epsor (employee savings fintech, B Corp) is building Tuttim, a mobile-first app reinventing the individual social report. Full ownership of features end-to-end (data models, API contracts, frontend) across a multi-entity, multi-country, multi-currency architecture. Requires at least 5 years of web development experience ideally in similar SaaS B2B structures, comfort with clean/hexagonal architecture and DDD, strong Node/TypeScript with willingness to work in other languages (Go present in stack), devops culture (cloud, IaC, observability). AI is referenced only as a modern dev-experience booster, not a core skill requirement. Based in Paris.",
+        "company_name": "Epsor",
+        "company_website": null,
+        "company_industries": ["fintech", "employee benefits"],
+        "company_employees": null,
+        "company_hq_country": "FR",
+        "is_expired": false
+      }
+    },
+    {
+      "id": "magellan-fullstack-node-vue-react",
+      "url": "https://jobs.smartrecruiters.com/Magellan/744000129969240-fullstack-developer-node-js-vue-js-or-react-js-m-f-",
+      "fetched_at": "2026-08-31",
+      "offer": {
+        "external_id": "744000129969240",
+        "source": "smartrecruiters-magellan",
+        "apply_url": "https://jobs.smartrecruiters.com/Magellan/744000129969240-fullstack-developer-node-js-vue-js-or-react-js-m-f-",
+        "title": "Fullstack Developer Node.JS / Vue.JS or React.JS (M/F)",
+        "core_job_title": "Fullstack Developer",
+        "category": null,
+        "seniority_level": "mid_senior_level",
+        "role_type": null,
+        "commitment": "full_time",
+        "workplace_type": "on-site",
+        "location": "Lille, France",
+        "workplace_cities": ["Lille"],
+        "workplace_states": null,
+        "workplace_countries": ["France"],
+        "salary_min": null,
+        "salary_max": null,
+        "salary_currency": null,
+        "technical_tools": [
+          "Node.js",
+          "Vue.js",
+          "React",
+          "TypeScript",
+          "MySQL",
+          "PostgreSQL",
+          "MongoDB",
+          "Git",
+          "Maven",
+          "Postman",
+          "SoapUI",
+          "Jenkins",
+          "AWS",
+          "GCP",
+          "Azure"
+        ],
+        "min_years_experience": null,
+        "bachelors_degree_requirement": null,
+        "requirements_summary": "Magellan is an international management and technology consulting group (IT services / consultancy, ~6700 employees). Mid-senior fullstack role working across the full agile cycle (design, dev, testing, deployment, maintenance) on client engagements. Requires solid cloud development experience (AWS, GCP or Azure), strong modern JS/TypeScript (Node, Vue or React), advanced database knowledge across several engines, familiarity with TDD/CRAFT/SOLID, fluent French. Consulting/staffing context (multidisciplinary teams on client projects including generative AI initiatives, but role itself is not AI-specific).",
+        "company_name": "Magellan",
+        "company_website": null,
+        "company_industries": ["IT consulting"],
+        "company_employees": 6700,
+        "company_hq_country": "FR",
+        "is_expired": false
+      }
+    },
+    {
+      "id": "nebius-ai-observability-engineer",
+      "url": "https://careers.nebius.com/?gh_jid=4942507101",
+      "fetched_at": "2026-08-31",
+      "note": "Linked as 'AI Engineer' but the actual posting title is 'AI Observability Engineer' — a deliberate near-miss for keyword-matching scorers: AI-adjacent title, SRE/platform-engineering substance.",
+      "offer": {
+        "external_id": "4942507101",
+        "source": "greenhouse-nebius",
+        "apply_url": "https://careers.nebius.com/?gh_jid=4942507101",
+        "title": "AI Observability Engineer",
+        "core_job_title": "AI Observability Engineer",
+        "category": "Technology",
+        "seniority_level": null,
+        "role_type": null,
+        "commitment": "full_time",
+        "workplace_type": "on-site",
+        "location": "Amsterdam, Netherlands",
+        "workplace_cities": ["Amsterdam"],
+        "workplace_states": null,
+        "workplace_countries": ["Netherlands"],
+        "salary_min": null,
+        "salary_max": null,
+        "salary_currency": null,
+        "technical_tools": [
+          "Langfuse",
+          "Grafana",
+          "Prometheus",
+          "Azure Monitor",
+          "Application Insights",
+          "Log Analytics",
+          "Terraform",
+          "Python"
+        ],
+        "min_years_experience": 5,
+        "bachelors_degree_requirement": null,
+        "requirements_summary": "Nebius builds a full-stack AI cloud platform (GPU orchestration, inference, compute/storage/networking). Role owns the AI observability backbone for the Azure AI platform: LLM and agent tracing, platform/infrastructure metrics. Stands up LLM/agent monitoring with Langfuse, captures traces/latency/token usage/cost/quality/safety signals, builds Python exporters, maintains Grafana dashboards and Prometheus metrics, owns Terraform IaC and CI/CD for observability tooling, supports incident investigation. Requires 5-8 years of experience in observability, SRE, platform engineering, DevOps, or cloud engineering; ML workload familiarity is wanted but the core skill set is SRE/platform, not AI application development.",
+        "company_name": "Nebius",
+        "company_website": null,
+        "company_industries": ["cloud infrastructure", "AI"],
+        "company_employees": 1500,
+        "company_hq_country": "NL",
+        "is_expired": false
+      }
+    }
+  ],
+  "annotations": {
+    "harfanglab-ai-engineer": {
+      "mateo": {
+        "expected_score": 85
+      },
+      "senior_fullstack_no_ai": {
+        "expected_score": 15
+      }
+    },
+    "menhir-fullstack-ai-engineer-lisbon": {
+      "mateo": {
+        "expected_score": 75
+      },
+      "senior_fullstack_no_ai": {
+        "expected_score": 50
+      }
+    },
+    "klaire-ai-engineer-42": {
+      "mateo": {
+        "expected_score": 70
+      },
+      "senior_fullstack_no_ai": {
+        "expected_score": 60
+      }
+    },
+    "betomorrow-ai-engineer": {
+      "mateo": {
+        "expected_score": 35
+      },
+      "senior_fullstack_no_ai": {
+        "expected_score": 20
+      }
+    },
+    "thefork-fullstack-engineer": {
+      "mateo": {
+        "expected_score": 60
+      },
+      "senior_fullstack_no_ai": {
+        "expected_score": 80
+      }
+    },
+    "epsor-senior-fullstack": {
+      "mateo": {
+        "expected_score": 25
+      },
+      "senior_fullstack_no_ai": {
+        "expected_score": 90
+      }
+    },
+    "magellan-fullstack-node-vue-react": {
+      "mateo": {
+        "expected_score": 60
+      },
+      "senior_fullstack_no_ai": {
+        "expected_score": 80
+      }
+    },
+    "nebius-ai-observability-engineer": {
+      "mateo": {
+        "expected_score": 10
+      },
+      "senior_fullstack_no_ai": {
+        "expected_score": 25
+      }
+    }
+  }
+}

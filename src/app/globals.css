@@ -168,16 +168,15 @@
     inset: 0;
     border-radius: inherit;
     padding: 2px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      var(--brand),
-      transparent
-    );
+    background: linear-gradient(90deg, transparent, var(--brand), transparent);
     background-size: 200% 100%;
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     mask-composite: exclude;
     opacity: 0;
     transition: opacity 0.3s ease;

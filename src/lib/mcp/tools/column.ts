@@ -47,11 +47,15 @@ export function registerColumnTools(server: McpServer, userId: string): void {
       title: "Rename column",
       description: "Renames a column, including default columns.",
       inputSchema: RenameColumnSchema.extend({
-        id: z.string().min(1).describe("Column id, from columns_list or board_get"),
+        id: z
+          .string()
+          .min(1)
+          .describe("Column id, from columns_list or board_get"),
       }),
       annotations: { idempotentHint: true },
     },
-    async ({ id, ...input }) => withToolErrors(() => renameColumn(userId, id, input)),
+    async ({ id, ...input }) =>
+      withToolErrors(() => renameColumn(userId, id, input)),
   );
 
   server.registerTool(
@@ -61,7 +65,10 @@ export function registerColumnTools(server: McpServer, userId: string): void {
       description:
         "Marks a column as a lost stage (red) or an advancing stage (green). Fails on the entry column, whose category is fixed.",
       inputSchema: SetColumnCategorySchema.extend({
-        id: z.string().min(1).describe("Column id, from columns_list or board_get"),
+        id: z
+          .string()
+          .min(1)
+          .describe("Column id, from columns_list or board_get"),
       }),
       annotations: { idempotentHint: true },
     },
@@ -76,11 +83,15 @@ export function registerColumnTools(server: McpServer, userId: string): void {
       description:
         "Moves a column to a new index within the free zone. Fails on the entry column and the two fixed terminal columns, which cannot be reordered.",
       inputSchema: ReorderColumnSchema.extend({
-        id: z.string().min(1).describe("Column id, from columns_list or board_get"),
+        id: z
+          .string()
+          .min(1)
+          .describe("Column id, from columns_list or board_get"),
       }),
       annotations: { idempotentHint: true },
     },
-    async ({ id, ...input }) => withToolErrors(() => reorderColumn(userId, id, input)),
+    async ({ id, ...input }) =>
+      withToolErrors(() => reorderColumn(userId, id, input)),
   );
 
   server.registerTool(
@@ -90,7 +101,10 @@ export function registerColumnTools(server: McpServer, userId: string): void {
       description:
         "Deletes a column. Fails if the column is a default column or still contains applications — move or delete every application in it first.",
       inputSchema: z.object({
-        id: z.string().min(1).describe("Column id, from columns_list or board_get"),
+        id: z
+          .string()
+          .min(1)
+          .describe("Column id, from columns_list or board_get"),
       }),
       annotations: { destructiveHint: true },
     },

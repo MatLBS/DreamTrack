@@ -29,7 +29,7 @@ const getClipPath = (
   shape: ClipPathShape,
   x: number,
   y: number,
-  endRadius: number
+  endRadius: number,
 ): string => {
   switch (shape) {
     case "circle":
@@ -134,7 +134,7 @@ export function AnimatedThemeToggler({
       // Calculate the radius needed to cover the entire viewport
       const endRadius = Math.hypot(
         Math.max(x, window.innerWidth - x),
-        Math.max(y, window.innerHeight - y)
+        Math.max(y, window.innerHeight - y),
       );
 
       // Start view transition
@@ -154,11 +154,11 @@ export function AnimatedThemeToggler({
             duration: 500,
             easing: "ease-in-out",
             pseudoElement: "::view-transition-new(root)",
-          }
+          },
         );
       });
     },
-    [resolvedTheme, setTheme, shape, direction, mounted]
+    [resolvedTheme, setTheme, shape, direction, mounted],
   );
 
   // Prevent hydration mismatch

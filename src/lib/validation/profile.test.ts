@@ -14,8 +14,9 @@ describe("UpdateProfileSchema workplacePreference", () => {
       }).success,
     ).toBe(true);
     expect(
-      UpdateProfileSchema.safeParse({ workplacePreference: [...WORKPLACE_PREFERENCES] })
-        .success,
+      UpdateProfileSchema.safeParse({
+        workplacePreference: [...WORKPLACE_PREFERENCES],
+      }).success,
     ).toBe(true);
   });
 
