@@ -3,7 +3,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Kanban, Monitor, Moon, Plus, Radar, Sun, User } from "lucide-react";
+import {
+  Kanban,
+  Monitor,
+  Moon,
+  PenLine,
+  Plus,
+  Radar,
+  Sun,
+  User,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { getBoardAction } from "@/app/actions/board";
@@ -112,6 +121,13 @@ export function CommandPalette() {
               >
                 <Radar />
                 {t.nav.aiWatch}
+              </CommandItem>
+              <CommandItem
+                value={t.nav.workshop}
+                onSelect={() => goTo("/workshop")}
+              >
+                <PenLine />
+                {t.nav.workshop}
               </CommandItem>
               <CommandItem
                 value={t.nav.profile}

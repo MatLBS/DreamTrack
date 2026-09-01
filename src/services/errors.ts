@@ -22,7 +22,12 @@ export type ServiceErrorCode =
   | "AI_WATCH_RUN_IN_PROGRESS"
   | "AI_WATCH_PIPELINE_FAILED"
   | "OFFER_NOT_FOUND"
-  | "API_KEY_NOT_FOUND";
+  | "API_KEY_NOT_FOUND"
+  | "UNSUPPORTED_DOCUMENT_TYPE"
+  | "DOCUMENT_TOO_LARGE"
+  | "EMBEDDING_PROVIDER_UNSUPPORTED"
+  | "DOCUMENT_INGESTION_FAILED"
+  | "DOCUMENT_NOT_FOUND";
 
 export class ServiceError extends Error {
   constructor(

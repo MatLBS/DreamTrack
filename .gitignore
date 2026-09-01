@@ -57,6 +57,7 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 ai-watch-service/output/
+ai-watch-service/.chroma-data/
 
 # agent plans and specs
 /docs/* 

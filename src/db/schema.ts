@@ -291,6 +291,39 @@ export const jobOffers = sqliteTable(
 export type JobOffer = typeof jobOffers.$inferSelect;
 export type NewJobOffer = typeof jobOffers.$inferInsert;
 
+/**
+ * Métadonnées d'un document (CV, lettre) uploadé pour la génération de lettres de
+ * motivation par RAG. Le texte et les embeddings vivent dans une collection Chroma
+ * dédiée à l'utilisateur (service Python `ai-watch-service`) ; cette table ne stocke
+ * que ce que ce service ne conserve pas lui-même (titre, statut d'ingestion).
+ * `chromaDocumentId` est généré côté Python — corrélation, pas une FK SQL.
+ */
+export const documents = sqliteTable(
+  "documents",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    kind: text("kind", { enum: ["cv", "cover_letter", "other"] }).notNull(),
+    title: text("title").notNull(),
+    chromaDocumentId: text("chroma_document_id").notNull(),
+    collectionName: text("collection_name").notNull(),
+    chunkCount: integer("chunk_count").notNull().default(0),
+    status: text("status", { enum: ["ready", "failed"] }).notNull(),
+    errorMessage: text("error_message"),
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [index("documents_user_idx").on(table.userId)],
+);
+
+export type WorkshopDocumentRow = typeof documents.$inferSelect;
+export type NewWorkshopDocumentRow = typeof documents.$inferInsert;
+
 export const apiKeys = sqliteTable(
   "api_keys",
   {

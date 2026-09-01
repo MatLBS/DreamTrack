@@ -3,15 +3,19 @@
 Point d'entrée pour le scheduler TypeScript — accepte provider/apiKey dynamiques.
 """
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 import logging
+import os
+from typing import Literal
 
 from ai_watch.api_schemas import (
     RunPipelineRequest,
     RunPipelineResponse,
     ScoredOfferResponse,
+    UploadDocumentResponse,
 )
 from ai_watch.agent.agent import create_llm, compiled_graph
+from ai_watch.documents import ingest_document
 
 app = FastAPI(
     title="AI Watch Service",
@@ -20,6 +24,9 @@ app = FastAPI(
 )
 
 logger = logging.getLogger(__name__)
+
+CHROMA_PERSIST_DIRECTORY = os.getenv("CHROMA_PERSIST_DIRECTORY", ".chroma-data")
+MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 Mo — même limite que celle validée côté front (design doc)
 
 
 @app.post("/run", response_model=RunPipelineResponse)
@@ -94,6 +101,69 @@ async def run_pipeline(request: RunPipelineRequest):
         # Erreur pipeline (fetch, LLM rate-limit, etc.)
         logger.exception(f"Pipeline failed for user {request.user_id}")
         raise HTTPException(status_code=500, detail=f"Pipeline error: {str(e)}")
+
+
+@app.post("/documents/upload", response_model=UploadDocumentResponse)
+async def upload_document(
+    user_id: str = Form(alias="userId"),
+    kind: Literal["cv", "cover_letter", "other"] = Form(alias="kind"),
+    api_key: str = Form(alias="apiKey"),
+    file: UploadFile = File(...),
+):
+    """
+    Ingère un document PDF (CV, lettre de motivation) dans la base vectorielle
+    de l'utilisateur.
+
+    Étapes :
+    1. Validation du fichier (type MIME, taille)
+    2. Extraction du texte (pypdf)
+    3. Découpage en chunks (~1000 caractères, overlap 200)
+    4. Embeddings OpenAI (text-embedding-3-small, clé fournie par requête)
+    5. Upsert dans la collection Chroma de l'utilisateur (persist_directory local/volume)
+
+    Args:
+        user_id: Identifiant utilisateur (détermine la collection Chroma cible)
+        kind: Nature du document — pilote son rôle dans un futur prompt de génération
+        api_key: Clé API OpenAI (embeddings uniquement, jamais lue depuis l'environnement)
+        file: Fichier PDF (10 Mo max)
+
+    Returns:
+        document_id généré, nombre de chunks indexés
+
+    Raises:
+        HTTPException: 400 si fichier invalide/vide, 500 si erreur pipeline
+    """
+    if file.content_type != "application/pdf":
+        raise HTTPException(status_code=400, detail="Only application/pdf is supported")
+
+    pdf_bytes = await file.read()
+    if len(pdf_bytes) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=400, detail="File exceeds 10 MB limit")
+
+    try:
+        logger.info(f"Ingesting document ({kind}) for user {user_id}")
+        document_id, chunk_count, collection_name = ingest_document(
+            user_id=user_id,
+            kind=kind,
+            pdf_bytes=pdf_bytes,
+            api_key=api_key,
+            persist_directory=CHROMA_PERSIST_DIRECTORY,
+        )
+        logger.info(f"Document {document_id} ingested for user {user_id}: {chunk_count} chunks")
+        return UploadDocumentResponse(
+            document_id=document_id,
+            user_id=user_id,
+            kind=kind,
+            chunk_count=chunk_count,
+            collection_name=collection_name,
+        )
+    except ValueError as e:
+        # EmptyDocumentError hérite de ValueError — capturé ici, pas besoin d'un branch séparé
+        logger.error(f"Validation error for user {user_id}: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.exception(f"Document ingestion failed for user {user_id}")
+        raise HTTPException(status_code=500, detail=f"Ingestion error: {str(e)}")
 
 
 @app.get("/health")

@@ -55,3 +55,15 @@ class RunPipelineResponse(BaseModel):
     """Réponse HTTP de /run."""
 
     offers: list[ScoredOfferResponse]
+
+
+class UploadDocumentResponse(BaseModel):
+    """Réponse HTTP de POST /documents/upload."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    document_id: str = Field(alias="documentId")
+    user_id: str = Field(alias="userId")
+    kind: Literal["cv", "cover_letter", "other"]
+    chunk_count: int = Field(alias="chunkCount")
+    collection_name: str = Field(alias="collectionName")

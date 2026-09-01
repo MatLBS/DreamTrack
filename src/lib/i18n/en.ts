@@ -12,6 +12,7 @@ export const en: Dictionary = {
   nav: {
     aiWatch: "AI Watch",
     applicationTrack: "Applications",
+    workshop: "Workshop",
     profile: "Profile",
     openNav: "Open navigation",
   },
@@ -295,6 +296,8 @@ export const en: Dictionary = {
       dismiss: "Dismiss",
       expand: "View details",
       addToDashboard: "Add to Dashboard",
+      generateLetter: "Generate a cover letter",
+      backToOffer: "Back to offer",
     },
     toasts: {
       configSaved: "Watch settings saved",
@@ -304,6 +307,73 @@ export const en: Dictionary = {
       dismissFailed: "Could not dismiss the offer",
       addedToDashboard: "Application added to dashboard",
       addToDashboardFailed: "Could not add to dashboard",
+    },
+  },
+  workshop: {
+    title: "Workshop",
+    subtitle:
+      "Upload your CV and letters, then generate a cover letter grounded in your real background.",
+    tabDocuments: "My documents",
+    tabLetter: "Cover letter",
+    documents: {
+      title: "MY DOCUMENTS",
+      addButton: "Add a document",
+      emptyTitle: "Upload your CV to get started",
+      emptyDescription:
+        "Your CV is the factual base used to generate cover letters that speak to your real experience.",
+      kinds: {
+        cv: "CV",
+        cover_letter: "Cover letter",
+        other: "Other",
+      },
+      status: {
+        ready: "Ready",
+        pending: "Indexing…",
+        failed: "Failed",
+      },
+      chunkCount: (n: number) => `${n} indexed chunk${n === 1 ? "" : "s"}`,
+      retry: "Retry",
+      deleteAria: "Delete document",
+      confirmDelete: "Delete this document?",
+    },
+    uploadDialog: {
+      title: "Add a document",
+      fileLabel: "File",
+      chooseFile: "Choose a PDF file",
+      fileConstraint: "PDF only, 10MB max",
+      kindLabel: "Document type",
+      titleLabel: "Title",
+      titlePlaceholder: "e.g. CV — Full-Stack Developer",
+      unsupportedType: "Only PDF files are accepted",
+      tooLarge: "The file exceeds 10MB",
+      save: "Add",
+    },
+    letter: {
+      emptyTitle: "Upload your CV first",
+      emptyDescription:
+        "Generating a letter needs at least one ready document to draw on your background.",
+      goToDocuments: "Go to My documents",
+      targetLabel: "Application",
+      targetPlaceholder: "Choose an application",
+      toneLabel: "Tone",
+      tones: {
+        formal: "Formal",
+        conversational: "Conversational",
+      },
+      generate: "Generate",
+      generating: "Writing…",
+      subjectLabel: "Subject",
+      regenerateParagraphAria: "Regenerate this paragraph",
+      usedFactsTitle: "CV excerpts used",
+      copy: "Copy",
+      copied: "Copied",
+      save: "Save",
+    },
+    toasts: {
+      documentAdded: "Document added",
+      documentDeleted: "Document deleted",
+      letterCopied: "Letter copied",
+      letterSaved: "Letter saved",
     },
   },
   commandPalette: {
@@ -340,6 +410,12 @@ export const en: Dictionary = {
     AI_WATCH_PIPELINE_FAILED: "The watch failed, try again later",
     OFFER_NOT_FOUND: "Offer not found",
     API_KEY_NOT_FOUND: "API key not found",
+    UNSUPPORTED_DOCUMENT_TYPE: "Only PDF files are accepted",
+    DOCUMENT_TOO_LARGE: "The file exceeds 10MB",
+    EMBEDDING_PROVIDER_UNSUPPORTED:
+      "Indexing requires an OpenAI API key in your profile",
+    DOCUMENT_INGESTION_FAILED: "Document indexing failed, try again",
+    DOCUMENT_NOT_FOUND: "Document not found",
     UNKNOWN: "An unexpected error occurred",
   },
 };

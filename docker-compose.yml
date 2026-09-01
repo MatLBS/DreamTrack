@@ -21,8 +21,14 @@ services:
       context: ./ai-watch-service
     ports:
       - "8008:8008"
+    environment:
+      - CHROMA_PERSIST_DIRECTORY=/app/.chroma-data
+    volumes:
+      - ai-watch-chroma-data:/app/.chroma-data
     restart: unless-stopped
 
 volumes:
   dreamtrack-uploads:
+    driver: local
+  ai-watch-chroma-data:
     driver: local

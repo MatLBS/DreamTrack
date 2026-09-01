@@ -85,6 +85,13 @@
       "when": 1787592794908,
       "tag": "0011_add_api_keys",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1788258797923,
+      "tag": "0012_add_documents",
+      "breakpoints": true
     }
   ]
 }
