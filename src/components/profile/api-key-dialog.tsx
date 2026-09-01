@@ -182,7 +182,9 @@ export function ApiKeyDialog({ open, onOpenChange }: ApiKeyDialogProps) {
                       placeholder={t.profile.apiKeys.dialog.namePlaceholder}
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(event) => field.handleChange(event.target.value)}
+                      onChange={(event) =>
+                        field.handleChange(event.target.value)
+                      }
                       className={fieldInputClassName}
                     />
                     {field.state.meta.errors.length > 0 && (

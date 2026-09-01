@@ -18,7 +18,11 @@ const OTHER_USER_ID = "other-test-user";
 async function ensureOtherUser() {
   await db
     .insert(user)
-    .values({ id: OTHER_USER_ID, name: "Other User", email: "other@example.com" })
+    .values({
+      id: OTHER_USER_ID,
+      name: "Other User",
+      email: "other@example.com",
+    })
     .onConflictDoNothing();
 }
 

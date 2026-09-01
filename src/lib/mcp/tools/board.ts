@@ -135,7 +135,8 @@ export function registerBoardTools(server: McpServer, userId: string): void {
     "application_delete",
     {
       title: "Delete application",
-      description: "Permanently deletes an application and its transition history.",
+      description:
+        "Permanently deletes an application and its transition history.",
       inputSchema: z.object({
         id: z.string().min(1).describe("Application id, from board_get"),
       }),

@@ -45,7 +45,9 @@ export function OfferCard({ offer, entryColumnId }: OfferCardProps) {
       toast.success(t.aiWatch.toasts.offerDismissed);
     },
     onError: (error) => {
-      toast.error(actionErrorMessage(t, error) || t.aiWatch.toasts.dismissFailed);
+      toast.error(
+        actionErrorMessage(t, error) || t.aiWatch.toasts.dismissFailed,
+      );
     },
   });
 

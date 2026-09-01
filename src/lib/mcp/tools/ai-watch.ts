@@ -1,6 +1,9 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 
-import { DismissOfferSchema, SaveAiWatchConfigSchema } from "@/lib/validation/ai-watch";
+import {
+  DismissOfferSchema,
+  SaveAiWatchConfigSchema,
+} from "@/lib/validation/ai-watch";
 import {
   dismissOfferForUser,
   getConfig,
@@ -16,7 +19,10 @@ import { withToolErrors } from "../errors";
 const DESCRIPTION_PREVIEW_LENGTH = 500;
 
 function truncateDescription(description: string | null): string | null {
-  if (description === null || description.length <= DESCRIPTION_PREVIEW_LENGTH) {
+  if (
+    description === null ||
+    description.length <= DESCRIPTION_PREVIEW_LENGTH
+  ) {
     return description;
   }
   return `${description.slice(0, DESCRIPTION_PREVIEW_LENGTH)}… (truncated)`;
@@ -75,7 +81,8 @@ export function registerAiWatchTools(server: McpServer, userId: string): void {
     "ai_watch_dismiss_offer",
     {
       title: "Dismiss AI Watch offer",
-      description: "Marks a discovered offer as dismissed so it stops appearing in ai_watch_list_offers.",
+      description:
+        "Marks a discovered offer as dismissed so it stops appearing in ai_watch_list_offers.",
       inputSchema: DismissOfferSchema,
       annotations: { idempotentHint: true },
     },
@@ -100,7 +107,9 @@ export function registerAiWatchTools(server: McpServer, userId: string): void {
 
         const outcome = await Promise.race([
           started.then(() => "completed" as const),
-          new Promise<"started">((resolve) => setTimeout(() => resolve("started"), 1500)),
+          new Promise<"started">((resolve) =>
+            setTimeout(() => resolve("started"), 1500),
+          ),
         ]);
 
         return { status: outcome };

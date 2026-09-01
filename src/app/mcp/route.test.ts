@@ -13,7 +13,11 @@ const OTHER_USER_ID = "mcp-route-other-user";
 async function ensureOtherUser() {
   await db
     .insert(user)
-    .values({ id: OTHER_USER_ID, name: "Other User", email: "mcp-other@example.com" })
+    .values({
+      id: OTHER_USER_ID,
+      name: "Other User",
+      email: "mcp-other@example.com",
+    })
     .onConflictDoNothing();
 }
 
@@ -53,14 +57,18 @@ async function readRpcResult(
   }
   const parsed: JsonRpcResponse = JSON.parse(lastLine);
   if (parsed.result === undefined) {
-    throw new Error(`Expected a JSON-RPC result, got: ${JSON.stringify(parsed)}`);
+    throw new Error(
+      `Expected a JSON-RPC result, got: ${JSON.stringify(parsed)}`,
+    );
   }
   return parsed.result;
 }
 
 describe("POST /mcp — authentication", () => {
   it("returns 401 with no Authorization header", async () => {
-    const response = await POST(rpc({ jsonrpc: "2.0", id: 1, method: "tools/list" }));
+    const response = await POST(
+      rpc({ jsonrpc: "2.0", id: 1, method: "tools/list" }),
+    );
     expect(response.status).toBe(401);
     expect(response.headers.get("www-authenticate")).toContain("Bearer");
   });
@@ -184,7 +192,12 @@ describe("POST /mcp — protocol", () => {
     const created = await createApiKey(TEST_USER_ID, { name: "test key" });
     const response = await POST(
       rpc(
-        { jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "board_get", arguments: {} } },
+        {
+          jsonrpc: "2.0",
+          id: 1,
+          method: "tools/call",
+          params: { name: "board_get", arguments: {} },
+        },
         created.token,
       ),
     );
@@ -198,10 +211,12 @@ describe("POST /mcp — protocol", () => {
 
   it("tools/call with a bogus column id returns isError, not an HTTP error", async () => {
     const created = await createApiKey(TEST_USER_ID, { name: "test key" });
-    const [application] = await Promise.all([createApplication(TEST_USER_ID, {
-      company: "Acme",
-      role: "Engineer",
-    })]);
+    const [application] = await Promise.all([
+      createApplication(TEST_USER_ID, {
+        company: "Acme",
+        role: "Engineer",
+      }),
+    ]);
 
     const response = await POST(
       rpc(
@@ -211,7 +226,11 @@ describe("POST /mcp — protocol", () => {
           method: "tools/call",
           params: {
             name: "application_move",
-            arguments: { id: application.id, toColumnId: "does-not-exist", toIndex: 0 },
+            arguments: {
+              id: application.id,
+              toColumnId: "does-not-exist",
+              toIndex: 0,
+            },
           },
         },
         created.token,
@@ -231,14 +250,21 @@ describe("POST /mcp — protocol", () => {
     const otherKey = await createApiKey(OTHER_USER_ID, { name: "other key" });
     const response = await POST(
       rpc(
-        { jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "board_get", arguments: {} } },
+        {
+          jsonrpc: "2.0",
+          id: 1,
+          method: "tools/call",
+          params: { name: "board_get", arguments: {} },
+        },
         otherKey.token,
       ),
     );
     const result = await readRpcResult(response);
     const content = result.content as { text: string }[];
     const board = JSON.parse(content[0].text);
-    const allApplications = board.flatMap((column: { applications: unknown[] }) => column.applications);
+    const allApplications = board.flatMap(
+      (column: { applications: unknown[] }) => column.applications,
+    );
     expect(JSON.stringify(allApplications)).not.toContain("UserA Co");
   });
 });

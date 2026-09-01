@@ -70,7 +70,10 @@ export async function markRunFinished(
     .where(eq(aiWatchConfigs.userId, userId));
 }
 
-export type NewOfferInput = Omit<NewJobOffer, "id" | "userId" | "dismissed" | "discoveredAt">;
+export type NewOfferInput = Omit<
+  NewJobOffer,
+  "id" | "userId" | "dismissed" | "discoveredAt"
+>;
 
 /** Insère les offres découvertes ; ignore silencieusement les doublons (user, source, externalId). */
 export async function insertOffers(
@@ -104,5 +107,8 @@ export async function getOfferById(id: string): Promise<JobOffer | undefined> {
 }
 
 export async function dismissOffer(id: string): Promise<void> {
-  await db.update(jobOffers).set({ dismissed: true }).where(eq(jobOffers.id, id));
+  await db
+    .update(jobOffers)
+    .set({ dismissed: true })
+    .where(eq(jobOffers.id, id));
 }

@@ -5,7 +5,14 @@ import { AnimatedThemeToggler } from "./ui/animated-theme-toggler";
 import { Button } from "./ui/button";
 
 interface ThemeToggleButtonProps {
-  shape?: "circle" | "square" | "triangle" | "diamond" | "rectangle" | "hexagon" | "star";
+  shape?:
+    | "circle"
+    | "square"
+    | "triangle"
+    | "diamond"
+    | "rectangle"
+    | "hexagon"
+    | "star";
   direction?: "ltr" | "rtl" | "ttb" | "btt";
 }
 

@@ -74,9 +74,7 @@ export function ProfileView({
 
   return (
     <div className="mx-auto max-w-[1680px] p-6 pt-24">
-      <h1 className="mb-8 text-[22px] font-extrabold">
-        {t.profile.title}
-      </h1>
+      <h1 className="mb-8 text-[22px] font-extrabold">{t.profile.title}</h1>
 
       <div className="flex flex-wrap items-start gap-[58px]">
         <div className="min-w-[504px] flex-1 space-y-[38px]">

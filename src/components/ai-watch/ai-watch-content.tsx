@@ -113,7 +113,9 @@ export function AiWatchContent({
     if (!value) return;
     saveMutation.mutate({
       enabled,
-      intervalMinutes: Number(value) as (typeof AI_WATCH_INTERVALS_MINUTES)[number],
+      intervalMinutes: Number(
+        value,
+      ) as (typeof AI_WATCH_INTERVALS_MINUTES)[number],
     });
   };
 
@@ -154,9 +156,7 @@ export function AiWatchContent({
             disabled={isRunning || runMutation.isPending}
             onClick={() => runMutation.mutate()}
           >
-            {isRunning
-              ? t.aiWatch.settings.running
-              : t.aiWatch.settings.runNow}
+            {isRunning ? t.aiWatch.settings.running : t.aiWatch.settings.runNow}
           </Button>
         </div>
       </div>

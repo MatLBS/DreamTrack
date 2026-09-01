@@ -86,7 +86,9 @@ export class RemoteHttpPipeline implements AiWatchPipeline {
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`Python service error (${response.status}): ${errorText}`);
+      throw new Error(
+        `Python service error (${response.status}): ${errorText}`,
+      );
     }
 
     const data = await response.json();
@@ -97,6 +99,7 @@ export class RemoteHttpPipeline implements AiWatchPipeline {
 
 /** Implémentation active : appelle le service Python via HTTP. */
 export function resolvePipeline(): AiWatchPipeline {
-  const pythonUrl = process.env.AI_WATCH_PYTHON_SERVICE_URL || "http://localhost:8008";
+  const pythonUrl =
+    process.env.AI_WATCH_PYTHON_SERVICE_URL || "http://localhost:8008";
   return new RemoteHttpPipeline(pythonUrl);
 }

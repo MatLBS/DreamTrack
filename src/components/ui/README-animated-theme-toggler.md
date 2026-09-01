@@ -55,19 +55,19 @@ export function CustomToggle() {
 
 ### AnimatedThemeToggler Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | `(props) => React.ReactNode` | Required | Render prop exposing theme, resolvedTheme and toggleTheme |
-| `shape` | `"circle" \| "square" \| "triangle" \| "diamond" \| "rectangle" \| "hexagon" \| "star"` | `"circle"` | Clip-path shape for animation |
-| `direction` | `"ltr" \| "rtl" \| "ttb" \| "btt"` | `"ltr"` | Animation direction |
-| `className` | `string` | - | Additional CSS classes |
+| Prop        | Type                                                                                    | Default    | Description                                               |
+| ----------- | --------------------------------------------------------------------------------------- | ---------- | --------------------------------------------------------- |
+| `children`  | `(props) => React.ReactNode`                                                            | Required   | Render prop exposing theme, resolvedTheme and toggleTheme |
+| `shape`     | `"circle" \| "square" \| "triangle" \| "diamond" \| "rectangle" \| "hexagon" \| "star"` | `"circle"` | Clip-path shape for animation                             |
+| `direction` | `"ltr" \| "rtl" \| "ttb" \| "btt"`                                                      | `"ltr"`    | Animation direction                                       |
+| `className` | `string`                                                                                | -          | Additional CSS classes                                    |
 
 ### ThemeToggleButton Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `shape` | Same as above | `"circle"` | Clip-path shape for animation |
-| `direction` | Same as above | `"ltr"` | Animation direction |
+| Prop        | Type          | Default    | Description                   |
+| ----------- | ------------- | ---------- | ----------------------------- |
+| `shape`     | Same as above | `"circle"` | Clip-path shape for animation |
+| `direction` | Same as above | `"ltr"`    | Animation direction           |
 
 ## Browser Support
 
@@ -91,7 +91,7 @@ const transition = document.startViewTransition(() => {
 transition.ready.then(() => {
   document.documentElement.animate(
     { clipPath: [startClipPath, endClipPath] },
-    { duration: 500, pseudoElement: "::view-transition-new(root)" }
+    { duration: 500, pseudoElement: "::view-transition-new(root)" },
   );
 });
 ```

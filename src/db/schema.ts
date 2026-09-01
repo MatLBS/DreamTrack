@@ -179,7 +179,9 @@ export const llmCredentials = sqliteTable("llm_credentials", {
     .notNull()
     .unique()
     .references(() => user.id, { onDelete: "cascade" }),
-  provider: text("provider", { enum: ["anthropic", "openai", "openrouter"] }).notNull(),
+  provider: text("provider", {
+    enum: ["anthropic", "openai", "openrouter"],
+  }).notNull(),
   apiKey: text("api_key").notNull(),
   keyPreview: text("key_preview").notNull(),
   modelExtraction: text("model_extraction"),
@@ -288,7 +290,6 @@ export const jobOffers = sqliteTable(
 
 export type JobOffer = typeof jobOffers.$inferSelect;
 export type NewJobOffer = typeof jobOffers.$inferInsert;
-
 
 export const apiKeys = sqliteTable(
   "api_keys",

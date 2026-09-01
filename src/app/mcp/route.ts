@@ -20,7 +20,11 @@ const handler = createMcpHandler((ctx) => {
 
 function unauthorized(): Response {
   return Response.json(
-    { jsonrpc: "2.0", error: { code: -32001, message: "Unauthorized" }, id: null },
+    {
+      jsonrpc: "2.0",
+      error: { code: -32001, message: "Unauthorized" },
+      id: null,
+    },
     {
       status: 401,
       headers: { "WWW-Authenticate": 'Bearer realm="DreamTrack MCP"' },
