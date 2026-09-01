@@ -15,6 +15,12 @@ DEFAULT_SCORING_MODELS = {
     "openrouter": "anthropic/claude-haiku-4.5",
 }
 
+DEFAULT_EVALUATION_MODELS = {
+    "anthropic": "claude-sonnet-5",
+    "openai": "gpt-4o",
+    "openrouter": "anthropic/claude-sonnet-5",
+}
+
 
 def resolve_scoring_model(provider: str, custom_model: str | None) -> str:
     """Résout le modèle à utiliser pour le scoring.
@@ -27,6 +33,20 @@ def resolve_scoring_model(provider: str, custom_model: str | None) -> str:
         Nom du modèle à utiliser
     """
     return custom_model if custom_model else DEFAULT_SCORING_MODELS[provider]
+
+
+
+def resolve_evaluation_model(provider: str, custom_model: str | None) -> str:
+    """Résout le modèle à utiliser pour l'évaluation.
+
+    Args:
+        provider: "anthropic", "openai", ou "openrouter"
+        custom_model: Modèle custom ou None
+
+    Returns:
+        Nom du modèle à utiliser
+    """
+    return custom_model if custom_model else DEFAULT_EVALUATION_MODELS[provider]
 
 
 def create_llm(provider: str, api_key: str, custom_model: str | None = None):

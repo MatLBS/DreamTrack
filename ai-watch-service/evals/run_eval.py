@@ -1,11 +1,14 @@
 import argparse
 import os
 from pathlib import Path
+from typing import TypedDict
 
 from dotenv import load_dotenv
 from langsmith import Client
 
-from ai_watch.agent.agent import create_llm, score_single_offer
+from openevals.llm import create_llm_as_judge
+
+from ai_watch.agent.agent import create_llm, score_single_offer, resolve_evaluation_model
 
 load_dotenv(Path(__file__).parent.parent / ".env")
 
@@ -16,6 +19,38 @@ PROVIDER_ENV_VARS = {
     "openai": "OPENAI_API_KEY",
     "openrouter": "OPENROUTER_API_KEY",
 }
+
+REASON_JUDGE_PROMPT = """You are auditing the output of a job-offer scoring pipeline.
+Given a job offer, a candidate profile, a match score (0-100), and a short
+reason explaining that score, judge the reason against three criteria.
+
+<Criteria>
+  - score_consistent: the reason's judgment (positive/negative/mixed) matches
+    the direction of match_score. A high score (>=60) with a mostly negative
+    reason, or a low score (<40) with a mostly positive reason, is inconsistent.
+  - grounded_in_facts: every concrete claim in the reason (skills, seniority,
+    salary, location, industry, etc.) is actually present in the job offer or
+    candidate profile below — no invented requirements or invented candidate
+    attributes.
+  - is_french: the reason is written in French, as required by the pipeline's
+    prompt.
+</Criteria>
+
+<JobOffer>
+{inputs}
+</JobOffer>
+
+<PipelineOutput>
+{outputs}
+</PipelineOutput>
+"""
+
+
+class ReasonJudgement(TypedDict):
+    score_consistent: bool
+    grounded_in_facts: bool
+    is_french: bool
+    explanation: str
 
 
 def make_target(provider: str, api_key: str, model: str | None):
@@ -48,6 +83,33 @@ def make_target(provider: str, api_key: str, model: str | None):
             raise
 
     return target
+
+
+def make_reason_judge_evaluator(provider: str):
+    """
+    Juge match_reason sur 3 critères vérifiables (voir REASON_JUDGE_PROMPT).
+    """
+    model = resolve_evaluation_model(provider, None)
+
+    judge = create_llm_as_judge(
+        prompt=REASON_JUDGE_PROMPT,
+        model=model,
+        output_schema=ReasonJudgement,
+    )
+
+    def reason_judge_evaluator(inputs: dict, outputs: dict) -> list[dict]:
+        judgement = judge(inputs=inputs, outputs=outputs)
+        return [
+            {
+                "key": "reason_score_consistent",
+                "score": judgement["score_consistent"],
+                "comment": judgement["explanation"],
+            },
+            {"key": "reason_grounded_in_facts", "score": judgement["grounded_in_facts"]},
+            {"key": "reason_is_french", "score": judgement["is_french"]},
+        ]
+
+    return reason_judge_evaluator
 
 
 def score_error(outputs: dict, reference_outputs: dict) -> dict:
@@ -100,7 +162,11 @@ def main() -> None:
     client.evaluate(
         target,
         data=DATASET_NAME,
-        evaluators=[score_error, structural_validity],
+        evaluators=[
+            score_error,
+            structural_validity,
+            make_reason_judge_evaluator(args.provider),
+        ],
         experiment_prefix=experiment_prefix,
     )
 
