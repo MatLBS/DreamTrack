@@ -324,6 +324,42 @@ export const documents = sqliteTable(
 export type WorkshopDocumentRow = typeof documents.$inferSelect;
 export type NewWorkshopDocumentRow = typeof documents.$inferInsert;
 
+/**
+ * Lettre de motivation générée puis validée par l'utilisateur. Volontairement
+ * autonome (rattachée au seul `userId`) : une lettre peut être écrite pour une
+ * offre de veille jamais ajoutée au Kanban. `paragraphs` stocke le texte final
+ * édité — ni les extraits du CV utilisés ni le contexte de génération ne sont
+ * conservés, ils appartiennent à la génération, pas au document.
+ */
+export const coverLetters = sqliteTable(
+  "cover_letters",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    company: text("company").notNull(),
+    role: text("role").notNull(),
+    paragraphs: text("paragraphs", { mode: "json" })
+      .$type<string[]>()
+      .notNull(),
+    tone: text("tone", { enum: ["formal", "conversational"] }).notNull(),
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+      .notNull()
+      .$defaultFn(() => new Date())
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [index("cover_letters_user_idx").on(table.userId)],
+);
+
+export type CoverLetterRow = typeof coverLetters.$inferSelect;
+export type NewCoverLetterRow = typeof coverLetters.$inferInsert;
+
 export const apiKeys = sqliteTable(
   "api_keys",
   {

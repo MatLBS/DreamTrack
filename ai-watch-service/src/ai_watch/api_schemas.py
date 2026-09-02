@@ -14,7 +14,7 @@ class ProfileInput(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     desired_positions: list[str] = Field(alias="desiredPositions")
-    locations: list[str]
+    locations: list[str] = Field(default_factory=list)
     skills: list[str]
     industries: list[str]
     workplace_preference: list[str] = Field(alias="workplacePreference")
@@ -67,3 +67,37 @@ class UploadDocumentResponse(BaseModel):
     kind: Literal["cv", "cover_letter", "other"]
     chunk_count: int = Field(alias="chunkCount")
     collection_name: str = Field(alias="collectionName")
+
+
+class OfferInputSchema(BaseModel):
+    """Offre ciblée reçue depuis TypeScript pour la génération de lettre."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    company: str
+    role: str
+    description: str | None = None
+
+
+class GenerateLetterRequest(BaseModel):
+    """Requête HTTP POST /generate-letter depuis TypeScript."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    user_id: str = Field(alias="userId")
+    api_key: str = Field(alias="apiKey")
+    provider: Literal["anthropic", "openai", "openrouter"]
+    model: str | None = None
+    offer: OfferInputSchema
+    profile: ProfileInput
+    tone: Literal["formal", "conversational"]
+
+
+class GenerateLetterResponse(BaseModel):
+    """Réponse HTTP de POST /generate-letter."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    paragraphs: list[str]
+    used_facts: list[str] = Field(alias="usedFacts")
+    insufficient_context: bool = Field(alias="insufficientContext")

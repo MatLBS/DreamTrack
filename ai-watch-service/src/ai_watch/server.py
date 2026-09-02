@@ -9,12 +9,15 @@ import os
 from typing import Literal
 
 from ai_watch.api_schemas import (
+    GenerateLetterRequest,
+    GenerateLetterResponse,
     RunPipelineRequest,
     RunPipelineResponse,
     ScoredOfferResponse,
     UploadDocumentResponse,
 )
 from ai_watch.agent.agent import create_llm, compiled_graph
+from ai_watch.agent.letter_agent import compiled_letter_graph
 from ai_watch.documents import ingest_document
 
 app = FastAPI(
@@ -164,6 +167,62 @@ async def upload_document(
     except Exception as e:
         logger.exception(f"Document ingestion failed for user {user_id}")
         raise HTTPException(status_code=500, detail=f"Ingestion error: {str(e)}")
+
+
+@app.post("/generate-letter", response_model=GenerateLetterResponse)
+async def generate_letter_endpoint(request: GenerateLetterRequest):
+    """
+    Génère une lettre de motivation via RAG : récupère les extraits pertinents du CV
+    de l'utilisateur (Chroma) puis génère la lettre avec un LLM à sortie structurée.
+
+    Étapes :
+    1. Retrieval — interroge la collection Chroma de l'utilisateur (chunks factuels
+       cv/other, chunks de style cover_letter)
+    2. Génération — LLM à sortie structurée, ancré sur les faits retrouvés uniquement
+
+    Args:
+        request: Offre ciblée, profil candidat, ton souhaité, credentials LLM
+
+    Returns:
+        Lettre en paragraphes, extraits utilisés, indicateur de contexte insuffisant
+
+    Raises:
+        HTTPException: 400 si aucun document indexé pour l'utilisateur ou erreur de
+            validation, 500 si erreur pipeline.
+    """
+    try:
+        llm = create_llm(request.provider, request.api_key, request.model)
+
+        initial_state = {
+            "user_id": request.user_id,
+            "offer": request.offer.model_dump(),
+            "profile": request.profile.model_dump(),
+            "tone": request.tone,
+            "llm": llm,
+            "persist_directory": CHROMA_PERSIST_DIRECTORY,
+            "embeddings_api_key": request.api_key,
+            "fact_chunks": [],
+            "style_chunks": [],
+            "letter": None,
+        }
+
+        logger.info(f"Generating letter for user {request.user_id} ({request.offer.company})")
+        result = compiled_letter_graph.invoke(initial_state)
+        letter = result["letter"]
+
+        logger.info(f"Letter generated for user {request.user_id}")
+        return GenerateLetterResponse(
+            paragraphs=letter["paragraphs"],
+            used_facts=letter["used_facts"],
+            insufficient_context=letter["insufficient_context"],
+        )
+    except ValueError as e:
+        # NoIndexedDocumentsError hérite de ValueError — capturé ici, pas de branch séparé
+        logger.error(f"Validation error generating letter for user {request.user_id}: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.exception(f"Letter generation failed for user {request.user_id}")
+        raise HTTPException(status_code=500, detail=f"Letter generation error: {str(e)}")
 
 
 @app.get("/health")

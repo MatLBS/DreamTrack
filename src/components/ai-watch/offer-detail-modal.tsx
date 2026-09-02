@@ -1,10 +1,17 @@
 "use client";
 
-import { ExternalLinkIcon, PlusIcon } from "lucide-react";
+import { useState } from "react";
+import {
+  ArrowLeftIcon,
+  ExternalLinkIcon,
+  PlusIcon,
+  Sparkles,
+} from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { createApplicationAction } from "@/app/actions/application";
+import { OfferLetterGenerator } from "@/components/ai-watch/offer-letter-generator";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -41,6 +48,12 @@ export function OfferDetailModal({
 }: OfferDetailModalProps) {
   const t = useT();
   const queryClient = useQueryClient();
+  const [showLetterGenerator, setShowLetterGenerator] = useState(false);
+
+  function handleOpenChange(next: boolean) {
+    if (!next) setShowLetterGenerator(false);
+    onOpenChange(next);
+  }
 
   const addMutation = useMutation({
     mutationFn: async () => {
@@ -65,7 +78,7 @@ export function OfferDetailModal({
       queryClient.invalidateQueries({ queryKey: ["board"] });
       queryClient.invalidateQueries({ queryKey: ["sankey"] });
       toast.success(t.aiWatch.toasts.addedToDashboard);
-      onOpenChange(false);
+      handleOpenChange(false);
     },
     onError: (error) => {
       toast.error(
@@ -75,54 +88,90 @@ export function OfferDetailModal({
   });
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[85vh] sm:max-w-3xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">
-            {offer.role}
-          </DialogTitle>
+          {showLetterGenerator ? (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowLetterGenerator(false)}
+                aria-label={t.aiWatch.offers.backToOffer}
+                className="flex size-7 shrink-0 items-center justify-center rounded-[8px] text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <ArrowLeftIcon className="size-4" />
+              </button>
+              <DialogTitle className="text-xl font-semibold">
+                {t.aiWatch.offers.generateLetter}
+              </DialogTitle>
+            </div>
+          ) : (
+            <DialogTitle className="text-xl font-semibold">
+              {offer.role}
+            </DialogTitle>
+          )}
         </DialogHeader>
 
-        <div className="flex flex-col gap-4">
-          <p className="text-sm text-muted-foreground">
-            {offer.company}
-            {offer.location ? ` — ${offer.location}` : ""}
-          </p>
+        {showLetterGenerator ? (
+          <OfferLetterGenerator
+            company={offer.company}
+            role={offer.role}
+            description={offer.description}
+          />
+        ) : (
+          <div className="flex flex-col gap-4">
+            <p className="text-sm text-muted-foreground">
+              {offer.company}
+              {offer.location ? ` — ${offer.location}` : ""}
+            </p>
 
-          <span
-            className={`w-fit rounded-full px-2.5 py-1 text-xs font-semibold ${getScoreBadgeClass(offer.matchScore)}`}
-          >
-            {t.aiWatch.offers.scoreLabel(offer.matchScore)}
-          </span>
+            <span
+              className={`w-fit rounded-full px-2.5 py-1 text-xs font-semibold ${getScoreBadgeClass(offer.matchScore)}`}
+            >
+              {t.aiWatch.offers.scoreLabel(offer.matchScore)}
+            </span>
 
-          {offer.matchReason && (
-            <div className="rounded-lg bg-muted/50 p-4">
-              <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap">
-                {offer.matchReason}
-              </p>
+            {offer.matchReason && (
+              <div className="rounded-lg bg-muted/50 p-4">
+                <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap">
+                  {offer.matchReason}
+                </p>
+              </div>
+            )}
+
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                variant="outline"
+                render={
+                  <a
+                    href={offer.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
+                }
+              >
+                {t.aiWatch.offers.viewOffer}
+                <ExternalLinkIcon className="size-4" />
+              </Button>
+
+              <Button
+                onClick={() => addMutation.mutate()}
+                disabled={addMutation.isPending || !entryColumnId}
+              >
+                <PlusIcon className="size-4" />
+                {t.aiWatch.offers.addToDashboard}
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => setShowLetterGenerator(true)}
+              >
+                <Sparkles className="size-4" />
+                {t.aiWatch.offers.generateLetter}
+              </Button>
             </div>
-          )}
-
-          <div className="flex gap-2">
-            <a
-              href={offer.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              {t.aiWatch.offers.viewOffer}
-              <ExternalLinkIcon className="size-4" />
-            </a>
-
-            <Button
-              onClick={() => addMutation.mutate()}
-              disabled={addMutation.isPending || !entryColumnId}
-            >
-              <PlusIcon className="size-4" />
-              {t.aiWatch.offers.addToDashboard}
-            </Button>
           </div>
-        </div>
+        )}
       </DialogContent>
     </Dialog>
   );
