@@ -12,6 +12,9 @@ COPY src ./src
 # Install dependencies (will build local package)
 RUN uv sync --frozen --no-dev
 
+# Persistent Chroma storage directory (mounted as a volume in docker-compose)
+RUN mkdir -p /app/.chroma-data
+
 # Expose port
 EXPOSE 8008
 

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
-import { Kanban, Menu, Radar, User } from "lucide-react";
+import { Kanban, Menu, PenLine, Radar, User } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n/locale-provider";
@@ -18,15 +18,22 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/ai-watch", labelKey: "aiWatch", icon: Radar, top: 64, x: -70 },
+  { href: "/ai-watch", labelKey: "aiWatch", icon: Radar, top: 58, x: -96 },
   {
     href: "/application-track",
     labelKey: "applicationTrack",
     icon: Kanban,
-    top: 96,
-    x: 0,
+    top: 92,
+    x: -33,
   },
-  { href: "/profile", labelKey: "profile", icon: User, top: 64, x: 70 },
+  {
+    href: "/workshop",
+    labelKey: "workshop",
+    icon: PenLine,
+    top: 92,
+    x: 33,
+  },
+  { href: "/profile", labelKey: "profile", icon: User, top: 58, x: 96 },
 ];
 
 function subscribeToHoverCapability(onChange: () => void) {
@@ -102,7 +109,7 @@ export function BubbleNav() {
     <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center">
       <div
         ref={wrapperRef}
-        className="pointer-events-auto relative flex h-40 w-52 items-start justify-center"
+        className="pointer-events-auto relative flex h-40 w-72 items-start justify-center"
         onMouseEnter={hasHover ? () => setIsOpen(true) : undefined}
         onMouseLeave={hasHover ? () => setIsOpen(false) : undefined}
       >

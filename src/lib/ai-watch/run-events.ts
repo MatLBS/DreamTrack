@@ -1,10 +1,12 @@
 import { EventEmitter } from "node:events";
 
+import type { ServiceErrorCode } from "@/services/errors";
+
 export type RunEvent =
   | { type: "run:started" }
   | { type: "run:progress"; step: string; detail?: string }
   | { type: "run:finished"; offerCount: number }
-  | { type: "run:error"; message: string };
+  | { type: "run:error"; message: string; code?: ServiceErrorCode };
 
 /**
  * Bus en mémoire, un canal par utilisateur. Suffisant en mono-instance : si l'app

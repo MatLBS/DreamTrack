@@ -10,6 +10,7 @@ export const fr = {
   nav: {
     aiWatch: "Veille IA",
     applicationTrack: "Candidatures",
+    workshop: "Atelier",
     profile: "Profil",
     openNav: "Ouvrir la navigation",
   },
@@ -296,6 +297,8 @@ export const fr = {
       dismiss: "Écarter",
       expand: "Voir les détails",
       addToDashboard: "Ajouter au tableau de bord",
+      generateLetter: "Générer une lettre de motivation",
+      backToOffer: "Retour à l'offre",
     },
     toasts: {
       configSaved: "Paramètres de la veille enregistrés",
@@ -305,6 +308,80 @@ export const fr = {
       dismissFailed: "Impossible d'écarter l'offre",
       addedToDashboard: "Candidature ajoutée au tableau de bord",
       addToDashboardFailed: "Impossible d'ajouter au tableau de bord",
+    },
+  },
+  workshop: {
+    title: "Atelier",
+    subtitle:
+      "Dépose ton CV et tes lettres, puis génère une lettre de motivation ancrée sur ton parcours réel.",
+    tabDocuments: "Mes documents",
+    tabLetter: "Lettre de motivation",
+    documents: {
+      title: "MES DOCUMENTS",
+      addButton: "Ajouter un document",
+      emptyTitle: "Dépose ton CV pour commencer",
+      emptyDescription:
+        "Ton CV sert de base factuelle pour générer des lettres de motivation qui parlent de tes vraies expériences.",
+      kinds: {
+        cv: "CV",
+        cover_letter: "Lettre de motivation",
+        other: "Autre",
+      },
+      status: {
+        ready: "Prêt",
+        pending: "Indexation…",
+        failed: "Échec",
+      },
+      chunkCount: (n: number) =>
+        `${n} extrait${n > 1 ? "s" : ""} indexé${n > 1 ? "s" : ""}`,
+      retry: "Réessayer",
+      deleteAria: "Supprimer le document",
+      confirmDelete: "Supprimer ce document ?",
+    },
+    uploadDialog: {
+      title: "Ajouter un document",
+      fileLabel: "Fichier",
+      chooseFile: "Choisir un fichier PDF",
+      fileConstraint: "PDF uniquement, 10 Mo max",
+      kindLabel: "Type de document",
+      titleLabel: "Titre",
+      titlePlaceholder: "Ex. CV — Développeur Full-Stack",
+      unsupportedType: "Seuls les fichiers PDF sont acceptés",
+      tooLarge: "Le fichier dépasse 10 Mo",
+      save: "Ajouter",
+    },
+    letter: {
+      emptyTitle: "Dépose d'abord ton CV",
+      emptyDescription:
+        "La génération de lettre a besoin d'au moins un document prêt pour s'appuyer sur ton parcours.",
+      goToDocuments: "Aller à Mes documents",
+      targetLabel: "Candidature",
+      targetPlaceholder: "Choisir une candidature",
+      toneLabel: "Ton",
+      tones: {
+        formal: "Formel",
+        conversational: "Conversationnel",
+      },
+      generate: "Générer",
+      generating: "Rédaction en cours…",
+      insufficientContextWarning:
+        "Tes documents ne couvrent pas bien cette offre — relis attentivement la lettre avant de l'envoyer.",
+      regenerateParagraphAria: "Régénérer ce paragraphe",
+      usedFactsTitle: "Extraits du CV utilisés",
+      copy: "Copier",
+      copied: "Copié",
+      save: "Enregistrer",
+      savedTitle: "LETTRES ENREGISTRÉES",
+      savedEmpty: "Aucune lettre enregistrée",
+      openAria: "Ouvrir la lettre",
+      deleteAria: "Supprimer la lettre",
+    },
+    toasts: {
+      documentAdded: "Document ajouté",
+      documentDeleted: "Document supprimé",
+      letterCopied: "Lettre copiée",
+      letterSaved: "Lettre enregistrée",
+      letterDeleted: "Lettre supprimée",
     },
   },
   commandPalette: {
@@ -341,9 +418,20 @@ export const fr = {
     LLM_REQUEST_FAILED: "L'extraction a échoué, réessaie",
     AI_WATCH_CONFIG_NOT_FOUND: "Configuration de veille introuvable",
     AI_WATCH_RUN_IN_PROGRESS: "Une analyse est déjà en cours",
+    AI_WATCH_NO_PROFILE: "Complète ton profil avant de lancer une veille",
     AI_WATCH_PIPELINE_FAILED: "La veille a échoué, réessaie plus tard",
     OFFER_NOT_FOUND: "Offre introuvable",
     API_KEY_NOT_FOUND: "Clé API introuvable",
+    UNSUPPORTED_DOCUMENT_TYPE: "Seuls les fichiers PDF sont acceptés",
+    DOCUMENT_TOO_LARGE: "Le fichier dépasse 10 Mo",
+    EMBEDDING_PROVIDER_UNSUPPORTED:
+      "L'indexation nécessite une clé API OpenAI dans ton profil",
+    DOCUMENT_INGESTION_FAILED: "L'indexation du document a échoué, réessaie",
+    DOCUMENT_NOT_FOUND: "Document introuvable",
+    NO_INDEXED_DOCUMENTS:
+      "Veuillez ajouter des documents avant de générer une lettre",
+    LETTER_GENERATION_FAILED: "La génération de la lettre a échoué, réessaie",
+    COVER_LETTER_NOT_FOUND: "Lettre introuvable",
     UNKNOWN: "Une erreur inattendue est survenue",
   },
 } satisfies Record<string, unknown>;
