@@ -10,6 +10,7 @@ import {
 import { getProfile } from "@/services/profile";
 import { resolveLlmCredential } from "@/services/llm-credential";
 
+import { ServiceError } from "../errors";
 import { resolvePipeline } from "./pipeline";
 
 /** Battement du cron : fréquence à laquelle on vérifie qui est dû, pas la récurrence choisie
@@ -46,7 +47,10 @@ export async function runForUser(userId: string): Promise<void> {
 
     const profile = await getProfile(userId);
     if (!profile) {
-      throw new Error("No profile configured for this user");
+      throw new ServiceError(
+        "AI_WATCH_NO_PROFILE",
+        "No profile configured for this user",
+      );
     }
     const { provider, apiKey, modelScoring } =
       await resolveLlmCredential(userId);
@@ -87,8 +91,9 @@ export async function runForUser(userId: string): Promise<void> {
     emitRunEvent(userId, { type: "run:finished", offerCount: offers.length });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
+    const code = error instanceof ServiceError ? error.code : undefined;
     await markRunFinished(userId, "error", message);
-    emitRunEvent(userId, { type: "run:error", message });
+    emitRunEvent(userId, { type: "run:error", message, code });
     throw error;
   } finally {
     runningUserIds.delete(userId);

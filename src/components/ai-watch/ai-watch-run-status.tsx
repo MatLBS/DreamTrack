@@ -25,7 +25,10 @@ export function AiWatchRunStatus({ runState }: AiWatchRunStatusProps) {
       {runState.status === "error" && (
         <p className="font-medium text-destructive">
           {t.aiWatch.runStatus.error}
-          {runState.errorMessage ? ` — ${runState.errorMessage}` : ""}
+          {" — "}
+          {runState.errorCode
+            ? t.errors[runState.errorCode]
+            : runState.errorMessage}
         </p>
       )}
       {runState.steps.length > 0 && (

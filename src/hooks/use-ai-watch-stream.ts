@@ -3,11 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 
 import type { RunEvent } from "@/lib/ai-watch/run-events";
+import type { ServiceErrorCode } from "@/services/errors";
 
 export interface AiWatchRunState {
   status: "idle" | "running" | "success" | "error";
   steps: string[];
   errorMessage?: string;
+  errorCode?: ServiceErrorCode;
 }
 
 /** Se connecte au flux SSE de la veille et tient l'état du run en cours. */
@@ -50,6 +52,7 @@ export function useAiWatchStream(onFinished: () => void): AiWatchRunState {
             ...prev,
             status: "error",
             errorMessage: data.message,
+            errorCode: data.code,
           }));
           break;
       }
